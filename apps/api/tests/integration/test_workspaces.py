@@ -49,16 +49,12 @@ async def test_slug_is_validated(client: httpx.AsyncClient, owner: AuthUser) -> 
 
 
 async def test_duplicate_slug_is_conflict(client: httpx.AsyncClient, owner: AuthUser, org: dict[str, object]) -> None:
-    r = await client.post(
-        "/api/v1/workspaces", headers=auth_headers(owner), json={"name": "Y", "slug": "meridian-test"}
-    )
+    r = await client.post("/api/v1/workspaces", headers=auth_headers(owner), json={"name": "Y", "slug": "meridian-test"})
     assert r.status_code == 409
     assert r.json()["type"].endswith("/conflict")
 
 
-async def test_outsider_cannot_read_or_update(
-    client: httpx.AsyncClient, outsider: AuthUser, org: dict[str, object]
-) -> None:
+async def test_outsider_cannot_read_or_update(client: httpx.AsyncClient, outsider: AuthUser, org: dict[str, object]) -> None:
     ws = org["id"]
     assert (await client.get(f"/api/v1/workspaces/{ws}", headers=auth_headers(outsider))).status_code == 403
     r = await client.patch(f"/api/v1/workspaces/{ws}", headers=auth_headers(outsider), json={"name": "Hijack"})
@@ -92,9 +88,7 @@ async def _latest_invite_link(to_email: str) -> str:
     return match.group(0)
 
 
-async def test_invite_accept_flow(
-    client: httpx.AsyncClient, owner: AuthUser, member: AuthUser, org: dict[str, object]
-) -> None:
+async def test_invite_accept_flow(client: httpx.AsyncClient, owner: AuthUser, member: AuthUser, org: dict[str, object]) -> None:
     ws = org["id"]
     r = await client.post(
         f"/api/v1/workspaces/{ws}/invitations",
@@ -134,18 +128,14 @@ async def test_invite_wrong_email_cannot_accept(
 ) -> None:
     ws = org["id"]
     target = "someone-else@test.gravv.local"
-    r = await client.post(
-        f"/api/v1/workspaces/{ws}/invitations", headers=auth_headers(owner), json={"email": target, "role": "viewer"}
-    )
+    r = await client.post(f"/api/v1/workspaces/{ws}/invitations", headers=auth_headers(owner), json={"email": target, "role": "viewer"})
     assert r.status_code == 201
     token = (await _latest_invite_link(target)).rsplit("/", 1)[1]
     r = await client.post(f"/api/v1/invitations/{token}/accept", headers=auth_headers(outsider))
     assert r.status_code == 403
     listing = await client.get(f"/api/v1/workspaces/{ws}/invitations", headers=auth_headers(owner))
     inv_id = next(i["id"] for i in listing.json() if i["email"] == target)
-    assert (
-        await client.delete(f"/api/v1/workspaces/{ws}/invitations/{inv_id}", headers=auth_headers(owner))
-    ).status_code == 204
+    assert (await client.delete(f"/api/v1/workspaces/{ws}/invitations/{inv_id}", headers=auth_headers(owner))).status_code == 204
     assert (await client.get(f"/api/v1/invitations/{token}")).status_code == 404
 
 
@@ -153,37 +143,23 @@ async def test_member_cannot_invite_or_change_roles(
     client: httpx.AsyncClient, member: AuthUser, owner: AuthUser, org: dict[str, object]
 ) -> None:
     ws = org["id"]
-    r = await client.post(
-        f"/api/v1/workspaces/{ws}/invitations", headers=auth_headers(member), json={"email": "x@test.gravv.local"}
-    )
+    r = await client.post(f"/api/v1/workspaces/{ws}/invitations", headers=auth_headers(member), json={"email": "x@test.gravv.local"})
     assert r.status_code == 403
-    r = await client.patch(
-        f"/api/v1/workspaces/{ws}/members/{owner.id}", headers=auth_headers(member), json={"role": "viewer"}
-    )
+    r = await client.patch(f"/api/v1/workspaces/{ws}/members/{owner.id}", headers=auth_headers(member), json={"role": "viewer"})
     assert r.status_code == 403
 
 
-async def test_role_change_rules(
-    client: httpx.AsyncClient, owner: AuthUser, member: AuthUser, org: dict[str, object]
-) -> None:
+async def test_role_change_rules(client: httpx.AsyncClient, owner: AuthUser, member: AuthUser, org: dict[str, object]) -> None:
     ws = org["id"]
-    r = await client.patch(
-        f"/api/v1/workspaces/{ws}/members/{member.id}", headers=auth_headers(owner), json={"role": "admin"}
-    )
+    r = await client.patch(f"/api/v1/workspaces/{ws}/members/{member.id}", headers=auth_headers(owner), json={"role": "admin"})
     assert r.status_code == 200 and r.json()["role"] == "admin"
     # admin cannot promote to admin (must be strictly below own role) nor touch the owner
-    r = await client.patch(
-        f"/api/v1/workspaces/{ws}/members/{owner.id}", headers=auth_headers(member), json={"role": "member"}
-    )
+    r = await client.patch(f"/api/v1/workspaces/{ws}/members/{owner.id}", headers=auth_headers(member), json={"role": "member"})
     assert r.status_code == 403
     # ownership transfer needs aal2
-    r = await client.patch(
-        f"/api/v1/workspaces/{ws}/members/{member.id}", headers=auth_headers(owner), json={"role": "owner"}
-    )
+    r = await client.patch(f"/api/v1/workspaces/{ws}/members/{member.id}", headers=auth_headers(owner), json={"role": "owner"})
     assert r.status_code == 403 and r.json()["type"].endswith("/mfa_required")
-    r = await client.patch(
-        f"/api/v1/workspaces/{ws}/members/{member.id}", headers=auth_headers(owner), json={"role": "manager"}
-    )
+    r = await client.patch(f"/api/v1/workspaces/{ws}/members/{member.id}", headers=auth_headers(owner), json={"role": "manager"})
     assert r.status_code == 200 and r.json()["role"] == "manager"
 
 
@@ -191,9 +167,7 @@ async def test_departure_blocks_access_immediately(
     client: httpx.AsyncClient, owner: AuthUser, member: AuthUser, org: dict[str, object]
 ) -> None:
     ws = org["id"]
-    r = await client.patch(
-        f"/api/v1/workspaces/{ws}/members/{member.id}", headers=auth_headers(owner), json={"status": "departed"}
-    )
+    r = await client.patch(f"/api/v1/workspaces/{ws}/members/{member.id}", headers=auth_headers(owner), json={"status": "departed"})
     assert r.status_code == 200, r.text
     assert r.json()["status"] == "departed" and r.json()["departed_at"]
     assert (await client.get(f"/api/v1/workspaces/{ws}", headers=auth_headers(member))).status_code == 403
@@ -203,14 +177,10 @@ async def test_departure_blocks_access_immediately(
     assert [m["status"] for m in me.json()["memberships"] if m["kind"] == "personal"] == ["active"]
 
 
-async def test_owner_cannot_leave_and_cannot_be_departed(
-    client: httpx.AsyncClient, owner: AuthUser, org: dict[str, object]
-) -> None:
+async def test_owner_cannot_leave_and_cannot_be_departed(client: httpx.AsyncClient, owner: AuthUser, org: dict[str, object]) -> None:
     ws = org["id"]
     assert (await client.delete(f"/api/v1/workspaces/{ws}/members/me", headers=auth_headers(owner))).status_code == 422
-    r = await client.patch(
-        f"/api/v1/workspaces/{ws}/members/{owner.id}", headers=auth_headers(owner), json={"status": "departed"}
-    )
+    r = await client.patch(f"/api/v1/workspaces/{ws}/members/{owner.id}", headers=auth_headers(owner), json={"status": "departed"})
     assert r.status_code == 422
 
 
@@ -225,17 +195,11 @@ async def test_ownership_transfer_with_mfa(
         json={"email": successor.email, "role": "admin"},
     )
     token = (await _latest_invite_link(successor.email)).rsplit("/", 1)[1]
-    assert (
-        await client.post(f"/api/v1/invitations/{token}/accept", headers=auth_headers(successor))
-    ).status_code == 200
+    assert (await client.post(f"/api/v1/invitations/{token}/accept", headers=auth_headers(successor))).status_code == 200
     from app.config import get_settings
 
-    strong = AuthUser(
-        id=owner.id, email=owner.email, token=mint_token(get_settings(), owner.id, owner.email, aal="aal2")
-    )
-    r = await client.patch(
-        f"/api/v1/workspaces/{ws}/members/{successor.id}", headers=auth_headers(strong), json={"role": "owner"}
-    )
+    strong = AuthUser(id=owner.id, email=owner.email, token=mint_token(get_settings(), owner.id, owner.email, aal="aal2"))
+    r = await client.patch(f"/api/v1/workspaces/{ws}/members/{successor.id}", headers=auth_headers(strong), json={"role": "owner"})
     assert r.status_code == 200, r.text
     assert r.json()["role"] == "owner"
     me = await client.get(f"/api/v1/workspaces/{ws}", headers=auth_headers(owner))

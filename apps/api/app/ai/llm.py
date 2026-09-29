@@ -46,9 +46,7 @@ class LLMClient(Protocol):
     name: str
     model: str
 
-    async def complete_structured(
-        self, *, prompt: Prompt, schema: type[T], max_tokens: int = 4096
-    ) -> Structured[T]: ...
+    async def complete_structured(self, *, prompt: Prompt, schema: type[T], max_tokens: int = 4096) -> Structured[T]: ...
 
     async def complete_text(self, *, prompt: Prompt, max_tokens: int = 2048) -> Structured[str]: ...
 
@@ -92,9 +90,7 @@ class AnthropicLLM:
                 last_error = exc
                 if attempt == 0:
                     messages.append({"role": "assistant", "content": text or "{}"})
-                    messages.append(
-                        {"role": "user", "content": f"That output did not validate: {exc}. Return only a valid object."}
-                    )
+                    messages.append({"role": "user", "content": f"That output did not validate: {exc}. Return only a valid object."})
         raise LLMError(f"structured output failed validation twice: {last_error}")
 
     async def complete_text(self, *, prompt: Prompt, max_tokens: int = 2048) -> Structured[str]:
@@ -107,9 +103,7 @@ class AnthropicLLM:
         if response.stop_reason == "refusal":
             raise LLMError("model declined the request")
         text = "".join(getattr(b, "text", "") for b in response.content if getattr(b, "type", "") == "text")
-        return Structured(
-            value=text, usage=Usage(response.usage.input_tokens, response.usage.output_tokens), model=response.model
-        )
+        return Structured(value=text, usage=Usage(response.usage.input_tokens, response.usage.output_tokens), model=response.model)
 
 
 class OpenAICompatibleLLM:
@@ -124,9 +118,7 @@ class OpenAICompatibleLLM:
 
     async def _chat(self, body: dict[str, Any]) -> dict[str, Any]:
         async with httpx.AsyncClient(timeout=120) as c:
-            r = await c.post(
-                f"{self.base_url}/chat/completions", json=body, headers={"Authorization": f"Bearer {self.key}"}
-            )
+            r = await c.post(f"{self.base_url}/chat/completions", json=body, headers={"Authorization": f"Bearer {self.key}"})
         r.raise_for_status()
         return r.json()  # type: ignore[no-any-return]
 
@@ -179,9 +171,7 @@ class FakeLLM:
 
     async def complete_text(self, *, prompt: Prompt, max_tokens: int = 2048) -> Structured[str]:
         if prompt.name == "brief":
-            return Structured(
-                value=fake.fake_brief(prompt).text, usage=Usage(len(prompt.user) // 4, 150), model=self.model
-            )
+            return Structured(value=fake.fake_brief(prompt).text, usage=Usage(len(prompt.user) // 4, 150), model=self.model)
         return Structured(value=prompt.user[:max_tokens], usage=Usage(len(prompt.user) // 4, 50), model=self.model)
 
 

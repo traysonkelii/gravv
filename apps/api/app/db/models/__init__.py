@@ -79,12 +79,8 @@ class Membership(Base):
     id: Mapped[UUID] = mapped_column(primary_key=True, server_default="gen_random_uuid()")
     workspace_id: Mapped[UUID] = mapped_column(ForeignKey("workspaces.id"))
     user_id: Mapped[UUID] = mapped_column(ForeignKey("profiles.id"))
-    role: Mapped[e.WorkspaceRole] = mapped_column(
-        pg_enum(e.WorkspaceRole, "workspace_role"), default=e.WorkspaceRole.member
-    )
-    status: Mapped[e.MembershipStatus] = mapped_column(
-        pg_enum(e.MembershipStatus, "membership_status"), default=e.MembershipStatus.active
-    )
+    role: Mapped[e.WorkspaceRole] = mapped_column(pg_enum(e.WorkspaceRole, "workspace_role"), default=e.WorkspaceRole.member)
+    status: Mapped[e.MembershipStatus] = mapped_column(pg_enum(e.MembershipStatus, "membership_status"), default=e.MembershipStatus.active)
     joined_at: Mapped[datetime] = mapped_column(server_default="now()")
     departed_at: Mapped[datetime | None]
     grace_until: Mapped[datetime | None]
@@ -97,9 +93,7 @@ class Invitation(Base):
     id: Mapped[UUID] = mapped_column(primary_key=True, server_default="gen_random_uuid()")
     workspace_id: Mapped[UUID] = mapped_column(ForeignKey("workspaces.id"))
     email: Mapped[str] = mapped_column(CITEXT)
-    role: Mapped[e.WorkspaceRole] = mapped_column(
-        pg_enum(e.WorkspaceRole, "workspace_role"), default=e.WorkspaceRole.member
-    )
+    role: Mapped[e.WorkspaceRole] = mapped_column(pg_enum(e.WorkspaceRole, "workspace_role"), default=e.WorkspaceRole.member)
     token_hash: Mapped[str] = mapped_column(Text, unique=True)
     invited_by: Mapped[UUID] = mapped_column(ForeignKey("profiles.id"))
     expires_at: Mapped[datetime] = mapped_column(server_default="now() + interval '7 days'")
@@ -130,9 +124,7 @@ class Contact(Base):
     company_id: Mapped[UUID | None] = mapped_column(ForeignKey("companies.id"))
     first_name: Mapped[str] = mapped_column(Text, default="")
     last_name: Mapped[str] = mapped_column(Text, default="")
-    display_name: Mapped[str] = mapped_column(
-        Text, Computed("btrim(first_name || ' ' || last_name)", persisted=True), nullable=True
-    )
+    display_name: Mapped[str] = mapped_column(Text, Computed("btrim(first_name || ' ' || last_name)", persisted=True), nullable=True)
     honorific: Mapped[str | None] = mapped_column(Text)
     title: Mapped[str | None] = mapped_column(Text)
     emails: Mapped[list[str]] = mapped_column(ARRAY(CITEXT), default=list)
@@ -144,9 +136,7 @@ class Contact(Base):
     visibility: Mapped[e.ContactVisibility] = mapped_column(
         pg_enum(e.ContactVisibility, "contact_visibility"), default=e.ContactVisibility.team
     )
-    status: Mapped[e.ContactStatus] = mapped_column(
-        pg_enum(e.ContactStatus, "contact_status"), default=e.ContactStatus.active
-    )
+    status: Mapped[e.ContactStatus] = mapped_column(pg_enum(e.ContactStatus, "contact_status"), default=e.ContactStatus.active)
     tags: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
     cadence_days: Mapped[int] = mapped_column(SmallInteger, default=30)
     gravity_score: Mapped[int] = mapped_column(SmallInteger, default=0)
@@ -202,9 +192,7 @@ class Interaction(Base):
     workspace_id: Mapped[UUID] = mapped_column(ForeignKey("workspaces.id"))
     contact_id: Mapped[UUID | None] = mapped_column(ForeignKey("contacts.id"))
     user_id: Mapped[UUID] = mapped_column(ForeignKey("profiles.id"))
-    kind: Mapped[e.InteractionKind] = mapped_column(
-        pg_enum(e.InteractionKind, "interaction_kind"), default=e.InteractionKind.note
-    )
+    kind: Mapped[e.InteractionKind] = mapped_column(pg_enum(e.InteractionKind, "interaction_kind"), default=e.InteractionKind.note)
     direction: Mapped[e.InteractionDirection] = mapped_column(
         pg_enum(e.InteractionDirection, "interaction_direction"), default=e.InteractionDirection.mutual
     )
@@ -239,9 +227,7 @@ class Capture(Base):
     duration_seconds: Mapped[float | None] = mapped_column(Float)
     transcript: Mapped[str | None] = mapped_column(Text)
     raw_text: Mapped[str | None] = mapped_column(Text)
-    status: Mapped[e.CaptureStatus] = mapped_column(
-        pg_enum(e.CaptureStatus, "capture_status"), default=e.CaptureStatus.uploaded
-    )
+    status: Mapped[e.CaptureStatus] = mapped_column(pg_enum(e.CaptureStatus, "capture_status"), default=e.CaptureStatus.uploaded)
     proposal: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     interaction_id: Mapped[UUID | None] = mapped_column(ForeignKey("interactions.id"))
     error: Mapped[str | None] = mapped_column(Text)
@@ -296,9 +282,7 @@ class OpportunityContact(Base):
     __tablename__ = "opportunity_contacts"
     opportunity_id: Mapped[UUID] = mapped_column(ForeignKey("opportunities.id"), primary_key=True)
     contact_id: Mapped[UUID] = mapped_column(ForeignKey("contacts.id"), primary_key=True)
-    role: Mapped[e.OpportunityRole] = mapped_column(
-        pg_enum(e.OpportunityRole, "opportunity_role"), default=e.OpportunityRole.other
-    )
+    role: Mapped[e.OpportunityRole] = mapped_column(pg_enum(e.OpportunityRole, "opportunity_role"), default=e.OpportunityRole.other)
 
 
 class ContactEdge(Base):
@@ -335,17 +319,13 @@ class Insight(Base):
     contact_id: Mapped[UUID | None] = mapped_column(ForeignKey("contacts.id"))
     company_id: Mapped[UUID | None] = mapped_column(ForeignKey("companies.id"))
     kind: Mapped[e.InsightKind] = mapped_column(pg_enum(e.InsightKind, "insight_kind"))
-    severity: Mapped[e.InsightSeverity] = mapped_column(
-        pg_enum(e.InsightSeverity, "insight_severity"), default=e.InsightSeverity.info
-    )
+    severity: Mapped[e.InsightSeverity] = mapped_column(pg_enum(e.InsightSeverity, "insight_severity"), default=e.InsightSeverity.info)
     title: Mapped[str] = mapped_column(Text)
     body: Mapped[str] = mapped_column(Text)
     evidence: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
     suggested_action: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     dedupe_key: Mapped[str] = mapped_column(Text)
-    status: Mapped[e.InsightStatus] = mapped_column(
-        pg_enum(e.InsightStatus, "insight_status"), default=e.InsightStatus.new
-    )
+    status: Mapped[e.InsightStatus] = mapped_column(pg_enum(e.InsightStatus, "insight_status"), default=e.InsightStatus.new)
     expires_at: Mapped[datetime | None]
     generated_by: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(server_default="now()")

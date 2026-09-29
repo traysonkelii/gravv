@@ -18,10 +18,94 @@
         "title": "AiStatus",
         "type": "string"
       },
+      "AnalyticsSummary": {
+        "properties": {
+          "active_count": {
+            "title": "Active Count",
+            "type": "integer"
+          },
+          "avg_gravity": {
+            "title": "Avg Gravity",
+            "type": "integer"
+          },
+          "avg_gravity_delta": {
+            "title": "Avg Gravity Delta",
+            "type": "integer"
+          },
+          "contact_count": {
+            "title": "Contact Count",
+            "type": "integer"
+          },
+          "contact_count_delta": {
+            "title": "Contact Count Delta",
+            "type": "integer"
+          },
+          "due_count": {
+            "title": "Due Count",
+            "type": "integer"
+          },
+          "engagement_rate": {
+            "title": "Engagement Rate",
+            "type": "number"
+          },
+          "open_opportunity_count": {
+            "title": "Open Opportunity Count",
+            "type": "integer"
+          },
+          "pipeline_delta_pct": {
+            "title": "Pipeline Delta Pct",
+            "type": "number"
+          },
+          "pipeline_value_cents": {
+            "title": "Pipeline Value Cents",
+            "type": "integer"
+          },
+          "range": {
+            "title": "Range",
+            "type": "string"
+          },
+          "scope": {
+            "enum": ["me", "team"],
+            "title": "Scope",
+            "type": "string"
+          }
+        },
+        "required": [
+          "range",
+          "scope",
+          "contact_count",
+          "contact_count_delta",
+          "active_count",
+          "engagement_rate",
+          "avg_gravity",
+          "avg_gravity_delta",
+          "pipeline_value_cents",
+          "pipeline_delta_pct",
+          "open_opportunity_count",
+          "due_count"
+        ],
+        "title": "AnalyticsSummary",
+        "type": "object"
+      },
       "Band": {
         "enum": ["strong", "steady", "weak", "drifting"],
         "title": "Band",
         "type": "string"
+      },
+      "BandCount": {
+        "properties": {
+          "band": {
+            "title": "Band",
+            "type": "string"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "required": ["band", "count"],
+        "title": "BandCount",
+        "type": "object"
       },
       "CaptureConfirm": {
         "additionalProperties": false,
@@ -1710,6 +1794,223 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "InsightActResult": {
+        "properties": {
+          "insight": {
+            "$ref": "#/components/schemas/InsightRead"
+          },
+          "navigate_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Navigate To"
+          },
+          "task_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Task Id"
+          }
+        },
+        "required": ["insight"],
+        "title": "InsightActResult",
+        "type": "object"
+      },
+      "InsightKind": {
+        "enum": [
+          "follow_up",
+          "at_risk",
+          "opportunity_signal",
+          "introduction_path",
+          "trend",
+          "briefing",
+          "common_ground"
+        ],
+        "title": "InsightKind",
+        "type": "string"
+      },
+      "InsightRead": {
+        "properties": {
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "company_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Id"
+          },
+          "company_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Name"
+          },
+          "contact_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Id"
+          },
+          "contact_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Name"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "evidence": {
+            "additionalProperties": true,
+            "title": "Evidence",
+            "type": "object"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "generated_by": {
+            "title": "Generated By",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/InsightKind"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/InsightSeverity"
+          },
+          "status": {
+            "$ref": "#/components/schemas/InsightStatus"
+          },
+          "suggested_action": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suggested Action"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          },
+          "workspace_id": {
+            "format": "uuid",
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "workspace_id",
+          "user_id",
+          "contact_id",
+          "contact_name",
+          "company_id",
+          "company_name",
+          "kind",
+          "severity",
+          "title",
+          "body",
+          "evidence",
+          "suggested_action",
+          "status",
+          "expires_at",
+          "generated_by",
+          "created_at"
+        ],
+        "title": "InsightRead",
+        "type": "object"
+      },
+      "InsightSeverity": {
+        "enum": ["info", "notice", "warning"],
+        "title": "InsightSeverity",
+        "type": "string"
+      },
+      "InsightStatus": {
+        "enum": ["new", "seen", "acted", "dismissed", "expired"],
+        "title": "InsightStatus",
+        "type": "string"
+      },
+      "InsightStatusUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "enum": ["seen", "acted", "dismissed"],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": ["status"],
+        "title": "InsightStatusUpdate",
+        "type": "object"
+      },
       "InteractionCreate": {
         "additionalProperties": false,
         "properties": {
@@ -2502,6 +2803,55 @@
         "title": "MeUpdate",
         "type": "object"
       },
+      "MemberMetrics": {
+        "properties": {
+          "avg_gravity": {
+            "title": "Avg Gravity",
+            "type": "integer"
+          },
+          "contact_count": {
+            "title": "Contact Count",
+            "type": "integer"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "interactions_in_range": {
+            "title": "Interactions In Range",
+            "type": "integer"
+          },
+          "overdue_tasks": {
+            "title": "Overdue Tasks",
+            "type": "integer"
+          },
+          "pipeline_value_cents": {
+            "title": "Pipeline Value Cents",
+            "type": "integer"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "full_name",
+          "role",
+          "contact_count",
+          "avg_gravity",
+          "interactions_in_range",
+          "pipeline_value_cents",
+          "overdue_tasks"
+        ],
+        "title": "MemberMetrics",
+        "type": "object"
+      },
       "MemberRead": {
         "properties": {
           "avatar_path": {
@@ -2984,6 +3334,25 @@
         "title": "RelationshipType",
         "type": "string"
       },
+      "ScorePoint": {
+        "properties": {
+          "band": {
+            "title": "Band",
+            "type": "string"
+          },
+          "score": {
+            "title": "Score",
+            "type": "integer"
+          },
+          "scored_on": {
+            "title": "Scored On",
+            "type": "string"
+          }
+        },
+        "required": ["scored_on", "score", "band"],
+        "title": "ScorePoint",
+        "type": "object"
+      },
       "SearchResult": {
         "properties": {
           "companies": {
@@ -3016,6 +3385,25 @@
         "enum": ["positive", "neutral", "negative", "mixed"],
         "title": "SentimentLabel",
         "type": "string"
+      },
+      "SeriesPoint": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "period": {
+            "title": "Period",
+            "type": "string"
+          }
+        },
+        "required": ["period", "kind", "count"],
+        "title": "SeriesPoint",
+        "type": "object"
       },
       "ShareRequest": {
         "additionalProperties": false,
@@ -3067,6 +3455,81 @@
         },
         "required": ["entry_type", "id", "ts", "kind", "title", "body", "meta"],
         "title": "TimelineEntry",
+        "type": "object"
+      },
+      "TopContact": {
+        "properties": {
+          "band": {
+            "title": "Band",
+            "type": "string"
+          },
+          "company_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company Name"
+          },
+          "deal_value_cents": {
+            "title": "Deal Value Cents",
+            "type": "integer"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "gravity_score": {
+            "title": "Gravity Score",
+            "type": "integer"
+          },
+          "honorific": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Honorific"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "last_interaction_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Interaction At"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "display_name",
+          "honorific",
+          "company_name",
+          "gravity_score",
+          "band",
+          "status",
+          "last_interaction_at",
+          "deal_value_cents"
+        ],
+        "title": "TopContact",
         "type": "object"
       },
       "UploadedRequest": {
@@ -3404,6 +3867,388 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/analytics/distribution": {
+      "get": {
+        "operationId": "analytics_distribution",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "scope",
+            "required": false,
+            "schema": {
+              "default": "me",
+              "enum": ["me", "team"],
+              "title": "Scope",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BandCount"
+                  },
+                  "title": "Response Analytics Distribution",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Analytics Distribution",
+        "tags": ["analytics"]
+      }
+    },
+    "/api/v1/analytics/interactions": {
+      "get": {
+        "operationId": "analytics_interactions",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "range",
+            "required": false,
+            "schema": {
+              "default": "month",
+              "enum": ["today", "week", "month", "quarter", "year"],
+              "title": "Range",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "scope",
+            "required": false,
+            "schema": {
+              "default": "me",
+              "enum": ["me", "team"],
+              "title": "Scope",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SeriesPoint"
+                  },
+                  "title": "Response Analytics Interactions",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Analytics Interactions",
+        "tags": ["analytics"]
+      }
+    },
+    "/api/v1/analytics/summary": {
+      "get": {
+        "operationId": "analytics_summary",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "range",
+            "required": false,
+            "schema": {
+              "default": "month",
+              "enum": ["today", "week", "month", "quarter", "year"],
+              "title": "Range",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "scope",
+            "required": false,
+            "schema": {
+              "default": "me",
+              "enum": ["me", "team"],
+              "title": "Scope",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsSummary"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Analytics Summary",
+        "tags": ["analytics"]
+      }
+    },
+    "/api/v1/analytics/team": {
+      "get": {
+        "operationId": "analytics_team",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "range",
+            "required": false,
+            "schema": {
+              "default": "month",
+              "enum": ["today", "week", "month", "quarter", "year"],
+              "title": "Range",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MemberMetrics"
+                  },
+                  "title": "Response Analytics Team",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Analytics Team",
+        "tags": ["analytics"]
+      }
+    },
+    "/api/v1/analytics/top-contacts": {
+      "get": {
+        "operationId": "analytics_top_contacts",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "scope",
+            "required": false,
+            "schema": {
+              "default": "me",
+              "enum": ["me", "team"],
+              "title": "Scope",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 120,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "maximum": 50,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TopContact"
+                  },
+                  "title": "Response Analytics Top Contacts",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Analytics Top Contacts",
+        "tags": ["analytics"]
+      }
+    },
     "/api/v1/captures": {
       "get": {
         "operationId": "captures_list",
@@ -4680,6 +5525,68 @@
         "tags": ["contacts"]
       }
     },
+    "/api/v1/contacts/{contact_id}/brief": {
+      "post": {
+        "operationId": "brief_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Contact Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Brief Create",
+        "tags": ["contacts"]
+      }
+    },
     "/api/v1/contacts/{contact_id}/copy-to-personal": {
       "post": {
         "operationId": "contacts_copy_to_personal",
@@ -5012,6 +5919,83 @@
         "tags": ["contacts"]
       }
     },
+    "/api/v1/contacts/{contact_id}/scores": {
+      "get": {
+        "operationId": "scores_history",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Contact Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "range",
+            "required": false,
+            "schema": {
+              "default": "90d",
+              "pattern": "^(30d|90d|1y)$",
+              "title": "Range",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ScorePoint"
+                  },
+                  "title": "Response Scores History",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Scores History",
+        "tags": ["contacts"]
+      }
+    },
     "/api/v1/contacts/{contact_id}/share": {
       "post": {
         "operationId": "contacts_share",
@@ -5316,6 +6300,321 @@
         ],
         "summary": "Facts Update",
         "tags": ["facts"]
+      }
+    },
+    "/api/v1/insights": {
+      "get": {
+        "operationId": "insights_list",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "pattern": "^(new|seen|acted|dismissed|expired)$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "in": "query",
+            "name": "contact_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Contact Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "scope",
+            "required": false,
+            "schema": {
+              "default": "me",
+              "pattern": "^(me|team)$",
+              "title": "Scope",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/InsightRead"
+                  },
+                  "title": "Response Insights List",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Insights List",
+        "tags": ["insights"]
+      }
+    },
+    "/api/v1/insights/generate": {
+      "post": {
+        "operationId": "insights_generate_now",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Insights Generate Now",
+        "tags": ["insights"]
+      }
+    },
+    "/api/v1/insights/{insight_id}/act": {
+      "post": {
+        "operationId": "insights_act",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "insight_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Insight Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsightActResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Insights Act",
+        "tags": ["insights"]
+      }
+    },
+    "/api/v1/insights/{insight_id}/status": {
+      "post": {
+        "operationId": "insights_set_status",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "insight_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Insight Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InsightStatusUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsightRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Insights Set Status",
+        "tags": ["insights"]
       }
     },
     "/api/v1/interactions": {

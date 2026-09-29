@@ -25,3 +25,4 @@ async def noop(job: Job) -> dict[str, Any]:
 # Register handler modules (import side effects).
 from app.jobs.handlers import capture as _capture  # noqa: E402, F401
 from app.jobs.handlers import profile as _profile  # noqa: E402, F401
+from app.jobs.handlers import scoring as _scoring  # noqa: E402, F401

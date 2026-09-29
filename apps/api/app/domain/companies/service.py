@@ -20,9 +20,7 @@ async def list_companies(
     cursor: str | None,
 ) -> Page[CompanyRead]:
     after = decode_cursor(cursor)
-    rows = await repo.list_companies(
-        session, ws.workspace_id, q, type_, industry, limit, (after[0], after[1]) if after else None
-    )
+    rows = await repo.list_companies(session, ws.workspace_id, q, type_, industry, limit, (after[0], after[1]) if after else None)
     items, next_cursor = page_of(rows, limit, lambda c: encode_cursor(c.name.lower(), c.id))
     return Page(items=[CompanyRead.model_validate(c) for c in items], next_cursor=next_cursor)
 

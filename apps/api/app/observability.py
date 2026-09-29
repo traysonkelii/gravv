@@ -22,9 +22,7 @@ def configure_logging(settings: Settings) -> None:
         structlog.processors.format_exc_info,
     ]
     renderer: structlog.typing.Processor = (
-        structlog.dev.ConsoleRenderer()
-        if settings.app_env in ("local", "test")
-        else structlog.processors.JSONRenderer()
+        structlog.dev.ConsoleRenderer() if settings.app_env in ("local", "test") else structlog.processors.JSONRenderer()
     )
     structlog.configure(
         processors=[*processors, renderer],

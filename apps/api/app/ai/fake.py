@@ -210,9 +210,7 @@ def fake_extract(prompt: Prompt) -> CaptureExtraction:
     for m in TASK_RE.finditer(capture):
         raw = m.group(1).strip()
         due, note = _resolve_date(raw, now)
-        title = re.sub(
-            r"\s+(next|on|by|in)\s+(\w+day|week|\d+ days?|thirty days|tomorrow).*$", "", raw, flags=re.I
-        ).strip()
+        title = re.sub(r"\s+(next|on|by|in)\s+(\w+day|week|\d+ days?|thirty days|tomorrow).*$", "", raw, flags=re.I).strip()
         title = title[0].upper() + title[1:] if title else raw
         tasks.append(ExtractedTask(title=title[:200], due_at=due, priority=2))
         if note:
@@ -269,8 +267,7 @@ def fake_profile(prompt: Prompt) -> ContactProfileDraft:
         communication_style=style[:120],
         remember=[p[:80] for p in plain if not p.lower().startswith("communication")][:8],
         risks=risks[:4],
-        talking_points=[f"Ask about {i.lower()}" for i in interest_facts[:5]]
-        or ["Ask what has changed since you last spoke"],
+        talking_points=[f"Ask about {i.lower()}" for i in interest_facts[:5]] or ["Ask what has changed since you last spoke"],
         common_ground=[c.capitalize() for c in common],
     )
 

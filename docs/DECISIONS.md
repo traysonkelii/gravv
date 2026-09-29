@@ -104,3 +104,22 @@ Extraction reads contacts under the practitioner's identity (RLS on), so `gravv_
 ## D-023 Capture provenance is stored beside the proposal (2026-09-29)
 `captures.proposal` holds `{extraction, provenance}`; provenance carries model, prompt version, inputs hash,
 provider, and any auto-applied fact ids. The API returns the two as separate fields.
+
+## D-024 Score writes through apply_score() (2026-09-29)
+A member logging a note on a teammate's contact triggers an immediate rescore, but the contacts update policy
+only lets owners and managers update the row. `apply_score()` (migration 0011) is security definer, checks
+membership, and writes both `relationship_scores` and the denormalized columns on `contacts`.
+
+## D-025 Insight narration with the LLM is deferred (2026-09-29)
+Rules produce plain-sentence titles and bodies directly. The optional `narrate_insights_with_llm` setting
+exists in the workspace settings schema but is not read yet; it moves to the Phase 2 backlog.
+
+## D-026 Scheduler dedupes by dedupe_key created today (2026-09-29)
+The unique index on `jobs.dedupe_key` only covers queued and running jobs, so a daily job would be enqueued
+again after it succeeded. The scheduler checks for any job with the day-stamped key created today before
+enqueueing, and holds `pg_try_advisory_xact_lock` so only one worker schedules.
+
+## D-027 Timeline includes score changes from day one (2026-09-29)
+Rescoring after every interaction writes a daily `relationship_scores` row, and the timeline shows a score
+entry whenever the score changed from the previous day. Tests filter those entries out where they assert on
+interaction order.

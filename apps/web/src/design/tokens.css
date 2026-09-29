@@ -115,6 +115,16 @@
 @utility chamfer-tr {
   clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
 }
+/* The hamon divider: the one tempered accent line on Home. Single use in the product. */
+@utility hamon {
+  height: 1px;
+  background-image: linear-gradient(
+    90deg,
+    var(--color-temper-500) 0%,
+    rgb(200 162 83 / 0.25) 60%,
+    transparent 100%
+  );
+}
 @utility tnum {
   font-variant-numeric: tabular-nums;
 }

@@ -103,9 +103,7 @@ async def _resolve_company(
     return None
 
 
-async def create_contact(
-    session: AsyncSession, ws: WorkspaceContext, user_id: UUID, body: ContactCreate
-) -> ContactRead:
+async def create_contact(session: AsyncSession, ws: WorkspaceContext, user_id: UUID, body: ContactCreate) -> ContactRead:
     fields: dict[str, Any] = body.model_dump(exclude={"company_id", "company_name", "visibility"})
     fields["company_id"] = await _resolve_company(session, ws, user_id, body.company_id, body.company_name)
     fields["visibility"] = body.visibility or ContactVisibility(ws.settings.get("default_contact_visibility", "team"))
@@ -113,9 +111,7 @@ async def create_contact(
         fields["cadence_days"] = int(ws.settings["default_cadence_days"])
     fields.update(workspace_id=ws.workspace_id, owner_user_id=user_id)
     contact = await repo.create_contact(session, fields)
-    await write_audit(
-        session, ws.workspace_id, "contact.create", "contact", contact.id, {"display_name": contact.display_name}
-    )
+    await write_audit(session, ws.workspace_id, "contact.create", "contact", contact.id, {"display_name": contact.display_name})
     return await get_contact(session, ws, contact.id)
 
 
@@ -135,9 +131,7 @@ async def _load_for_write(
     return contact
 
 
-async def update_contact(
-    session: AsyncSession, ws: WorkspaceContext, user_id: UUID, contact_id: UUID, body: ContactUpdate
-) -> ContactRead:
+async def update_contact(session: AsyncSession, ws: WorkspaceContext, user_id: UUID, contact_id: UUID, body: ContactUpdate) -> ContactRead:
     contact = await _load_for_write(session, ws, user_id, contact_id, "manager")
     fields = body.model_dump(exclude_unset=True, exclude={"company_id", "company_name"})
     if "company_id" in body.model_fields_set or "company_name" in body.model_fields_set:
@@ -257,9 +251,7 @@ async def copy_to_personal(session: AsyncSession, ws: WorkspaceContext, user_id:
     if personal is None or personal.id == ws.workspace_id:
         raise Problem(422, "validation_error", "Invalid request", "This contact is already in your personal workspace.")
     copy = await _copy_contact(session, contact, ws.workspace_id, personal.id, user_id, ContactVisibility.private)
-    await write_audit(
-        session, ws.workspace_id, "contact.copy_to_personal", "contact", contact.id, {"copy": str(copy.id)}
-    )
+    await write_audit(session, ws.workspace_id, "contact.copy_to_personal", "contact", contact.id, {"copy": str(copy.id)})
     personal_ctx = WorkspaceContext(workspace_id=personal.id, role="owner", settings=personal.settings)
     return await get_contact(session, personal_ctx, copy.id)
 

@@ -34,11 +34,7 @@ def test_reference_scenario_yields_one_fact_and_one_task() -> None:
     assert out.facts[0].category == "interest"
     assert [t.title for t in out.tasks] == ["Call the program officers"]
     due = out.tasks[0].due_at
-    assert (
-        isinstance(due, datetime)
-        and due.strftime("%A") == "Tuesday"
-        and due > datetime.fromisoformat("2026-09-28T14:30-04:00")
-    )
+    assert isinstance(due, datetime) and due.strftime("%A") == "Tuesday" and due > datetime.fromisoformat("2026-09-28T14:30-04:00")
     assert out.needs_review == []
 
 

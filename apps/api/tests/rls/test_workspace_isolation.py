@@ -62,9 +62,7 @@ async def test_no_cross_workspace_reads(actors: Actors) -> None:
 
 async def test_private_contact_invisible_to_teammate(actors: Actors) -> None:
     async with rls_session(actors.c) as s:
-        names = list(
-            await s.scalars(text("select display_name from contacts where workspace_id = :ws"), {"ws": actors.x})
-        )
+        names = list(await s.scalars(text("select display_name from contacts where workspace_id = :ws"), {"ws": actors.x}))
     assert names == ["Team Contact"]
 
 
@@ -97,10 +95,7 @@ async def test_departed_member_loses_access_instantly(actors: Actors, auth_admin
     assert await _count_contacts(d, str(actors.x)) == 1
     async with rls_session(a) as s:
         await s.execute(
-            text(
-                "update memberships set status = 'departed', departed_at = now() "
-                "where workspace_id = :ws and user_id = :u"
-            ),
+            text("update memberships set status = 'departed', departed_at = now() where workspace_id = :ws and user_id = :u"),
             {"ws": actors.x, "u": d.id},
         )
     assert await _count_contacts(d, str(actors.x)) == 0

@@ -32,8 +32,9 @@ db-diff: ## fail if the live schema drifted from migrations
 	@diff=$$(supabase db diff --local --output-format json 2>/dev/null | jq -r '.diff // empty'); \
 	if [[ -n "$$diff" ]]; then echo "$$diff"; echo "schema drift detected"; exit 1; else echo "no schema drift"; fi
 
-seed: ## create seed users through the auth admin API and load supabase/seed.sql
+seed: ## create seed users through the auth admin API, load supabase/seed.sql, score and generate insights
 	cd apps/api && uv run python -m scripts.seed_users
+	cd apps/api && uv run python -m scripts.rescore
 
 gen: ## regenerate the TypeScript API client
 	cd apps/api && APP_ENV=test uv run python -m scripts.export_openapi > ../web/src/lib/api/openapi.json

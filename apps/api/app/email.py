@@ -32,7 +32,5 @@ async def send_email(to: str, subject: str, body: str) -> None:
         await asyncio.to_thread(_send_sync, to, subject, body)
     except OSError as exc:
         log.warning("email_failed", to_domain=to.split("@")[-1], error=str(exc))
-        raise Problem(
-            502, "email_failed", "Email could not be sent", "The message could not be delivered. Try again in a moment."
-        ) from exc
+        raise Problem(502, "email_failed", "Email could not be sent", "The message could not be delivered. Try again in a moment.") from exc
     log.info("email_sent", subject=subject, to_domain=to.split("@")[-1])

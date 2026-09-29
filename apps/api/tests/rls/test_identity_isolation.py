@@ -14,9 +14,7 @@ async def test_profiles_are_private(auth_admin: AuthAdmin) -> None:
         emails = list(await s.scalars(text("select email from profiles")))
     assert emails == [a.email]
     async with rls_session(a) as s:
-        updated = await s.execute(
-            text("update profiles set full_name = 'Hijacked' where id = :b returning id"), {"b": b.id}
-        )
+        updated = await s.execute(text("update profiles set full_name = 'Hijacked' where id = :b returning id"), {"b": b.id})
         assert updated.first() is None
     async with rls_session(b) as s:
         assert await s.scalar(text("select full_name from profiles where id = :b"), {"b": b.id}) == "Pat B"
@@ -33,9 +31,7 @@ async def test_member_directory_scoped_to_shared_workspaces(auth_admin: AuthAdmi
             {"ws": x, "u": b.id},
         )
     async with rls_session(b) as s:
-        names = sorted(
-            await s.scalars(text("select full_name from member_directory where workspace_id = :ws"), {"ws": x})
-        )
+        names = sorted(await s.scalars(text("select full_name from member_directory where workspace_id = :ws"), {"ws": x}))
     assert names == ["Dir A", "Dir B"]
     async with rls_session(c) as s:
         assert await s.scalar(text("select count(*) from member_directory where workspace_id = :ws"), {"ws": x}) == 0

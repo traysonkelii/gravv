@@ -26,9 +26,7 @@ async def viewer(auth_admin: AuthAdmin) -> AuthUser:
 async def org(client: httpx.AsyncClient, owner: AuthUser, teammate: AuthUser, viewer: AuthUser) -> str:
     ws = str(await create_org(owner, "Contacts Org"))
     for u, role in ((teammate, "member"), (viewer, "viewer")):
-        r = await client.post(
-            f"/api/v1/workspaces/{ws}/invitations", headers=auth_headers(owner), json={"email": u.email, "role": role}
-        )
+        r = await client.post(f"/api/v1/workspaces/{ws}/invitations", headers=auth_headers(owner), json={"email": u.email, "role": role})
         assert r.status_code == 201, r.text
     from sqlalchemy import text
 
@@ -38,9 +36,7 @@ async def org(client: httpx.AsyncClient, owner: AuthUser, teammate: AuthUser, vi
         await s.execute(text("update memberships set status='active' where workspace_id=:ws"), {"ws": ws})
         for u, role in ((teammate, "member"), (viewer, "viewer")):
             await s.execute(
-                text(
-                    "insert into memberships (workspace_id, user_id, role) values (:ws, :u, :r) on conflict do nothing"
-                ),
+                text("insert into memberships (workspace_id, user_id, role) values (:ws, :u, :r) on conflict do nothing"),
                 {"ws": ws, "u": u.id, "r": role},
             )
     return ws
@@ -81,9 +77,7 @@ async def test_create_contact_creates_company_and_profile(client: httpx.AsyncCli
 async def test_validation_limits(client: httpx.AsyncClient, owner: AuthUser, org: str) -> None:
     r = await client.post("/api/v1/contacts", headers=auth_headers(owner, org), json={"first_name": ""})
     assert r.status_code == 422
-    r = await client.post(
-        "/api/v1/contacts", headers=auth_headers(owner, org), json={"first_name": "X", "emails": ["not-an-email"]}
-    )
+    r = await client.post("/api/v1/contacts", headers=auth_headers(owner, org), json={"first_name": "X", "emails": ["not-an-email"]})
     assert r.status_code == 422
     r = await client.post("/api/v1/contacts", headers=auth_headers(owner, org), json={"first_name": "X", "bogus": 1})
     assert r.status_code == 422
@@ -95,23 +89,15 @@ async def test_viewer_cannot_create(client: httpx.AsyncClient, viewer: AuthUser,
     assert r.json()["type"].endswith("/insufficient_role")
 
 
-async def test_private_contact_invisible_to_teammate(
-    client: httpx.AsyncClient, owner: AuthUser, teammate: AuthUser, org: str
-) -> None:
-    private = await _create(
-        client, owner, org, first_name="Secret", last_name="Source", visibility="private", company_name=None
-    )
+async def test_private_contact_invisible_to_teammate(client: httpx.AsyncClient, owner: AuthUser, teammate: AuthUser, org: str) -> None:
+    private = await _create(client, owner, org, first_name="Secret", last_name="Source", visibility="private", company_name=None)
     mine = await client.get("/api/v1/contacts", headers=auth_headers(owner, org), params={"q": "Secret"})
     assert [c["id"] for c in mine.json()["items"]] == [private["id"]]
     theirs = await client.get("/api/v1/contacts", headers=auth_headers(teammate, org), params={"q": "Secret"})
     assert theirs.json()["items"] == []
-    assert (
-        await client.get(f"/api/v1/contacts/{private['id']}", headers=auth_headers(teammate, org))
-    ).status_code == 404
+    assert (await client.get(f"/api/v1/contacts/{private['id']}", headers=auth_headers(teammate, org))).status_code == 404
     # nor through facts or timeline
-    assert (
-        await client.get(f"/api/v1/contacts/{private['id']}/facts", headers=auth_headers(teammate, org))
-    ).status_code == 404
+    assert (await client.get(f"/api/v1/contacts/{private['id']}/facts", headers=auth_headers(teammate, org))).status_code == 404
 
 
 async def test_list_filters_sort_and_cursor(client: httpx.AsyncClient, owner: AuthUser, org: str) -> None:
@@ -142,9 +128,7 @@ async def test_list_filters_sort_and_cursor(client: httpx.AsyncClient, owner: Au
     assert len(by_type.json()["items"]) == 3
     bad = await client.get("/api/v1/contacts", headers=h, params={"cursor": "!!!"})
     assert bad.status_code == 400
-    wrong_sort = await client.get(
-        "/api/v1/contacts", headers=h, params={"sort": "gravity", "cursor": first.json()["next_cursor"]}
-    )
+    wrong_sort = await client.get("/api/v1/contacts", headers=h, params={"sort": "gravity", "cursor": first.json()["next_cursor"]})
     assert wrong_sort.status_code == 400
     fuzzy = await client.get("/api/v1/contacts", headers=h, params={"q": "page0 tset"})
     assert any(c["display_name"] == "Page0 Test" for c in fuzzy.json()["items"])
@@ -172,14 +156,10 @@ async def test_update_rules(client: httpx.AsyncClient, owner: AuthUser, teammate
 async def test_facts_supersede_and_archive(client: httpx.AsyncClient, owner: AuthUser, org: str) -> None:
     c = await _create(client, owner, org, first_name="Facts", last_name="Person", company_name=None)
     h = auth_headers(owner, org)
-    r = await client.post(
-        f"/api/v1/contacts/{c['id']}/facts", headers=h, json={"category": "preference", "content": "Drinks Diet Coke"}
-    )
+    r = await client.post(f"/api/v1/contacts/{c['id']}/facts", headers=h, json={"category": "preference", "content": "Drinks Diet Coke"})
     assert r.status_code == 201, r.text
     fact = r.json()
-    dup = await client.post(
-        f"/api/v1/contacts/{c['id']}/facts", headers=h, json={"category": "preference", "content": "drinks diet coke "}
-    )
+    dup = await client.post(f"/api/v1/contacts/{c['id']}/facts", headers=h, json={"category": "preference", "content": "drinks diet coke "})
     assert dup.status_code == 409
     r = await client.patch(f"/api/v1/facts/{fact['id']}", headers=h, json={"content": "Drinks Diet Coke, never coffee"})
     assert r.status_code == 200, r.text
@@ -194,9 +174,7 @@ async def test_facts_supersede_and_archive(client: httpx.AsyncClient, owner: Aut
     assert (await client.get(f"/api/v1/contacts/{c['id']}/facts", headers=h)).json() == []
 
 
-async def test_interactions_and_timeline(
-    client: httpx.AsyncClient, owner: AuthUser, teammate: AuthUser, org: str
-) -> None:
+async def test_interactions_and_timeline(client: httpx.AsyncClient, owner: AuthUser, teammate: AuthUser, org: str) -> None:
     c = await _create(client, owner, org, first_name="Timeline", last_name="Person", company_name=None)
     h = auth_headers(owner, org)
     r = await client.post(
@@ -228,20 +206,17 @@ async def test_interactions_and_timeline(
     detail = await client.get(f"/api/v1/contacts/{c['id']}", headers=h)
     assert detail.json()["last_interaction"]["kind"] == "email"
     tl = await client.get(f"/api/v1/contacts/{c['id']}/timeline", headers=h)
-    assert [e["kind"] for e in tl.json()["items"]] == ["email", "meeting"]
-    assert tl.json()["items"][1]["title"] == "Phase 2 review"
+    entries = [e for e in tl.json()["items"] if e["kind"] != "score"]
+    assert [e["kind"] for e in entries] == ["email", "meeting"]
+    assert entries[1]["title"] == "Phase 2 review"
     only_meetings = await client.get(f"/api/v1/contacts/{c['id']}/timeline", headers=h, params={"kinds": ["meeting"]})
     assert [e["kind"] for e in only_meetings.json()["items"]] == ["meeting"]
     # teammate cannot edit the owner's note; owner can
     assert (
-        await client.patch(
-            f"/api/v1/interactions/{meeting['id']}", headers=auth_headers(teammate, org), json={"subject": "x"}
-        )
+        await client.patch(f"/api/v1/interactions/{meeting['id']}", headers=auth_headers(teammate, org), json={"subject": "x"})
     ).status_code == 403
     assert (
-        await client.patch(
-            f"/api/v1/interactions/{meeting['id']}", headers=h, json={"subject": "Phase 2 schedule review"}
-        )
+        await client.patch(f"/api/v1/interactions/{meeting['id']}", headers=h, json={"subject": "Phase 2 schedule review"})
     ).status_code == 200
     listing = await client.get("/api/v1/interactions", headers=h, params={"contact_id": c["id"], "limit": 1})
     assert len(listing.json()["items"]) == 1 and listing.json()["next_cursor"]
@@ -250,21 +225,13 @@ async def test_interactions_and_timeline(
     assert detail.json()["last_interaction"]["kind"] == "email"
 
 
-async def test_share_to_org_and_copy_back(
-    client: httpx.AsyncClient, owner: AuthUser, teammate: AuthUser, org: str
-) -> None:
+async def test_share_to_org_and_copy_back(client: httpx.AsyncClient, owner: AuthUser, teammate: AuthUser, org: str) -> None:
     me = await client.get("/api/v1/me", headers=auth_headers(teammate))
     personal = next(m["workspace_id"] for m in me.json()["memberships"] if m["kind"] == "personal")
-    p = await _create(
-        client, teammate, personal, first_name="Maya", last_name="Delgado", company_name="Anduril", visibility="private"
-    )
+    p = await _create(client, teammate, personal, first_name="Maya", last_name="Delgado", company_name="Anduril", visibility="private")
     hp = auth_headers(teammate, personal)
-    await client.post(
-        f"/api/v1/contacts/{p['id']}/facts", headers=hp, json={"category": "interest", "content": "Sailing"}
-    )
-    await client.post(
-        "/api/v1/interactions", headers=hp, json={"contact_id": p["id"], "kind": "call", "body": "Caught up."}
-    )
+    await client.post(f"/api/v1/contacts/{p['id']}/facts", headers=hp, json={"category": "interest", "content": "Sailing"})
+    await client.post("/api/v1/interactions", headers=hp, json={"contact_id": p["id"], "kind": "call", "body": "Caught up."})
     r = await client.post(f"/api/v1/contacts/{p['id']}/share", headers=hp, json={"target_workspace_id": org})
     assert r.status_code == 201, r.text
     shared = r.json()
@@ -282,27 +249,19 @@ async def test_share_to_org_and_copy_back(
     assert r.status_code == 201, r.text
     assert r.json()["workspace_id"] == personal and r.json()["visibility"] == "private"
     # a contact already in personal cannot be shared to a workspace the user is not in
-    r = await client.post(
-        f"/api/v1/contacts/{p['id']}/share", headers=hp, json={"target_workspace_id": str(uuid.uuid4())}
-    )
+    r = await client.post(f"/api/v1/contacts/{p['id']}/share", headers=hp, json={"target_workspace_id": str(uuid.uuid4())})
     assert r.status_code == 403
 
 
-async def test_search_and_companies_crud(
-    client: httpx.AsyncClient, owner: AuthUser, viewer: AuthUser, org: str
-) -> None:
+async def test_search_and_companies_crud(client: httpx.AsyncClient, owner: AuthUser, viewer: AuthUser, org: str) -> None:
     h = auth_headers(owner, org)
-    r = await client.post(
-        "/api/v1/companies", headers=h, json={"name": "NASA", "industry": "government", "type": "government"}
-    )
+    r = await client.post("/api/v1/companies", headers=h, json={"name": "NASA", "industry": "government", "type": "government"})
     assert r.status_code == 201, r.text
     nasa = r.json()
     assert (await client.post("/api/v1/companies", headers=h, json={"name": "nasa"})).status_code == 409
     r = await client.patch(f"/api/v1/companies/{nasa['id']}", headers=h, json={"domain": "nasa.gov"})
     assert r.json()["domain"] == "nasa.gov"
-    assert (
-        await client.delete(f"/api/v1/companies/{nasa['id']}", headers=auth_headers(viewer, org))
-    ).status_code == 403
+    assert (await client.delete(f"/api/v1/companies/{nasa['id']}", headers=auth_headers(viewer, org))).status_code == 403
     s = await client.get("/api/v1/search", headers=h, params={"q": "Johnson"})
     assert s.status_code == 200
     assert any(c["display_name"] == "Michael Johnson" for c in s.json()["contacts"])

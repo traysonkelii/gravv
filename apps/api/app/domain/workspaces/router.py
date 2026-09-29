@@ -33,9 +33,7 @@ async def workspaces_get(workspace_id: UUID, ctx: CurrentUser, session: Session)
 
 
 @router.patch("/{workspace_id}", operation_id="workspaces_update", response_model=WorkspaceRead)
-async def workspaces_update(
-    workspace_id: UUID, body: WorkspaceUpdate, ctx: CurrentUser, session: Session
-) -> WorkspaceRead:
+async def workspaces_update(workspace_id: UUID, body: WorkspaceUpdate, ctx: CurrentUser, session: Session) -> WorkspaceRead:
     return await service.update_workspace(session, workspace_id, UUID(ctx.user_id), body)
 
 
@@ -51,18 +49,12 @@ async def members_leave(workspace_id: UUID, ctx: CurrentUser, session: Session) 
 
 
 @router.patch("/{workspace_id}/members/{user_id}", operation_id="members_update", response_model=MemberRead)
-async def members_update(
-    workspace_id: UUID, user_id: UUID, body: MemberUpdate, ctx: CurrentUser, session: Session
-) -> MemberRead:
+async def members_update(workspace_id: UUID, user_id: UUID, body: MemberUpdate, ctx: CurrentUser, session: Session) -> MemberRead:
     return await service.update_member(session, workspace_id, ctx, user_id, body)
 
 
-@router.post(
-    "/{workspace_id}/invitations", operation_id="invitations_create", response_model=InvitationRead, status_code=201
-)
-async def invitations_create(
-    workspace_id: UUID, body: InvitationCreate, ctx: CurrentUser, session: Session
-) -> InvitationRead:
+@router.post("/{workspace_id}/invitations", operation_id="invitations_create", response_model=InvitationRead, status_code=201)
+async def invitations_create(workspace_id: UUID, body: InvitationCreate, ctx: CurrentUser, session: Session) -> InvitationRead:
     return await service.invite(session, workspace_id, UUID(ctx.user_id), body)
 
 

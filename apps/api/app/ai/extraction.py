@@ -36,9 +36,7 @@ class ExtractedTask(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     due_at: datetime | None = None
     priority: int = Field(default=2, ge=1, le=3)
-    contact_ref: str | None = Field(
-        default=None, description="Name of the person the task concerns, if not the main contact"
-    )
+    contact_ref: str | None = Field(default=None, description="Name of the person the task concerns, if not the main contact")
 
 
 class MentionedPerson(BaseModel):

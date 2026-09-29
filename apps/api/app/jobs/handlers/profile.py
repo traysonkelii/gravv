@@ -17,17 +17,14 @@ _CONTACT = text(
     "c.relationship_type::text, c.cadence_days from contacts c left join companies co on co.id = c.company_id "
     "where c.id = :id and c.deleted_at is null"
 )
-_FACTS = text(
-    "select category::text, content from contact_facts where contact_id = :id and is_active order by created_at"
-)
+_FACTS = text("select category::text, content from contact_facts where contact_id = :id and is_active order by created_at")
 _INTERACTIONS = text(
     "select to_char(occurred_at, 'YYYY-MM-DD') as d, kind::text, "
     "coalesce(nullif(summary, ''), left(body, 160)) as s, coalesce(sentiment::text, '') as sent "
     "from interactions where contact_id = :id and deleted_at is null order by occurred_at desc limit 30"
 )
 _TASKS = text(
-    "select title, to_char(due_at, 'YYYY-MM-DD') from tasks where contact_id = :id and status = 'open' "
-    "order by due_at nulls last limit 20"
+    "select title, to_char(due_at, 'YYYY-MM-DD') from tasks where contact_id = :id and status = 'open' order by due_at nulls last limit 20"
 )
 _OPPS = text(
     "select o.name, o.value_cents, o.stage from opportunity_contacts oc "
@@ -76,8 +73,7 @@ async def synthesize(job: Job) -> dict[str, Any]:
         ),
         user_interests=", ".join(interests) or "none",
         facts="\n".join(f"- {f[0]}: {f[1]}" for f in facts) or "none",
-        interactions="\n".join(f"{i[0]} | {i[1]} | {i[2]}{' | ' + i[3] if i[3] else ''}" for i in interactions)
-        or "none",
+        interactions="\n".join(f"{i[0]} | {i[1]} | {i[2]}{' | ' + i[3] if i[3] else ''}" for i in interactions) or "none",
         tasks="\n".join(f"- {t[0]}{' (due ' + t[1] + ')' if t[1] else ''}" for t in tasks) or "none",
         opportunities="\n".join(f"- {o[0]}, {o[1] / 100:,.0f} USD, {o[2]}" for o in opps) or "none",
     )

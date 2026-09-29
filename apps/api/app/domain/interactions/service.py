@@ -12,6 +12,7 @@ from app.domain.common import Page, decode_cursor, encode_cursor, page_of
 from app.domain.contacts.service import touch_last_interaction
 from app.domain.interactions.schemas import InteractionCreate, InteractionRead, InteractionUpdate
 from app.errors import Problem
+from app.scoring.compute import rescore_contact
 
 
 async def list_interactions(
@@ -22,9 +23,7 @@ async def list_interactions(
     return Page(items=[InteractionRead.model_validate(i) for i in items], next_cursor=next_cursor)
 
 
-async def create_interaction(
-    session: AsyncSession, ws: WorkspaceContext, user_id: UUID, body: InteractionCreate
-) -> InteractionRead:
+async def create_interaction(session: AsyncSession, ws: WorkspaceContext, user_id: UUID, body: InteractionCreate) -> InteractionRead:
     if await contacts_repo.get_contact(session, ws.workspace_id, body.contact_id) is None:
         raise Problem(404, "not_found", "Contact not found")
     fields = body.model_dump(exclude={"extract"})
@@ -39,6 +38,7 @@ async def create_interaction(
         row.id,
         {"contact_id": str(body.contact_id), "kind": body.kind.value},
     )
+    await rescore_contact(session, body.contact_id)
     if body.extract and body.body.strip():
         from app.domain.captures.service import create_for_interaction
 
@@ -46,16 +46,12 @@ async def create_interaction(
     return InteractionRead.model_validate(row)
 
 
-async def _load_for_write(
-    session: AsyncSession, ws: WorkspaceContext, user_id: UUID, interaction_id: UUID
-) -> Interaction:
+async def _load_for_write(session: AsyncSession, ws: WorkspaceContext, user_id: UUID, interaction_id: UUID) -> Interaction:
     row = await repo.get_interaction(session, ws.workspace_id, interaction_id)
     if row is None:
         raise Problem(404, "not_found", "Interaction not found")
     if row.user_id != user_id and not ws.at_least("manager"):
-        raise Problem(
-            403, "insufficient_role", "Insufficient role", "Editing another person's note requires the manager role."
-        )
+        raise Problem(403, "insufficient_role", "Insufficient role", "Editing another person's note requires the manager role.")
     return row
 
 
@@ -67,6 +63,7 @@ async def update_interaction(
     row = await repo.update_interaction(session, row, fields)
     if row.contact_id is not None:
         await touch_last_interaction(session, row.contact_id)
+        await rescore_contact(session, row.contact_id)
     await write_audit(session, ws.workspace_id, "interaction.update", "interaction", row.id, fields)
     return InteractionRead.model_validate(row)
 
@@ -76,4 +73,5 @@ async def delete_interaction(session: AsyncSession, ws: WorkspaceContext, user_i
     await repo.soft_delete_interaction(session, row)
     if row.contact_id is not None:
         await touch_last_interaction(session, row.contact_id)
+        await rescore_contact(session, row.contact_id)
     await write_audit(session, ws.workspace_id, "interaction.delete", "interaction", row.id)

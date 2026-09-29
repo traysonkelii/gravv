@@ -28,9 +28,7 @@ async def check_budget(session: AsyncSession, workspace_id: UUID) -> None:
         raise BudgetExceeded(f"workspace {workspace_id} used {row[1]} of {row[0]} tokens today")
 
 
-async def record_usage(
-    session: AsyncSession, workspace_id: UUID, user_id: UUID | None, kind: str, model: str, usage: Usage
-) -> None:
+async def record_usage(session: AsyncSession, workspace_id: UUID, user_id: UUID | None, kind: str, model: str, usage: Usage) -> None:
     await session.execute(
         text(
             "insert into ai_usage (workspace_id, user_id, kind, model, input_tokens, output_tokens) "

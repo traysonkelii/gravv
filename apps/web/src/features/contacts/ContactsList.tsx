@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link, useNavigate, useSearchParams } from 'react-router'
 import { Avatar } from '@/components/ui/Avatar'
 import { Button } from '@/components/ui/Button'
 import { Chip } from '@/components/ui/Chip'
@@ -52,7 +52,11 @@ export function ContactsList() {
   const openCapture = useUiStore((s) => s.openCapture)
   const [q, setQ] = useState('')
   const [debounced, setDebounced] = useState('')
-  const [filters, setFilters] = useState<ContactFilters>({ sort: 'updated' })
+  const [params] = useSearchParams()
+  const [filters, setFilters] = useState<ContactFilters>(() => ({
+    sort: (params.get('sort') as ContactFilters['sort']) ?? 'updated',
+    company_id: params.get('company_id') ?? undefined,
+  }))
   useEffect(() => {
     const t = setTimeout(() => setDebounced(q.trim()), 250)
     return () => clearTimeout(t)

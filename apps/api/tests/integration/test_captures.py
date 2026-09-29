@@ -40,28 +40,21 @@ async def johnson(client: httpx.AsyncClient, user: AuthUser, org: str) -> dict[s
 async def _pending_job_for(capture_id: str) -> uuid.UUID:
     async with worker_session() as s:
         jid = await s.scalar(
-            text(
-                "select id from jobs where kind = 'capture.extract' and payload->>'capture_id' = :c "
-                "order by created_at desc limit 1"
-            ),
+            text("select id from jobs where kind = 'capture.extract' and payload->>'capture_id' = :c order by created_at desc limit 1"),
             {"c": capture_id},
         )
     assert jid is not None, "capture.extract not enqueued"
     return uuid.UUID(str(jid))
 
 
-async def test_text_capture_to_proposal_to_confirm(
-    client: httpx.AsyncClient, user: AuthUser, org: str, johnson: dict[str, object]
-) -> None:
+async def test_text_capture_to_proposal_to_confirm(client: httpx.AsyncClient, user: AuthUser, org: str, johnson: dict[str, object]) -> None:
     h = auth_headers(user, org)
     key = uuid.uuid4().hex
     r = await client.post(
         "/api/v1/captures/text",
         headers=h,
         json={
-            "text": (
-                "Met the Colonel, he loves competitive pinball, remind me to call the program officers next Tuesday"
-            ),
+            "text": ("Met the Colonel, he loves competitive pinball, remind me to call the program officers next Tuesday"),
             "contact_id": johnson["id"],
             "idempotency_key": key,
         },
@@ -104,7 +97,7 @@ async def test_text_capture_to_proposal_to_confirm(
     assert [f["content"] for f in facts.json()] == ["Competitive pinball"]
     assert facts.json()[0]["source"] == "note"
     tl = await client.get(f"/api/v1/contacts/{johnson['id']}/timeline", headers=h)
-    assert tl.json()["items"][0]["kind"] == "meeting"
+    assert next(e["kind"] for e in tl.json()["items"] if e["kind"] != "score") == "meeting"
 
     # a repeated confirm does not duplicate facts or tasks
     r = await client.post(f"/api/v1/captures/{capture['id']}/confirm", headers=h, json=confirm)
@@ -122,10 +115,7 @@ async def test_text_capture_to_proposal_to_confirm(
     # profile synthesis runs inline and marks the profile fresh
     async with worker_session() as s:
         jid = await s.scalar(
-            text(
-                "select id from jobs where kind = 'profile.synthesize' and payload->>'contact_id' = :c "
-                "order by created_at desc limit 1"
-            ),
+            text("select id from jobs where kind = 'profile.synthesize' and payload->>'contact_id' = :c order by created_at desc limit 1"),
             {"c": johnson["id"]},
         )
         await s.execute(text("update jobs set run_after = now() + interval '1 hour' where id = :id"), {"id": jid})
@@ -135,9 +125,7 @@ async def test_text_capture_to_proposal_to_confirm(
     assert prof.json()["prompt_version"] == "profile:v1"
 
 
-async def test_confirm_can_create_mentioned_people(
-    client: httpx.AsyncClient, user: AuthUser, org: str, johnson: dict[str, object]
-) -> None:
+async def test_confirm_can_create_mentioned_people(client: httpx.AsyncClient, user: AuthUser, org: str, johnson: dict[str, object]) -> None:
     h = auth_headers(user, org)
     r = await client.post(
         "/api/v1/captures/text",
@@ -173,9 +161,7 @@ async def test_confirm_can_create_mentioned_people(
     assert edges == 1
 
 
-async def test_voice_upload_url_validation_and_missing_object(
-    client: httpx.AsyncClient, user: AuthUser, org: str
-) -> None:
+async def test_voice_upload_url_validation_and_missing_object(client: httpx.AsyncClient, user: AuthUser, org: str) -> None:
     h = auth_headers(user, org)
     bad = await client.post(
         "/api/v1/captures/voice/upload-url",
@@ -243,13 +229,9 @@ async def test_voice_round_trip_with_fake_transcription(
     assert got["proposal"]["facts"][0]["category"] == "dislike"
 
 
-async def test_discard_and_ownership(
-    client: httpx.AsyncClient, user: AuthUser, auth_admin: AuthAdmin, org: str
-) -> None:
+async def test_discard_and_ownership(client: httpx.AsyncClient, user: AuthUser, auth_admin: AuthAdmin, org: str) -> None:
     h = auth_headers(user, org)
-    r = await client.post(
-        "/api/v1/captures/text", headers=h, json={"text": "Throwaway note.", "idempotency_key": uuid.uuid4().hex}
-    )
+    r = await client.post("/api/v1/captures/text", headers=h, json={"text": "Throwaway note.", "idempotency_key": uuid.uuid4().hex})
     cid = r.json()["id"]
     other = await auth_admin.create_user("cap2", "Other Person")
     assert (await client.get(f"/api/v1/captures/{cid}", headers=auth_headers(other, org))).status_code == 403
@@ -272,17 +254,13 @@ async def test_budget_exhaustion_fails_softly(client: httpx.AsyncClient, user: A
             ),
             {"ws": org},
         )
-    r = await client.post(
-        "/api/v1/captures/text", headers=h, json={"text": "Met Johnson again.", "idempotency_key": uuid.uuid4().hex}
-    )
+    r = await client.post("/api/v1/captures/text", headers=h, json={"text": "Met Johnson again.", "idempotency_key": uuid.uuid4().hex})
     cid = r.json()["id"]
     assert await run_job_now(await _pending_job_for(cid)) == "succeeded"
     got = (await client.get(f"/api/v1/captures/{cid}", headers=h)).json()
     assert got["status"] == "failed" and "budget" in got["error"].lower()
     async with worker_session() as s:
-        await s.execute(
-            text("update workspaces set settings = settings - 'ai_daily_token_budget' where id = :ws"), {"ws": org}
-        )
+        await s.execute(text("update workspaces set settings = settings - 'ai_daily_token_budget' where id = :ws"), {"ws": org})
 
 
 async def test_interaction_with_extract_creates_review_capture(

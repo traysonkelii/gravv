@@ -27,9 +27,7 @@ def _local_keys() -> tuple[str, str]:
     settings = get_settings()
     if settings.supabase_secret_key:
         return settings.supabase_url, settings.supabase_secret_key
-    out = subprocess.run(
-        ["supabase", "status", "-o", "env"], check=True, capture_output=True, text=True, cwd=REPO_ROOT
-    ).stdout
+    out = subprocess.run(["supabase", "status", "-o", "env"], check=True, capture_output=True, text=True, cwd=REPO_ROOT).stdout
     env = dict(line.split("=", 1) for line in out.splitlines() if "=" in line)
     return settings.supabase_url, env["SECRET_KEY"].strip('"')
 

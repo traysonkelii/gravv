@@ -34,9 +34,7 @@ async def _require_membership(session: AsyncSession, ws_id: UUID, user_id: UUID,
     if m is None or m.status != MembershipStatus.active:
         raise Problem(403, "not_a_member", "Not a member", "You are not an active member of this workspace.")
     if _rank(m.role) < ROLE_RANK[min_role]:
-        raise Problem(
-            403, "insufficient_role", "Insufficient role", f"This action requires the {min_role} role or higher."
-        )
+        raise Problem(403, "insufficient_role", "Insufficient role", f"This action requires the {min_role} role or higher.")
     return m
 
 
@@ -58,8 +56,7 @@ async def create_workspace(session: AsyncSession, user_id: UUID, body: Workspace
     assert ws is not None
     profile = await profiles_repo.get_profile(session, user_id)
     if profile is not None and (
-        profile.default_workspace_id is None
-        or (await repo.get_workspace(session, profile.default_workspace_id)) is None
+        profile.default_workspace_id is None or (await repo.get_workspace(session, profile.default_workspace_id)) is None
     ):
         await profiles_repo.update_profile(session, profile, {"default_workspace_id": ws_id})
     item = WorkspaceRead.model_validate(ws)
@@ -112,9 +109,7 @@ async def list_members(session: AsyncSession, ws_id: UUID, user_id: UUID) -> lis
     ]
 
 
-async def update_member(
-    session: AsyncSession, ws_id: UUID, actor: AuthContext, target_user_id: UUID, body: MemberUpdate
-) -> MemberRead:
+async def update_member(session: AsyncSession, ws_id: UUID, actor: AuthContext, target_user_id: UUID, body: MemberUpdate) -> MemberRead:
     actor_id = UUID(actor.user_id)
     me = await _require_membership(session, ws_id, actor_id, "admin")
     target = await repo.get_membership(session, ws_id, target_user_id)
@@ -143,9 +138,7 @@ async def update_member(
             if target.user_id == actor_id:
                 raise Problem(422, "validation_error", "Invalid request", "You cannot change your own role.")
             if _rank(target.role) >= _rank(me.role) or _rank(body.role) >= _rank(me.role):
-                raise Problem(
-                    403, "insufficient_role", "Insufficient role", "You can only assign roles below your own."
-                )
+                raise Problem(403, "insufficient_role", "Insufficient role", "You can only assign roles below your own.")
             await repo.set_role(session, target, body.role)
 
     if body.status is not None and body.status != target.status:
@@ -183,12 +176,8 @@ async def leave(session: AsyncSession, ws_id: UUID, user_id: UUID) -> None:
     await repo.depart(session, m)
     profile = await profiles_repo.get_profile(session, user_id)
     if profile is not None and profile.default_workspace_id == ws_id:
-        personal = next(
-            (w for mm, w in await repo.list_memberships(session, user_id) if w.kind == WorkspaceKind.personal), None
-        )
-        await profiles_repo.update_profile(
-            session, profile, {"default_workspace_id": personal.id if personal else None}
-        )
+        personal = next((w for mm, w in await repo.list_memberships(session, user_id) if w.kind == WorkspaceKind.personal), None)
+        await profiles_repo.update_profile(session, profile, {"default_workspace_id": personal.id if personal else None})
 
 
 def token_hash(raw: str) -> str:

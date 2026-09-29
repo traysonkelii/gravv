@@ -29,9 +29,7 @@ class WorkspaceContext:
         return ROLE_RANK[self.role] >= ROLE_RANK[min_role]
 
 
-async def current_user(
-    request: Request, credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)]
-) -> AuthContext:
+async def current_user(request: Request, credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)]) -> AuthContext:
     if credentials is None or credentials.scheme.lower() != "bearer":
         raise Problem(401, "unauthenticated", "Unauthenticated", "Provide a bearer token.")
     ctx = verify_token(credentials.credentials)
@@ -56,9 +54,7 @@ async def bind_identity(session: AsyncSession, ctx: AuthContext | None) -> None:
         "aal": ctx.aal,
         "session_id": ctx.session_id,
     }
-    await session.execute(
-        text("select set_config('request.jwt.claims', :claims, true)"), {"claims": json.dumps(claims)}
-    )
+    await session.execute(text("select set_config('request.jwt.claims', :claims, true)"), {"claims": json.dumps(claims)})
 
 
 async def get_session(ctx: CurrentUser) -> AsyncIterator[AsyncSession]:

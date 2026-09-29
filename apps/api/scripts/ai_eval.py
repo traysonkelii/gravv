@@ -91,9 +91,7 @@ async def run(cases: list[dict[str, Any]]) -> int:
         if ok:
             contact_ok += 1
         else:
-            failures.append(
-                f"{case['id']}: contact {got!r} expected {case.get('expect_contact', case.get('expect_contact_in'))!r}"
-            )
+            failures.append(f"{case['id']}: contact {got!r} expected {case.get('expect_contact', case.get('expect_contact_in'))!r}")
         if case.get("expect_kind") and out.interaction.kind.value != case["expect_kind"]:
             failures.append(f"{case['id']}: kind {out.interaction.kind.value} expected {case['expect_kind']}")
         if case.get("needs_review") and not out.needs_review:

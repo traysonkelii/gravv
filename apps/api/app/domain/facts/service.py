@@ -10,17 +10,13 @@ from app.domain.facts.schemas import FactCreate, FactRead, FactUpdate
 from app.errors import Problem
 
 
-async def list_facts(
-    session: AsyncSession, ws: WorkspaceContext, contact_id: UUID, include_inactive: bool
-) -> list[FactRead]:
+async def list_facts(session: AsyncSession, ws: WorkspaceContext, contact_id: UUID, include_inactive: bool) -> list[FactRead]:
     if await contacts_repo.get_contact(session, ws.workspace_id, contact_id) is None:
         raise Problem(404, "not_found", "Contact not found")
     return [FactRead.model_validate(f) for f in await repo.list_facts(session, contact_id, include_inactive)]
 
 
-async def create_fact(
-    session: AsyncSession, ws: WorkspaceContext, user_id: UUID, contact_id: UUID, body: FactCreate
-) -> FactRead:
+async def create_fact(session: AsyncSession, ws: WorkspaceContext, user_id: UUID, contact_id: UUID, body: FactCreate) -> FactRead:
     if await contacts_repo.get_contact(session, ws.workspace_id, contact_id) is None:
         raise Problem(404, "not_found", "Contact not found")
     if await repo.find_active_duplicate(session, contact_id, body.content):
@@ -32,9 +28,7 @@ async def create_fact(
     return FactRead.model_validate(fact)
 
 
-async def update_fact(
-    session: AsyncSession, ws: WorkspaceContext, user_id: UUID, fact_id: UUID, body: FactUpdate
-) -> FactRead:
+async def update_fact(session: AsyncSession, ws: WorkspaceContext, user_id: UUID, fact_id: UUID, body: FactUpdate) -> FactRead:
     fact = await repo.get_fact(session, ws.workspace_id, fact_id)
     if fact is None:
         raise Problem(404, "not_found", "Note not found")

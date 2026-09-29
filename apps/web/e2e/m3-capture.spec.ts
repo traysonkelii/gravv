@@ -46,7 +46,7 @@ test('text capture from the contact page becomes a fact and a task after review'
 test('pending captures appear on Home and a failed capture keeps its text', async ({ page }) => {
   await signIn(page, 'sarah@demo.gravv.local')
   await page.goto('/app/home')
-  await page.getByRole('button', { name: 'Capture a note' }).click()
+  await page.getByRole('button', { name: 'Capture', exact: true }).first().click()
   const sheet = page.getByRole('dialog')
   await sheet.getByRole('tab', { name: 'Text' }).click()
   await sheet.getByLabel('What happened').fill('Quick note with nobody named.')

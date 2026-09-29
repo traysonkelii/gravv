@@ -118,12 +118,8 @@ def install_error_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(RequestValidationError)
     async def _validation(request: Request, exc: RequestValidationError) -> JSONResponse:
-        errors = [
-            {"field": ".".join(str(p) for p in e["loc"] if p != "body"), "message": str(e["msg"])} for e in exc.errors()
-        ]
-        return problem_response(
-            request, 422, "validation_error", "Invalid request", "One or more fields are invalid.", errors
-        )
+        errors = [{"field": ".".join(str(p) for p in e["loc"] if p != "body"), "message": str(e["msg"])} for e in exc.errors()]
+        return problem_response(request, 422, "validation_error", "Invalid request", "One or more fields are invalid.", errors)
 
     @app.exception_handler(StarletteHTTPException)
     async def _http(request: Request, exc: StarletteHTTPException) -> JSONResponse:

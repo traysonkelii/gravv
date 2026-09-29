@@ -42,9 +42,7 @@ async def update_workspace(session: AsyncSession, ws: Workspace, fields: dict[st
 
 
 async def get_membership(session: AsyncSession, workspace_id: UUID, user_id: UUID) -> Membership | None:
-    return await session.scalar(
-        select(Membership).where(Membership.workspace_id == workspace_id, Membership.user_id == user_id)
-    )
+    return await session.scalar(select(Membership).where(Membership.workspace_id == workspace_id, Membership.user_id == user_id))
 
 
 async def list_members(session: AsyncSession, workspace_id: UUID) -> list[Any]:
@@ -71,9 +69,7 @@ async def depart(session: AsyncSession, membership: Membership, grace_days: int 
     await session.flush()
 
 
-async def transfer_ownership(
-    session: AsyncSession, ws: Workspace, old_owner: Membership, new_owner: Membership
-) -> None:
+async def transfer_ownership(session: AsyncSession, ws: Workspace, old_owner: Membership, new_owner: Membership) -> None:
     new_owner.role = WorkspaceRole.owner
     old_owner.role = WorkspaceRole.admin
     ws.owner_user_id = new_owner.user_id

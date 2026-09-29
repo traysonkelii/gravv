@@ -29,6 +29,7 @@ from app.domain.contacts.schemas import ContactCreate
 from app.domain.interactions.schemas import InteractionRead
 from app.errors import Problem
 from app.jobs import queue
+from app.scoring.compute import rescore_contact
 
 PENDING = ("uploaded", "transcribing", "transcribed", "extracting", "proposed", "failed")
 
@@ -69,9 +70,7 @@ async def _get_own(session: AsyncSession, ws: WorkspaceContext, user_id: UUID, c
 
 
 async def _existing_by_key(session: AsyncSession, user_id: UUID, key: str) -> Capture | None:
-    cid = await session.scalar(
-        text("select id from captures where user_id = :u and idempotency_key = :k"), {"u": user_id, "k": key}
-    )
+    cid = await session.scalar(text("select id from captures where user_id = :u and idempotency_key = :k"), {"u": user_id, "k": key})
     return await session.get(Capture, cid) if cid else None
 
 
@@ -80,9 +79,7 @@ async def _check_contact(session: AsyncSession, ws: WorkspaceContext, contact_id
         raise Problem(404, "not_found", "Contact not found")
 
 
-async def create_text(
-    session: AsyncSession, ws: WorkspaceContext, user_id: UUID, body: CaptureTextCreate
-) -> CaptureRead:
+async def create_text(session: AsyncSession, ws: WorkspaceContext, user_id: UUID, body: CaptureTextCreate) -> CaptureRead:
     existing = await _existing_by_key(session, user_id, body.idempotency_key)
     if existing:
         return _read(existing)
@@ -136,9 +133,7 @@ async def create_for_interaction(
     )
 
 
-async def voice_upload_url(
-    session: AsyncSession, ws: WorkspaceContext, user_id: UUID, body: VoiceUploadRequest
-) -> VoiceUploadResponse:
+async def voice_upload_url(session: AsyncSession, ws: WorkspaceContext, user_id: UUID, body: VoiceUploadRequest) -> VoiceUploadResponse:
     settings = get_settings()
     existing = await _existing_by_key(session, user_id, body.idempotency_key)
     if existing and existing.storage_path:
@@ -175,9 +170,7 @@ async def voice_upload_url(
     )
 
 
-async def uploaded(
-    session: AsyncSession, ws: WorkspaceContext, user_id: UUID, capture_id: UUID, body: UploadedRequest
-) -> CaptureRead:
+async def uploaded(session: AsyncSession, ws: WorkspaceContext, user_id: UUID, capture_id: UUID, body: UploadedRequest) -> CaptureRead:
     c = await _get_own(session, ws, user_id, capture_id)
     if c.kind != "voice" or not c.storage_path:
         raise Problem(409, "conflict", "Not a voice capture")
@@ -248,17 +241,11 @@ async def discard(session: AsyncSession, ws: WorkspaceContext, user_id: UUID, ca
 
 
 async def _find_contact_by_name(session: AsyncSession, ws: UUID, name: str) -> UUID | None:
-    row = (
-        await session.execute(
-            text("select id from search_contacts(:ws, :q, 1) where rank > 0.3"), {"ws": ws, "q": name}
-        )
-    ).first()
+    row = (await session.execute(text("select id from search_contacts(:ws, :q, 1) where rank > 0.3"), {"ws": ws, "q": name})).first()
     return row[0] if row else None
 
 
-async def confirm(
-    session: AsyncSession, ws: WorkspaceContext, user_id: UUID, capture_id: UUID, body: CaptureConfirm
-) -> ConfirmResult:
+async def confirm(session: AsyncSession, ws: WorkspaceContext, user_id: UUID, capture_id: UUID, body: CaptureConfirm) -> ConfirmResult:
     c = await _get_own(session, ws, user_id, capture_id)
     if c.status == CaptureStatus.confirmed and c.interaction_id:
         # Idempotent: a repeated confirm returns what was created without duplicating anything.
@@ -389,9 +376,7 @@ async def confirm(
             session,
             ws,
             user_id,
-            ContactCreate(
-                first_name=first, last_name=last, honorific=honorific, title=person.title, company_name=person.company
-            ),
+            ContactCreate(first_name=first, last_name=last, honorific=honorific, title=person.title, company_name=person.company),
         )
         created_contacts.append(new_contact.id)
 
@@ -412,6 +397,7 @@ async def confirm(
     c.interaction_id = row.id
     c.contact_id = body.contact_id
     await session.flush()
+    await rescore_contact(session, body.contact_id)
     await queue.enqueue(
         session,
         "profile.synthesize",

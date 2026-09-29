@@ -6,7 +6,7 @@
 | M1 Identity, workspaces, onboarding | done | /me, workspaces, members, invitations via Mailpit, departure, ownership transfer with MFA, onboarding wizard, settings |
 | M2 Contacts, companies, facts, interactions | done | Contacts CRUD with search, filters, sort, cursor pagination; companies; facts with supersede; interactions; timeline; share and copy; detail page |
 | M3 Capture pipeline | done | Text and voice captures, signed uploads, transcription and extraction jobs, profile synthesis, proposal review, token budget, injection tests, AI eval |
-| M4 Scoring, insights, Home, Analytics | not started | |
+| M4 Scoring, insights, Home, Analytics | done | Score engine, nightly and immediate rescoring, insight rules, scheduler with advisory lock, Home dashboard, Insights, Analytics with charts |
 | M5 Network, tasks, opportunities | not started | |
 | M6 Organization features, data portability | not started | |
 | M7 Hardening and AWS | not started | |
@@ -44,3 +44,11 @@
   extract=true on a manual note produces a review capture that updates the same note.
 - `make ai-eval` runs 30 cases against the configured provider; the fake provider passes 100 percent.
 - Live provider check (LLM_PROVIDER=anthropic) is a configuration change; not run in this environment (no key).
+
+## M4 acceptance
+- Seeded data yields Sarah Martinez drifting and Emily Rodriguez strong (API test against the seed).
+- The at_risk insight appears for Sarah Martinez; acting on it creates a task (API test and Playwright).
+- Analytics summary matches SQL-computed contact count, average gravity, and pipeline (API test).
+- Charts render only token colors (design lint plus a Playwright check of every rect fill).
+- Score engine: 50 unit cases including the drifting boundary, half-life recency, frequency cap, reciprocity,
+  depth, momentum, status rules, and next_due.

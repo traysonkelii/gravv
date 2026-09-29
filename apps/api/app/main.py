@@ -2,11 +2,13 @@ from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
+from app.domain.analytics.router import router as analytics_router
 from app.domain.captures.router import router as captures_router
 from app.domain.companies.router import router as companies_router
 from app.domain.contacts.router import router as contacts_router
 from app.domain.facts.router import router as facts_router
 from app.domain.health.router import router as health_router
+from app.domain.insights.router import router as insights_router
 from app.domain.interactions.router import router as interactions_router
 from app.domain.invitations.router import router as invitations_router
 from app.domain.jobs.router import router as jobs_router
@@ -29,6 +31,8 @@ def api_router() -> APIRouter:
     api.include_router(search_router)
     api.include_router(captures_router)
     api.include_router(jobs_router)
+    api.include_router(insights_router)
+    api.include_router(analytics_router)
     return api
 
 

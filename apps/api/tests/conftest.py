@@ -106,8 +106,7 @@ async def cleanup_test_users(superuser: asyncpg.Connection) -> AsyncIterator[Non
     yield
     # Organization workspaces block the auth.users cascade through owner_user_id, so drop them first.
     await superuser.execute(
-        "delete from workspaces where owner_user_id in "
-        "(select id from profiles where email like 'test-%@test.gravv.local')"
+        "delete from workspaces where owner_user_id in (select id from profiles where email like 'test-%@test.gravv.local')"
     )
     await superuser.execute("delete from auth.users where email like 'test-%@test.gravv.local'")
 

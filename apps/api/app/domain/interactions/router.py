@@ -30,9 +30,7 @@ async def interactions_list(
 
 
 @router.post("", operation_id="interactions_create", response_model=InteractionRead, status_code=201)
-async def interactions_create(
-    body: InteractionCreate, ctx: CurrentUser, ws: Member, session: Session
-) -> InteractionRead:
+async def interactions_create(body: InteractionCreate, ctx: CurrentUser, ws: Member, session: Session) -> InteractionRead:
     return await service.create_interaction(session, ws, UUID(ctx.user_id), body)
 
 

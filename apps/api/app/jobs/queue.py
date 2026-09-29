@@ -69,9 +69,7 @@ async def enqueue(
 ) -> UUID | None:
     """Runs under the caller's identity through the security definer function. Returns None when deduplicated."""
     result = await session.execute(
-        text(
-            "select enqueue_job(:kind, cast(:payload as jsonb), :ws, :run_after, cast(:priority as smallint), :dedupe)"
-        ),
+        text("select enqueue_job(:kind, cast(:payload as jsonb), :ws, :run_after, cast(:priority as smallint), :dedupe)"),
         {
             "kind": kind,
             "payload": json.dumps(payload),
@@ -142,8 +140,7 @@ async def fail(session: AsyncSession, job: Job, error: str) -> str:
     if job.attempts >= job.max_attempts:
         await session.execute(
             text(
-                "update jobs set status = 'dead', last_error = :err, finished_at = now(), locked_by = null, "
-                "locked_at = null where id = :id"
+                "update jobs set status = 'dead', last_error = :err, finished_at = now(), locked_by = null, locked_at = null where id = :id"
             ),
             {"id": job.id, "err": error[:2000]},
         )
@@ -160,9 +157,7 @@ async def fail(session: AsyncSession, job: Job, error: str) -> str:
 
 
 async def heartbeat(session: AsyncSession, job_id: UUID) -> None:
-    await session.execute(
-        text("update jobs set locked_at = now() where id = :id and status = 'running'"), {"id": job_id}
-    )
+    await session.execute(text("update jobs set locked_at = now() where id = :id and status = 'running'"), {"id": job_id})
 
 
 async def reap_stale(session: AsyncSession) -> int:

@@ -4,6 +4,91 @@
  */
 
 export interface paths {
+  '/api/v1/analytics/distribution': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Analytics Distribution */
+    get: operations['analytics_distribution']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/analytics/interactions': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Analytics Interactions */
+    get: operations['analytics_interactions']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/analytics/summary': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Analytics Summary */
+    get: operations['analytics_summary']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/analytics/team': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Analytics Team */
+    get: operations['analytics_team']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/analytics/top-contacts': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Analytics Top Contacts */
+    get: operations['analytics_top_contacts']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/captures': {
     parameters: {
       query?: never
@@ -197,6 +282,23 @@ export interface paths {
     patch: operations['contacts_update']
     trace?: never
   }
+  '/api/v1/contacts/{contact_id}/brief': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Brief Create */
+    post: operations['brief_create']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/contacts/{contact_id}/copy-to-personal': {
     parameters: {
       query?: never
@@ -266,6 +368,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/contacts/{contact_id}/scores': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Scores History */
+    get: operations['scores_history']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/contacts/{contact_id}/share': {
     parameters: {
       query?: never
@@ -316,6 +435,74 @@ export interface paths {
     head?: never
     /** Facts Update */
     patch: operations['facts_update']
+    trace?: never
+  }
+  '/api/v1/insights': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Insights List */
+    get: operations['insights_list']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/insights/generate': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Insights Generate Now */
+    post: operations['insights_generate_now']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/insights/{insight_id}/act': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Insights Act */
+    post: operations['insights_act']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/insights/{insight_id}/status': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Insights Set Status */
+    post: operations['insights_set_status']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
     trace?: never
   }
   '/api/v1/interactions': {
@@ -630,11 +817,48 @@ export interface components {
      * @enum {string}
      */
     AiStatus: 'none' | 'pending' | 'processed' | 'failed' | 'skipped'
+    /** AnalyticsSummary */
+    AnalyticsSummary: {
+      /** Active Count */
+      active_count: number
+      /** Avg Gravity */
+      avg_gravity: number
+      /** Avg Gravity Delta */
+      avg_gravity_delta: number
+      /** Contact Count */
+      contact_count: number
+      /** Contact Count Delta */
+      contact_count_delta: number
+      /** Due Count */
+      due_count: number
+      /** Engagement Rate */
+      engagement_rate: number
+      /** Open Opportunity Count */
+      open_opportunity_count: number
+      /** Pipeline Delta Pct */
+      pipeline_delta_pct: number
+      /** Pipeline Value Cents */
+      pipeline_value_cents: number
+      /** Range */
+      range: string
+      /**
+       * Scope
+       * @enum {string}
+       */
+      scope: 'me' | 'team'
+    }
     /**
      * Band
      * @enum {string}
      */
     Band: 'strong' | 'steady' | 'weak' | 'drifting'
+    /** BandCount */
+    BandCount: {
+      /** Band */
+      band: string
+      /** Count */
+      count: number
+    }
     /** CaptureConfirm */
     CaptureConfirm: {
       /**
@@ -1219,6 +1443,91 @@ export interface components {
       /** Detail */
       detail?: components['schemas']['ValidationError'][]
     }
+    /** InsightActResult */
+    InsightActResult: {
+      insight: components['schemas']['InsightRead']
+      /** Navigate To */
+      navigate_to?: string | null
+      /** Task Id */
+      task_id?: string | null
+    }
+    /**
+     * InsightKind
+     * @enum {string}
+     */
+    InsightKind:
+      | 'follow_up'
+      | 'at_risk'
+      | 'opportunity_signal'
+      | 'introduction_path'
+      | 'trend'
+      | 'briefing'
+      | 'common_ground'
+    /** InsightRead */
+    InsightRead: {
+      /** Body */
+      body: string
+      /** Company Id */
+      company_id: string | null
+      /** Company Name */
+      company_name: string | null
+      /** Contact Id */
+      contact_id: string | null
+      /** Contact Name */
+      contact_name: string | null
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Evidence */
+      evidence: {
+        [key: string]: unknown
+      }
+      /** Expires At */
+      expires_at: string | null
+      /** Generated By */
+      generated_by: string
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      kind: components['schemas']['InsightKind']
+      severity: components['schemas']['InsightSeverity']
+      status: components['schemas']['InsightStatus']
+      /** Suggested Action */
+      suggested_action: {
+        [key: string]: unknown
+      } | null
+      /** Title */
+      title: string
+      /** User Id */
+      user_id: string | null
+      /**
+       * Workspace Id
+       * Format: uuid
+       */
+      workspace_id: string
+    }
+    /**
+     * InsightSeverity
+     * @enum {string}
+     */
+    InsightSeverity: 'info' | 'notice' | 'warning'
+    /**
+     * InsightStatus
+     * @enum {string}
+     */
+    InsightStatus: 'new' | 'seen' | 'acted' | 'dismissed' | 'expired'
+    /** InsightStatusUpdate */
+    InsightStatusUpdate: {
+      /**
+       * Status
+       * @enum {string}
+       */
+      status: 'seen' | 'acted' | 'dismissed'
+    }
     /** InteractionCreate */
     InteractionCreate: {
       /**
@@ -1519,6 +1828,28 @@ export interface components {
       /** Timezone */
       timezone?: string | null
     }
+    /** MemberMetrics */
+    MemberMetrics: {
+      /** Avg Gravity */
+      avg_gravity: number
+      /** Contact Count */
+      contact_count: number
+      /** Full Name */
+      full_name: string
+      /** Interactions In Range */
+      interactions_in_range: number
+      /** Overdue Tasks */
+      overdue_tasks: number
+      /** Pipeline Value Cents */
+      pipeline_value_cents: number
+      /** Role */
+      role: string
+      /**
+       * User Id
+       * Format: uuid
+       */
+      user_id: string
+    }
     /** MemberRead */
     MemberRead: {
       /** Avatar Path */
@@ -1679,6 +2010,15 @@ export interface components {
      * @enum {string}
      */
     RelationshipType: 'client' | 'partner' | 'vendor' | 'colleague' | 'government' | 'other'
+    /** ScorePoint */
+    ScorePoint: {
+      /** Band */
+      band: string
+      /** Score */
+      score: number
+      /** Scored On */
+      scored_on: string
+    }
     /** SearchResult */
     SearchResult: {
       /** Companies */
@@ -1693,6 +2033,15 @@ export interface components {
      * @enum {string}
      */
     SentimentLabel: 'positive' | 'neutral' | 'negative' | 'mixed'
+    /** SeriesPoint */
+    SeriesPoint: {
+      /** Count */
+      count: number
+      /** Kind */
+      kind: string
+      /** Period */
+      period: string
+    }
     /** ShareRequest */
     ShareRequest: {
       /**
@@ -1728,6 +2077,30 @@ export interface components {
        * Format: date-time
        */
       ts: string
+    }
+    /** TopContact */
+    TopContact: {
+      /** Band */
+      band: string
+      /** Company Name */
+      company_name: string | null
+      /** Deal Value Cents */
+      deal_value_cents: number
+      /** Display Name */
+      display_name: string
+      /** Gravity Score */
+      gravity_score: number
+      /** Honorific */
+      honorific: string | null
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Last Interaction At */
+      last_interaction_at: string | null
+      /** Status */
+      status: string
     }
     /** UploadedRequest */
     UploadedRequest: {
@@ -1882,6 +2255,175 @@ export interface components {
 }
 export type $defs = Record<string, never>
 export interface operations {
+  analytics_distribution: {
+    parameters: {
+      query?: {
+        scope?: 'me' | 'team'
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['BandCount'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  analytics_interactions: {
+    parameters: {
+      query?: {
+        range?: 'today' | 'week' | 'month' | 'quarter' | 'year'
+        scope?: 'me' | 'team'
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SeriesPoint'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  analytics_summary: {
+    parameters: {
+      query?: {
+        range?: 'today' | 'week' | 'month' | 'quarter' | 'year'
+        scope?: 'me' | 'team'
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AnalyticsSummary']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  analytics_team: {
+    parameters: {
+      query?: {
+        range?: 'today' | 'week' | 'month' | 'quarter' | 'year'
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['MemberMetrics'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  analytics_top_contacts: {
+    parameters: {
+      query?: {
+        scope?: 'me' | 'team'
+        q?: string | null
+        limit?: number
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TopContact'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   captures_list: {
     parameters: {
       query?: never
@@ -2474,6 +3016,39 @@ export interface operations {
       }
     }
   }
+  brief_create: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      202: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['JobAccepted']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   contacts_copy_to_personal: {
     parameters: {
       query?: never
@@ -2645,6 +3220,41 @@ export interface operations {
       }
     }
   }
+  scores_history: {
+    parameters: {
+      query?: {
+        range?: string
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ScorePoint'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   contacts_share: {
     parameters: {
       query?: never
@@ -2774,6 +3384,144 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['FactRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  insights_list: {
+    parameters: {
+      query?: {
+        status?: string | null
+        kind?: string | null
+        contact_id?: string | null
+        scope?: string
+        limit?: number
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['InsightRead'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  insights_generate_now: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      202: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['JobAccepted']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  insights_act: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        insight_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['InsightActResult']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  insights_set_status: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        insight_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['InsightStatusUpdate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['InsightRead']
         }
       }
       /** @description Validation Error */

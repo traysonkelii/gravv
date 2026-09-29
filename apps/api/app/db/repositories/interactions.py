@@ -30,19 +30,14 @@ async def list_interactions(
     if f.until:
         stmt = stmt.where(Interaction.occurred_at <= f.until)
     if after:
-        stmt = stmt.where(
-            func.row(Interaction.occurred_at, Interaction.id)
-            < func.row(datetime.fromisoformat(after[0]), UUID(after[1]))
-        )
+        stmt = stmt.where(func.row(Interaction.occurred_at, Interaction.id) < func.row(datetime.fromisoformat(after[0]), UUID(after[1])))
     stmt = stmt.order_by(Interaction.occurred_at.desc(), Interaction.id.desc()).limit(limit + 1)
     return list(await session.scalars(stmt))
 
 
 async def get_interaction(session: AsyncSession, ws: UUID, interaction_id: UUID) -> Interaction | None:
     return await session.scalar(
-        select(Interaction).where(
-            Interaction.id == interaction_id, Interaction.workspace_id == ws, Interaction.deleted_at.is_(None)
-        )
+        select(Interaction).where(Interaction.id == interaction_id, Interaction.workspace_id == ws, Interaction.deleted_at.is_(None))
     )
 
 

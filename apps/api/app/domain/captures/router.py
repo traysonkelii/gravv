@@ -25,18 +25,12 @@ async def captures_create_text(body: CaptureTextCreate, ctx: CurrentUser, ws: Me
 
 
 @router.post("/voice/upload-url", operation_id="captures_voice_upload_url", response_model=VoiceUploadResponse)
-async def captures_voice_upload_url(
-    body: VoiceUploadRequest, ctx: CurrentUser, ws: Member, session: Session
-) -> VoiceUploadResponse:
+async def captures_voice_upload_url(body: VoiceUploadRequest, ctx: CurrentUser, ws: Member, session: Session) -> VoiceUploadResponse:
     return await service.voice_upload_url(session, ws, UUID(ctx.user_id), body)
 
 
-@router.post(
-    "/{capture_id}/uploaded", operation_id="captures_voice_uploaded", response_model=CaptureRead, status_code=202
-)
-async def captures_voice_uploaded(
-    capture_id: UUID, body: UploadedRequest, ctx: CurrentUser, ws: Member, session: Session
-) -> CaptureRead:
+@router.post("/{capture_id}/uploaded", operation_id="captures_voice_uploaded", response_model=CaptureRead, status_code=202)
+async def captures_voice_uploaded(capture_id: UUID, body: UploadedRequest, ctx: CurrentUser, ws: Member, session: Session) -> CaptureRead:
     return await service.uploaded(session, ws, UUID(ctx.user_id), capture_id, body)
 
 
@@ -51,9 +45,7 @@ async def captures_get(capture_id: UUID, ctx: CurrentUser, ws: Member, session: 
 
 
 @router.post("/{capture_id}/confirm", operation_id="captures_confirm", response_model=ConfirmResult)
-async def captures_confirm(
-    capture_id: UUID, body: CaptureConfirm, ctx: CurrentUser, ws: Member, session: Session
-) -> ConfirmResult:
+async def captures_confirm(capture_id: UUID, body: CaptureConfirm, ctx: CurrentUser, ws: Member, session: Session) -> ConfirmResult:
     return await service.confirm(session, ws, UUID(ctx.user_id), capture_id, body)
 
 

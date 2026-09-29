@@ -39,9 +39,7 @@ class SearchResult(BaseModel):
 
 
 @router.get("", operation_id="search_global", response_model=SearchResult)
-async def search_global(
-    ws: Workspace, session: Session, q: Annotated[str, Query(min_length=1, max_length=120)]
-) -> SearchResult:
+async def search_global(ws: Workspace, session: Session, q: Annotated[str, Query(min_length=1, max_length=120)]) -> SearchResult:
     contacts = (
         (
             await session.execute(

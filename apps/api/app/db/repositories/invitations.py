@@ -19,16 +19,12 @@ async def create_invitation(
 
 
 async def list_invitations(session: AsyncSession, workspace_id: UUID) -> list[Invitation]:
-    rows = await session.scalars(
-        select(Invitation).where(Invitation.workspace_id == workspace_id).order_by(Invitation.created_at.desc())
-    )
+    rows = await session.scalars(select(Invitation).where(Invitation.workspace_id == workspace_id).order_by(Invitation.created_at.desc()))
     return list(rows)
 
 
 async def get_invitation(session: AsyncSession, workspace_id: UUID, invitation_id: UUID) -> Invitation | None:
-    return await session.scalar(
-        select(Invitation).where(Invitation.workspace_id == workspace_id, Invitation.id == invitation_id)
-    )
+    return await session.scalar(select(Invitation).where(Invitation.workspace_id == workspace_id, Invitation.id == invitation_id))
 
 
 async def revoke_invitation(session: AsyncSession, invitation: Invitation) -> None:

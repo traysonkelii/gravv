@@ -70,7 +70,5 @@ async def delete_object(bucket: str, path: str) -> None:
 async def upload_bytes(bucket: str, path: str, data: bytes, content_type: str) -> None:
     """Server-side upload (exports)."""
     async with _client() as c:
-        r = await c.post(
-            f"/object/{bucket}/{path}", content=data, headers={"Content-Type": content_type, "x-upsert": "true"}
-        )
+        r = await c.post(f"/object/{bucket}/{path}", content=data, headers={"Content-Type": content_type, "x-upsert": "true"})
     r.raise_for_status()

@@ -122,9 +122,7 @@ def cursor_value(row: RowMapping, sort: str) -> Any:
 
 
 async def get_contact(session: AsyncSession, ws: UUID, contact_id: UUID) -> Contact | None:
-    return await session.scalar(
-        select(Contact).where(Contact.id == contact_id, Contact.workspace_id == ws, Contact.deleted_at.is_(None))
-    )
+    return await session.scalar(select(Contact).where(Contact.id == contact_id, Contact.workspace_id == ws, Contact.deleted_at.is_(None)))
 
 
 async def create_contact(session: AsyncSession, fields: dict[str, Any]) -> Contact:

@@ -30,17 +30,13 @@ async def list_companies(
 
 
 async def get_company(session: AsyncSession, ws: UUID, company_id: UUID) -> Company | None:
-    return await session.scalar(
-        select(Company).where(Company.id == company_id, Company.workspace_id == ws, Company.deleted_at.is_(None))
-    )
+    return await session.scalar(select(Company).where(Company.id == company_id, Company.workspace_id == ws, Company.deleted_at.is_(None)))
 
 
 async def find_by_name(session: AsyncSession, ws: UUID, name: str) -> Company | None:
     return await session.scalar(
         select(Company)
-        .where(
-            Company.workspace_id == ws, Company.deleted_at.is_(None), func.lower(Company.name) == name.strip().lower()
-        )
+        .where(Company.workspace_id == ws, Company.deleted_at.is_(None), func.lower(Company.name) == name.strip().lower())
         .limit(1)
     )
 

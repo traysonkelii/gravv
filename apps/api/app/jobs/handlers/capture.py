@@ -149,10 +149,7 @@ async def extract(job: Job) -> dict[str, Any]:
         if c["contact_id"]:
             row = (await s.execute(_SELECTED, {"id": c["contact_id"]})).mappings().first()
             if row:
-                selected = (
-                    f"{row['id']} | {_label(row['honorific'], row['display_name'])} | "
-                    f"{row['company'] or ''} | {row['title'] or ''}"
-                )
+                selected = f"{row['id']} | {_label(row['honorific'], row['display_name'])} | {row['company'] or ''} | {row['title'] or ''}"
                 facts = (
                     await s.execute(
                         text("select category::text, content from contact_facts where contact_id = :id and is_active"),
@@ -212,9 +209,7 @@ async def extract(job: Job) -> dict[str, Any]:
 
     settings_json = c["settings"] or {}
     target_contact = (
-        extraction.contact_match.contact_id
-        if extraction.contact_match
-        else (str(c["contact_id"]) if c["contact_id"] else None)
+        extraction.contact_match.contact_id if extraction.contact_match else (str(c["contact_id"]) if c["contact_id"] else None)
     )
     async with worker_session() as s:
         await record_usage(s, c["workspace_id"], user_id, "capture.extract", result.model, result.usage)
