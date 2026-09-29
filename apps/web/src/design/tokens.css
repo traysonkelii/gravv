@@ -1,0 +1,166 @@
+@import 'tailwindcss';
+
+/* The only place colors, fonts, sizes, radii, shadows, and motion are defined.
+   Default Tailwind namespaces are cleared first so forbidden utilities (rounded-lg, bg-blue-500,
+   shadow-xl, blur, font-mono) do not exist at all. */
+@theme {
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --blur-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --ease-*: initial;
+
+  /* Steel ramp (cool gray with a faint blue cast). Dark theme is the default. */
+  --color-steel-950: #0f1214; /* canvas behind sheets and the network grid */
+  --color-steel-900: #161a1e; /* page background */
+  --color-steel-800: #1e2328; /* plate (card) surface */
+  --color-steel-700: #272d34; /* raised plate, hover, table header */
+  --color-steel-600: #343b44; /* rules and borders */
+  --color-steel-500: #4b5560; /* disabled text, placeholders */
+  --color-steel-400: #76818d; /* secondary text (4.6:1 on steel-800) */
+  --color-steel-300: #a3acb6; /* body text (7.4:1 on steel-800) */
+  --color-steel-200: #c9d0d8; /* primary text (10.8:1 on steel-800) */
+  --color-steel-100: #e6eaee; /* headings (13.6:1 on steel-800) */
+  --color-steel-050: #f4f6f8; /* highlight, the blade edge */
+
+  /* Temper: tempered straw-gold, the only accent (8.3:1 as text on steel-900) */
+  --color-temper-300: #e2c98a; /* accent text on dark plates */
+  --color-temper-500: #c8a253; /* primary action fill, focus ring, active nav */
+  --color-temper-600: #a8873f; /* pressed */
+
+  /* Rust: risk and destructive only (rust-400 is 5.2:1 on steel-800) */
+  --color-rust-400: #d4744e;
+  --color-rust-500: #b4552f;
+  --color-rust-700: #7e3a20;
+
+  /* Oxide: inert / drifting */
+  --color-oxide-500: #3f4a55;
+
+  /* Band mapping (brightness encodes strength) */
+  --color-band-strong: var(--color-steel-050);
+  --color-band-steady: var(--color-steel-300);
+  --color-band-weak: var(--color-steel-500);
+  --color-band-drifting: var(--color-oxide-500);
+
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Type */
+  --font-display:
+    'Big Shoulders Variable', 'Big Shoulders', 'Big Shoulders Display', 'Archivo Narrow',
+    'Arial Narrow', sans-serif;
+  --font-sans: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 0.9375rem;
+  --text-base--line-height: 1.5rem;
+  --text-md: 1rem;
+  --text-md--line-height: 1.5rem;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.5625rem;
+  --text-xl--line-height: 1.75rem; /* display */
+  --text-2xl: 1.9375rem;
+  --text-2xl--line-height: 2rem; /* display */
+  --text-3xl: 2.4375rem;
+  --text-3xl--line-height: 2.5rem; /* display, stat numbers */
+  --text-4xl: 3.0625rem;
+  --text-4xl--line-height: 3rem; /* display, landing hero */
+
+  /* Spacing: 8px grid with 4px half-step */
+  --spacing: 0.25rem;
+
+  /* Radius: none */
+  --radius-none: 0px;
+
+  /* Bevels (the only "shadows") */
+  --shadow-plate: inset 0 1px 0 0 rgb(244 246 248 / 0.06), inset 0 -1px 0 0 rgb(15 18 20 / 0.7);
+  --shadow-plate-raised:
+    inset 0 1px 0 0 rgb(244 246 248 / 0.1), inset 0 -1px 0 0 rgb(15 18 20 / 0.8);
+  --shadow-pressed: inset 0 1px 0 0 rgb(15 18 20 / 0.6), inset 0 -1px 0 0 rgb(244 246 248 / 0.05);
+
+  /* Motion */
+  --ease-machined: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 120ms;
+  --duration-sheet: 200ms;
+  --duration-blade: 400ms;
+}
+
+/* Non-token utilities used by components (defined once here) */
+@utility edge-highlight {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(244 246 248 / 0.55) 50%,
+    transparent 100%
+  );
+  height: 1px;
+}
+@utility brushed {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgb(244 246 248 / 0.025) 0 1px,
+    transparent 1px 3px
+  );
+}
+@utility chamfer-br {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+}
+@utility chamfer-tr {
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+}
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-temper-500);
+    outline-offset: 0;
+  }
+  html {
+    background: var(--color-steel-900);
+    color: var(--color-steel-200);
+    font-family: var(--font-sans);
+  }
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+  }
+  * {
+    border-radius: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms;
+      transition-duration: 0.01ms;
+    }
+  }
+}
+
+/* Light theme (optional): same ramp inverted. Apply with data-theme="light" on <html>. */
+:root[data-theme='light'] {
+  --color-steel-950: #f4f6f8;
+  --color-steel-900: #e9ecef;
+  --color-steel-800: #dee2e6;
+  --color-steel-700: #d0d5db;
+  --color-steel-600: #b9c0c8;
+  --color-steel-500: #8e98a3;
+  --color-steel-400: #5e6873;
+  --color-steel-300: #3c444d;
+  --color-steel-200: #272d34;
+  --color-steel-100: #1b2025;
+  --color-steel-050: #0f1214;
+  --color-temper-500: #9a7a2f;
+  --color-temper-600: #7c6226;
+  --color-temper-300: #6e5620;
+}

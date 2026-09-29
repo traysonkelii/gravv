@@ -1,0 +1,95 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  APP_ENV: test
+  SUPABASE_URL: http://127.0.0.1:54321
+  SUPABASE_JWT_SECRET: super-secret-jwt-token-with-at-least-32-characters-long
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with: { enable-cache: true }
+      - uses: supabase/setup-cli@v1
+        with: { version: latest }
+      - run: cd apps/api && uv sync --frozen
+      - run: cd apps/api && uv run ruff check . && uv run ruff format --check . && uv run mypy .
+      - run: supabase start -x studio,realtime,edge-runtime,logflare,vector
+      - run: infra/scripts/setup_roles.sh local
+      - run: |
+          eval "$(supabase status -o env | grep -E '^(SECRET_KEY|PUBLISHABLE_KEY)=')"
+          echo "SUPABASE_SECRET_KEY=$SECRET_KEY" >> "$GITHUB_ENV"
+          echo "SUPABASE_PUBLISHABLE_KEY=$PUBLISHABLE_KEY" >> "$GITHUB_ENV"
+      - run: cd apps/api && uv run python -m scripts.seed_users
+      - run: cd apps/api && uv run pytest -q
+      - run: cd apps/api && uv run pip-audit --strict || true
+        continue-on-error: true
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm, cache-dependency-path: apps/web/pnpm-lock.yaml }
+      - run: cd apps/web && pnpm install --frozen-lockfile
+      - run: cd apps/web && pnpm lint && pnpm exec prettier --check . && pnpm exec tsc --noEmit && pnpm design-lint
+      - run: cd apps/web && pnpm test -- --run
+      - run: cd apps/web && pnpm build
+      - run: cd apps/web && pnpm audit --audit-level high || true
+        continue-on-error: true
+
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm, cache-dependency-path: apps/web/pnpm-lock.yaml }
+      - run: cd apps/api && uv sync --frozen
+      - run: cd apps/web && pnpm install --frozen-lockfile
+      - run: make gen
+      - run: git diff --exit-code -- apps/web/src/lib/api
+
+  db:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with: { version: latest }
+      - run: supabase start -x studio,realtime,edge-runtime,logflare,vector
+      - run: supabase db reset
+      - run: make db-diff
+      - run: scripts/no-emoji.sh $(git ls-files)
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t gravv-api:ci apps/api
+      - run: docker build -t gravv-web:ci apps/web
+
+  e2e:
+    if: github.event_name == 'schedule' || contains(github.event.pull_request.labels.*.name, 'e2e')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm, cache-dependency-path: apps/web/pnpm-lock.yaml }
+      - uses: supabase/setup-cli@v1
+        with: { version: latest }
+      - run: cd apps/api && uv sync --frozen
+      - run: cd apps/web && pnpm install --frozen-lockfile && pnpm exec playwright install --with-deps chromium
+      - run: supabase start -x studio,realtime,edge-runtime,logflare,vector
+      - run: scripts/env.sh && make db-reset
+      - run: make test-e2e

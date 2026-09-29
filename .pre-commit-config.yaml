@@ -1,0 +1,20 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff
+        name: ruff
+        entry: bash -c 'cd apps/api && uv run ruff check --fix . && uv run ruff format .'
+        language: system
+        pass_filenames: false
+        files: ^apps/api/
+      - id: prettier
+        name: prettier
+        entry: bash -c 'cd apps/web && pnpm exec prettier --write .'
+        language: system
+        pass_filenames: false
+        files: ^apps/web/
+      - id: no-emoji
+        name: no emoji
+        entry: scripts/no-emoji.sh
+        language: script
+        pass_filenames: true

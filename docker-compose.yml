@@ -1,0 +1,21 @@
+# Local parity check only: `make build && docker compose up`. Supabase runs through the CLI.
+services:
+  api:
+    image: gravv-api:local
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://gravv_api:gravv_api_local@host.docker.internal:54322/postgres
+      SUPABASE_URL: http://host.docker.internal:54321
+    ports: ["8000:8080"]
+    extra_hosts: ["host.docker.internal:host-gateway"]
+  worker:
+    image: gravv-api:local
+    command: ["python", "-m", "app.worker"]
+    env_file: .env
+    environment:
+      DATABASE_URL_WORKER: postgresql+asyncpg://gravv_worker:gravv_worker_local@host.docker.internal:54322/postgres
+      SUPABASE_URL: http://host.docker.internal:54321
+    extra_hosts: ["host.docker.internal:host-gateway"]
+  web:
+    build: apps/web
+    ports: ["5173:80"]
