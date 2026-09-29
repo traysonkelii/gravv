@@ -12,6 +12,7 @@ from app.db.models import Membership
 from app.db.repositories import invitations as inv_repo
 from app.db.repositories import profiles as profiles_repo
 from app.db.repositories import workspaces as repo
+from app.domain.exports.service import request_export
 from app.domain.workspaces.schemas import (
     InvitationCreate,
     InvitationRead,
@@ -149,6 +150,15 @@ async def update_member(session: AsyncSession, ws_id: UUID, actor: AuthContext, 
         if target.user_id != actor_id and _rank(target.role) >= _rank(me.role):
             raise Problem(403, "insufficient_role", "Insufficient role", "You can only remove members below your role.")
         await repo.depart(session, target)
+        departed_profile = await profiles_repo.get_profile(session, target.user_id) if target.user_id == actor_id else None
+        await request_export(
+            session,
+            actor_id,
+            "my_contributions",
+            ws_id,
+            notify_email=departed_profile.email if departed_profile else await _member_email(session, ws_id, target.user_id),
+            for_user_id=target.user_id,
+        )
 
     rows = [r for r in await repo.list_members(session, ws_id) if r[0] == target_user_id]
     r = rows[0]
@@ -173,8 +183,10 @@ async def leave(session: AsyncSession, ws_id: UUID, user_id: UUID) -> None:
         raise Problem(422, "validation_error", "Invalid request", "You cannot leave your personal workspace.")
     if m.role == WorkspaceRole.owner:
         raise Problem(422, "validation_error", "Invalid request", "Transfer ownership before leaving.")
-    await repo.depart(session, m)
     profile = await profiles_repo.get_profile(session, user_id)
+    # the export is enqueued while the membership is still active; the job itself runs as the worker
+    await request_export(session, user_id, "my_contributions", ws_id, notify_email=profile.email if profile else None)
+    await repo.depart(session, m)
     if profile is not None and profile.default_workspace_id == ws_id:
         personal = next((w for mm, w in await repo.list_memberships(session, user_id) if w.kind == WorkspaceKind.personal), None)
         await profiles_repo.update_profile(session, profile, {"default_workspace_id": personal.id if personal else None})
@@ -220,3 +232,8 @@ async def revoke_invitation(session: AsyncSession, ws_id: UUID, actor_id: UUID, 
     if inv is None:
         raise Problem(404, "not_found", "Invitation not found")
     await inv_repo.revoke_invitation(session, inv)
+
+
+async def _member_email(session: AsyncSession, ws_id: UUID, user_id: UUID) -> str | None:
+    rows = await repo.list_members(session, ws_id)
+    return next((str(r[4]) for r in rows if r[0] == user_id), None)

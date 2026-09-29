@@ -136,3 +136,17 @@ recursive SQL CTE can replace this if workspaces grow past a few thousand edges.
 ## D-030 The canvas reset is instant (2026-09-29)
 `d3-transition` is not installed; resetting the view applies the identity transform directly, which also fits
 the design rule that motion is limited to the sheet and the score blade.
+
+## D-031 Profiles no longer reference auth.users (2026-09-29)
+Organization records point at profiles through owner_user_id, created_by, and user_id without cascade, so a
+cascading delete from auth.users would fail. Migration 0012 drops the foreign key; account deletion tombstones
+the profile row and then removes the auth user through the admin API.
+
+## D-032 Export builds read as the worker, scoped by workspace and user (2026-09-29)
+A departed member has no RLS access left, but the organization still owes them their contributions. The
+export handler is the second listed cross-tenant code path (after nightly scoring): it filters every query by
+workspace_id and, for my_contributions, by the user id recorded on the export row.
+
+## D-033 Exports are requested through create_export() (2026-09-29)
+Admins request the departure export on behalf of the leaving member, which the exports insert policy
+(user_id = auth.uid()) would reject; the definer function checks admin membership instead.

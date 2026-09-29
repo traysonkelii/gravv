@@ -8,7 +8,7 @@
 | M3 Capture pipeline | done | Text and voice captures, signed uploads, transcription and extraction jobs, profile synthesis, proposal review, token budget, injection tests, AI eval |
 | M4 Scoring, insights, Home, Analytics | done | Score engine, nightly and immediate rescoring, insight rules, scheduler with advisory lock, Home dashboard, Insights, Analytics with charts |
 | M5 Network, tasks, opportunities | done | Contact edges, network graph and path finder on canvas, tasks with complete and snooze, opportunities with contact roles |
-| M6 Organization features, data portability | not started | |
+| M6 Organization features, data portability | done | Exports (personal, my contributions, workspace) as zipped JSON and CSV via signed URLs, departure export email, account deletion with tombstones, retention purge |
 | M7 Hardening and AWS | not started | |
 
 ## M0 acceptance
@@ -61,3 +61,15 @@
   shows on the contact's Deals tab.
 - API: canonical edge ordering with reverse-order upsert, graph filters (industry, minimum score), shortest paths,
   task lifecycle with immediate rescoring, opportunity lifecycle with pipeline totals flowing into analytics.
+
+## M6 acceptance
+- Managers see per-member metrics and members do not (API tests on /analytics/team and scope=team; Playwright
+  checks the Team tab is absent for a member and present for a manager).
+- Exports download through a signed URL and contain the user's contacts and interactions (API test inspects the
+  zip; Playwright downloads a personal export from Settings, Data).
+- Deleting a test account removes personal data, departs organization memberships, tombstones the profile, and
+  organization records keep their author (API test). Deletion needs a token from the last five minutes and aal2
+  when MFA is enrolled.
+- Departure enqueues a my_contributions export and emails the link (API test through Mailpit).
+- Retention purge removes soft-deleted rows older than 30 days, audio after 30 days unless retain_audio, and
+  expired export files.

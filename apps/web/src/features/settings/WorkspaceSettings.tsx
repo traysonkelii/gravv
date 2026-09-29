@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { Input, Select } from '@/components/ui/Field'
 import { toast, toastError } from '@/components/ui/Toast'
-import { ApiError } from '@/lib/api/client'
+import { api, ApiError, unwrap } from '@/lib/api/client'
 import { useActiveWorkspace, useSwitchWorkspace } from '@/lib/workspace'
 import {
   useCreateWorkspace,
@@ -173,7 +173,45 @@ function WorkspaceForm({ ws }: { ws: Workspace }) {
           </p>
         )}
       </form>
+      {isAdmin && !personal && <ExportWorkspace id={ws.id} />}
       <CreateOrganization />
+    </div>
+  )
+}
+
+function ExportWorkspace({ id }: { id: string }) {
+  const [busy, setBusy] = useState(false)
+  return (
+    <div className="mt-8 border-t border-steel-600 pt-6">
+      <h2 className="text-md font-semibold text-steel-100">Export workspace</h2>
+      <p className="mt-1 text-sm text-steel-400">
+        Everything in this organization as zipped JSON and CSV. The file appears under Settings,
+        Data.
+      </p>
+      <div className="mt-3">
+        <Button
+          loading={busy}
+          onClick={async () => {
+            setBusy(true)
+            try {
+              unwrap(
+                await api.POST('/api/v1/workspaces/{workspace_id}/export', {
+                  params: { path: { workspace_id: id } },
+                }),
+              )
+              toast('Export started', 'It appears under Settings, Data when ready.')
+            } catch (e) {
+              toastError(
+                'Export could not be started',
+                e instanceof ApiError ? e.problem.detail : undefined,
+              )
+            }
+            setBusy(false)
+          }}
+        >
+          Export workspace
+        </Button>
+      </div>
     </div>
   )
 }

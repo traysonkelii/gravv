@@ -412,3 +412,5 @@ class Export(Base):
     storage_path: Mapped[str | None] = mapped_column(Text)
     expires_at: Mapped[datetime | None]
     created_at: Mapped[datetime] = mapped_column(server_default="now()")
+    error: Mapped[str | None] = mapped_column(Text)
+    finished_at: Mapped[datetime | None]

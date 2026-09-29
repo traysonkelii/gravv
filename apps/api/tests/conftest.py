@@ -85,6 +85,10 @@ class AuthAdmin:
     async def delete_user(self, user_id: str) -> None:
         await self.client.delete(f"/auth/v1/admin/users/{user_id}")
 
+    async def get_user_exists(self, user_id: str) -> bool:
+        r = await self.client.get(f"/auth/v1/admin/users/{user_id}")
+        return r.status_code == 200
+
 
 @pytest.fixture(scope="session")
 async def auth_admin(settings: Settings) -> AsyncIterator[AuthAdmin]:

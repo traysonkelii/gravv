@@ -454,6 +454,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/exports/{export_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Exports Get */
+    get: operations['exports_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/facts/{fact_id}': {
     parameters: {
       query?: never
@@ -638,11 +655,46 @@ export interface paths {
     get: operations['me_get']
     put?: never
     post?: never
-    delete?: never
+    /** Me Delete */
+    delete: operations['me_delete']
     options?: never
     head?: never
     /** Me Update */
     patch: operations['me_update']
+    trace?: never
+  }
+  '/api/v1/me/export': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Me Export */
+    post: operations['me_export']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/me/exports': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Me Exports List */
+    get: operations['me_exports_list']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
     trace?: never
   }
   '/api/v1/me/onboarding': {
@@ -871,6 +923,23 @@ export interface paths {
     head?: never
     /** Workspaces Update */
     patch: operations['workspaces_update']
+    trace?: never
+  }
+  '/api/v1/workspaces/{workspace_id}/export': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Workspaces Export */
+    post: operations['workspaces_export']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
     trace?: never
   }
   '/api/v1/workspaces/{workspace_id}/invitations': {
@@ -1502,6 +1571,60 @@ export interface components {
       other_honorific: string | null
       /** Strength */
       strength: number
+    }
+    /** ExportAccepted */
+    ExportAccepted: {
+      /**
+       * Export Id
+       * Format: uuid
+       */
+      export_id: string
+      /** Job Id */
+      job_id: string | null
+    }
+    /** ExportRead */
+    ExportRead: {
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Download Url */
+      download_url: string | null
+      /** Error */
+      error: string | null
+      /** Expires At */
+      expires_at: string | null
+      /** Finished At */
+      finished_at: string | null
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Scope */
+      scope: string
+      /** Status */
+      status: string
+      /**
+       * User Id
+       * Format: uuid
+       */
+      user_id: string
+      /**
+       * Workspace Id
+       * Format: uuid
+       */
+      workspace_id: string
+    }
+    /** ExportRequest */
+    ExportRequest: {
+      /**
+       * Scope
+       * @default personal
+       * @enum {string}
+       */
+      scope?: 'personal' | 'my_contributions'
     }
     /** ExtractedEdge */
     ExtractedEdge: {
@@ -4003,6 +4126,37 @@ export interface operations {
       }
     }
   }
+  exports_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        export_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ExportRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   facts_delete: {
     parameters: {
       query?: never
@@ -4463,6 +4617,24 @@ export interface operations {
       }
     }
   }
+  me_delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
   me_update: {
     parameters: {
       query?: never
@@ -4492,6 +4664,61 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  me_export: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ExportRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      202: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ExportAccepted']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  me_exports_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ExportRead'][]
         }
       }
     }
@@ -5162,6 +5389,39 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['WorkspaceRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  workspaces_export: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        workspace_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      202: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ExportAccepted']
         }
       }
       /** @description Validation Error */

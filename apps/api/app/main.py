@@ -6,6 +6,7 @@ from app.domain.analytics.router import router as analytics_router
 from app.domain.captures.router import router as captures_router
 from app.domain.companies.router import router as companies_router
 from app.domain.contacts.router import router as contacts_router
+from app.domain.exports.router import router as exports_router
 from app.domain.facts.router import router as facts_router
 from app.domain.health.router import router as health_router
 from app.domain.insights.router import router as insights_router
@@ -39,6 +40,7 @@ def api_router() -> APIRouter:
     api.include_router(tasks_router)
     api.include_router(opportunities_router)
     api.include_router(network_router)
+    api.include_router(exports_router)
     return api
 
 
