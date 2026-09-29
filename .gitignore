@@ -18,7 +18,6 @@ apps/web/test-results/
 apps/web/playwright-report/
 apps/web/e2e/.auth/
 apps/web/dev-dist/
-.terraform/
-*.tfstate
-*.tfstate.backup
+infra/cdk/cdk.out/
 .DS_Store
+*.tsbuildinfo

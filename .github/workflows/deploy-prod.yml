@@ -35,17 +35,15 @@ jobs:
           docker build -t "$IMAGE" apps/api
           docker push "$IMAGE"
           echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
-      - name: Roll the API and worker services
-        run: |
-          for svc in gravv-api gravv-worker; do
-            arn=$(aws apprunner list-services --query "ServiceSummaryList[?ServiceName=='$svc'].ServiceArn" --output text)
-            aws apprunner update-service --service-arn "$arn" --source-configuration "{\"ImageRepository\":{\"ImageIdentifier\":\"$IMAGE\",\"ImageRepositoryType\":\"ECR\"}}" >/dev/null
-          done
-          for svc in gravv-api gravv-worker; do
-            arn=$(aws apprunner list-services --query "ServiceSummaryList[?ServiceName=='$svc'].ServiceArn" --output text)
-            until [ "$(aws apprunner describe-service --service-arn "$arn" --query Service.Status --output text)" = "RUNNING" ]; do sleep 15; done
-          done
       - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm, cache-dependency-path: infra/cdk/pnpm-lock.yaml }
+      - name: Deploy the stack with the new image tag (rolls api and worker)
+        run: cd infra/cdk && pnpm install --frozen-lockfile && pnpm exec cdk deploy -c env=prod -c imageTag="$GITHUB_SHA" --require-approval never
+      - name: Associate the API custom domain (no-op when already associated)
+        run: |
+          arn=$(aws apprunner list-services --query "ServiceSummaryList[?ServiceName=='gravv-api'].ServiceArn" --output text)
+          aws apprunner associate-custom-domain --service-arn "$arn" --domain-name api.gravv.app --no-enable-www-subdomain >/dev/null 2>&1 || true
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm, cache-dependency-path: apps/web/pnpm-lock.yaml }
       - name: Build the web app

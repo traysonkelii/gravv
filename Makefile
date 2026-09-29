@@ -64,17 +64,19 @@ build: ## container image and static bundle
 	docker build -t gravv-api:local apps/api
 	cd apps/web && pnpm build
 
-infra-plan: ## make infra-plan env=staging
-	terraform -chdir=infra/terraform/envs/$(env) init -input=false && terraform -chdir=infra/terraform/envs/$(env) plan -input=false
+infra-synth: ## synthesize the CDK app for one env (make infra-synth env=staging)
+	cd infra/cdk && pnpm install --frozen-lockfile >/dev/null && pnpm exec cdk synth -c env=$(env) --quiet
 
-infra-apply: ## make infra-apply env=staging
-	terraform -chdir=infra/terraform/envs/$(env) apply -input=false
+infra-diff: ## make infra-diff env=staging
+	cd infra/cdk && pnpm exec cdk diff -c env=$(env)
 
-infra-validate: ## terraform fmt and validate without cloud access
-	terraform fmt -check -recursive infra/terraform
-	for e in staging prod; do terraform -chdir=infra/terraform/envs/$$e init -backend=false -input=false >/dev/null && terraform -chdir=infra/terraform/envs/$$e validate; done
+infra-deploy: ## make infra-deploy env=staging tag=<image tag>
+	cd infra/cdk && pnpm exec cdk deploy -c env=$(env) -c imageTag=$(tag) --require-approval never
+
+infra-validate: ## type-check and synthesize both envs without cloud access
+	cd infra/cdk && pnpm install --frozen-lockfile >/dev/null && pnpm exec tsc --noEmit && for e in staging prod; do pnpm exec cdk synth -c env=$$e --quiet >/dev/null && echo "synth $$e ok"; done
 
 jobs-requeue: ## make jobs-requeue id=<job id>
 	cd apps/api && uv run python -m scripts.requeue_job $(id)
 
-.PHONY: help setup dev env db-reset db-migrate db-diff seed gen lint format test test-e2e ai-eval check build jobs-requeue infra-plan infra-apply infra-validate
+.PHONY: help setup dev env db-reset db-migrate db-diff seed gen lint format test test-e2e ai-eval check build jobs-requeue infra-synth infra-diff infra-deploy infra-validate

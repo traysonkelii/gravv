@@ -1,5 +1,0 @@
-zone_id         = "Z0000000000000000000"
-certificate_arn = "arn:aws:acm:us-east-1:123456789012:certificate/00000000-0000-0000-0000-000000000000"
-supabase_url    = "https://<project-ref>.supabase.co"
-github_repo     = "your-org/gravv"
-alert_email     = "ops@example.com"

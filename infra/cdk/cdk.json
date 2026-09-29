@@ -1,0 +1,30 @@
+{
+  "app": "npx tsx bin/gravv.ts",
+  "context": {
+    "staging": {
+      "siteDomain": "staging.gravv.app",
+      "apiDomain": "api-staging.gravv.app",
+      "zoneName": "gravv.app",
+      "zoneId": "Z0000000000000000000",
+      "certificateArn": "arn:aws:acm:us-east-1:000000000000:certificate/00000000-0000-0000-0000-000000000000",
+      "supabaseUrl": "https://staging-project-ref.supabase.co",
+      "githubRepo": "your-org/gravv",
+      "alertEmail": "ops@example.com",
+      "workerMax": 1,
+      "apiMax": 10
+    },
+    "prod": {
+      "siteDomain": "app.gravv.app",
+      "apiDomain": "api.gravv.app",
+      "zoneName": "gravv.app",
+      "zoneId": "Z0000000000000000000",
+      "certificateArn": "arn:aws:acm:us-east-1:000000000000:certificate/00000000-0000-0000-0000-000000000000",
+      "supabaseUrl": "https://prod-project-ref.supabase.co",
+      "githubRepo": "your-org/gravv",
+      "alertEmail": "ops@example.com",
+      "workerMax": 1,
+      "apiMax": 10
+    },
+    "@aws-cdk/core:newStyleStackSynthesis": true
+  }
+}
