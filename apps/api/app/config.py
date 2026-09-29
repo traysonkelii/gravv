@@ -43,6 +43,7 @@ class Settings(BaseSettings):
     worker_concurrency: int = 4
     worker_poll_interval_seconds: float = 2.0
     rate_limit_per_minute: int = 120
+    worker_health_port: int = 8080
     log_level: str = "INFO"
     sentry_dsn: str = ""
 

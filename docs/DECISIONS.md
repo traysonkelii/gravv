@@ -150,3 +150,17 @@ workspace_id and, for my_contributions, by the user id recorded on the export ro
 ## D-033 Exports are requested through create_export() (2026-09-29)
 Admins request the departure export on behalf of the leaving member, which the exports insert policy
 (user_id = auth.uid()) would reject; the definer function checks admin membership instead.
+
+## D-034 Rate limiter keys on the unverified JWT subject (2026-09-29)
+The limiter runs as middleware before authentication. It reads `sub` from the bearer token without verifying the
+signature purely to choose a bucket, and falls back to the client address. A forged token cannot gain capacity
+beyond one bucket per subject, and every request is still fully verified afterwards.
+
+## D-035 Lighthouse runs on the public pages only (2026-09-29)
+Lighthouse cannot carry the browser session the SPA keeps in localStorage. The budget script covers `/` and
+`/auth/sign-in`; the authenticated pages keep the axe-core WCAG A/AA audit in Playwright for accessibility.
+
+## D-036 Deployment is written but not applied (2026-09-29)
+Terraform, deploy workflows, and the runbook are complete and validated offline (`terraform validate` for both
+environments). No AWS or hosted Supabase resources were created from this environment; the first deployment
+follows the runbook.

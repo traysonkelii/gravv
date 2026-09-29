@@ -8,6 +8,7 @@ import { Chip } from '@/components/ui/Chip'
 import { Input, Select, Textarea } from '@/components/ui/Field'
 import { toast, toastError } from '@/components/ui/Toast'
 import { useMe, useUpdateMe, type Me } from '@/lib/api/me'
+import { useUiStore } from '@/lib/store'
 import { timeZones } from '@/utils/timezones'
 
 const schema = z.object({
@@ -31,6 +32,8 @@ export function ProfileSettings() {
 
 function ProfileForm({ me }: { me: Me }) {
   const update = useUpdateMe()
+  const theme = useUiStore((s) => s.theme)
+  const setTheme = useUiStore((s) => s.setTheme)
   const g = me.profile.goals as Partial<Form>
   const [interests, setInterests] = useState<Interest[]>(() =>
     me.interests.map((i) => ({ kind: i.kind as Interest['kind'], value: i.value })),
@@ -94,6 +97,15 @@ function ProfileForm({ me }: { me: Me }) {
             {tz}
           </option>
         ))}
+      </Select>
+
+      <Select
+        label="Appearance"
+        value={theme}
+        onChange={(e) => setTheme(e.target.value as 'dark' | 'light')}
+      >
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
       </Select>
 
       <h2 className="mt-4 text-md font-semibold text-steel-100">Interests</h2>

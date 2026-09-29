@@ -2,7 +2,11 @@ import { Outlet } from 'react-router'
 import { BottomNav } from '@/components/shell/BottomNav'
 import { SideRail } from '@/components/shell/SideRail'
 import { TopBar } from '@/components/shell/TopBar'
-import { CaptureSheet } from '@/features/capture/CaptureSheet'
+import { lazy, Suspense } from 'react'
+
+const CaptureSheet = lazy(async () => ({
+  default: (await import('@/features/capture/CaptureSheet')).CaptureSheet,
+}))
 
 export function AppShell() {
   return (
@@ -15,7 +19,9 @@ export function AppShell() {
         </main>
         <BottomNav />
       </div>
-      <CaptureSheet />
+      <Suspense fallback={null}>
+        <CaptureSheet />
+      </Suspense>
     </div>
   )
 }

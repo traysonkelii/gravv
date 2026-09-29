@@ -9,7 +9,7 @@
 | M4 Scoring, insights, Home, Analytics | done | Score engine, nightly and immediate rescoring, insight rules, scheduler with advisory lock, Home dashboard, Insights, Analytics with charts |
 | M5 Network, tasks, opportunities | done | Contact edges, network graph and path finder on canvas, tasks with complete and snooze, opportunities with contact roles |
 | M6 Organization features, data portability | done | Exports (personal, my contributions, workspace) as zipped JSON and CSV via signed URLs, departure export email, account deletion with tombstones, retention purge |
-| M7 Hardening and AWS | not started | |
+| M7 Hardening and AWS | code complete, deployment unverified | Rate limiting, HSTS, PWA, landing page, light theme, Terraform for staging and prod, OIDC deploy workflows, alarms, runbook, Lighthouse budgets |
 
 ## M0 acceptance
 - `make setup && make dev`: sign-in page at http://127.0.0.1:5173, `/readyz` returns 200.
@@ -73,3 +73,27 @@
 - Departure enqueues a my_contributions export and emails the link (API test through Mailpit).
 - Retention purge removes soft-deleted rows older than 30 days, audio after 30 days unless retain_audio, and
   expired export files.
+
+## M7 status
+Everything the milestone lists exists in the repository and passes the local gate:
+- Rate limiting (per-user token bucket, stricter on capture and AI routes), security headers, HSTS behind TLS.
+- Dependency audits run in CI (`pip-audit`, `pnpm audit`, non-blocking as the plan allows before M7 hardening).
+- Audit log entries on every mutation of contacts, companies, facts, interactions, tasks, opportunities, edges,
+  memberships, invitations, captures, insights, and exports.
+- PWA manifest, icons, service worker with NetworkFirst caching for GET API calls.
+- Optional light theme through Settings, Profile, Appearance.
+- Landing page at `/` with a real product screenshot and three feature statements.
+- Terraform: modules ecr, apprunner, secrets, static-site, github-oidc, alarms; envs staging and prod;
+  `make infra-validate` passes `terraform fmt` and `terraform validate` for both environments.
+- GitHub Actions: `deploy-staging` on merge to main after ci, `deploy-prod` on `v*` tags behind the
+  `production` environment approval; migrations first, then services, then the SPA, then a smoke test.
+- `docs/RUNBOOK.md`: first deployment, key rotation, re-queuing dead jobs, backup restore, revoking an integration,
+  scaling, alarms.
+- Lighthouse budgets script (`pnpm lighthouse`) for the public pages; the authenticated pages are covered by the
+  axe-core audit in Playwright.
+
+Not done in this environment, because it needs cloud accounts and domains that do not exist here:
+- Creating the hosted Supabase projects, the Route 53 zone, ACM certificates, the state bucket, and applying
+  Terraform. `terraform plan` was not run against a real account.
+- Reaching staging at its domains, the Playwright smoke against staging, and the dead-job alarm email.
+- Visual regression baselines (optional in the plan) were not recorded.

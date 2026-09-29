@@ -54,6 +54,8 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "no-referrer"
         if "authorization" in request.headers:
             response.headers["Cache-Control"] = "no-store"
+        if request.url.scheme == "https" or request.headers.get("x-forwarded-proto") == "https":
+            response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains"
         log.info(
             "request",
             method=request.method,

@@ -15,6 +15,7 @@ from app.db.session import worker_session
 from app.jobs import queue, scheduler
 from app.jobs.runner import run_job
 from app.observability import configure_logging
+from app.worker_health import serve as serve_health
 
 log = structlog.get_logger()
 
@@ -62,6 +63,7 @@ async def main() -> None:
         loop.add_signal_handler(sig, stop.set)
     sem = asyncio.Semaphore(settings.worker_concurrency)
     tasks: set[asyncio.Task[Any]] = set()
+    health = await serve_health(settings.worker_health_port) if settings.app_env in ("staging", "production") else None
     background = [
         asyncio.create_task(_listener(wake, stop)),
         asyncio.create_task(_housekeeping(stop)),
@@ -98,6 +100,8 @@ async def main() -> None:
     for task in background:
         task.cancel()
     await asyncio.gather(*background, return_exceptions=True)
+    if health is not None:
+        health.close()
 
 
 if __name__ == "__main__":

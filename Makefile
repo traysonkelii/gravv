@@ -64,7 +64,17 @@ build: ## container image and static bundle
 	docker build -t gravv-api:local apps/api
 	cd apps/web && pnpm build
 
+infra-plan: ## make infra-plan env=staging
+	terraform -chdir=infra/terraform/envs/$(env) init -input=false && terraform -chdir=infra/terraform/envs/$(env) plan -input=false
+
+infra-apply: ## make infra-apply env=staging
+	terraform -chdir=infra/terraform/envs/$(env) apply -input=false
+
+infra-validate: ## terraform fmt and validate without cloud access
+	terraform fmt -check -recursive infra/terraform
+	for e in staging prod; do terraform -chdir=infra/terraform/envs/$$e init -backend=false -input=false >/dev/null && terraform -chdir=infra/terraform/envs/$$e validate; done
+
 jobs-requeue: ## make jobs-requeue id=<job id>
 	cd apps/api && uv run python -m scripts.requeue_job $(id)
 
-.PHONY: help setup dev env db-reset db-migrate db-diff seed gen lint format test test-e2e ai-eval check build jobs-requeue
+.PHONY: help setup dev env db-reset db-migrate db-diff seed gen lint format test test-e2e ai-eval check build jobs-requeue infra-plan infra-apply infra-validate

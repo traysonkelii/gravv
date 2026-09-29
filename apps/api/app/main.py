@@ -21,6 +21,7 @@ from app.domain.tasks.router import router as tasks_router
 from app.domain.workspaces.router import router as workspaces_router
 from app.errors import install_error_handlers
 from app.observability import RequestContextMiddleware, configure_logging
+from app.ratelimit import RateLimitMiddleware
 
 
 def api_router() -> APIRouter:
@@ -56,6 +57,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
         expose_headers=["X-Request-Id"],
     )
+    app.add_middleware(RateLimitMiddleware, settings=settings)
     app.add_middleware(RequestContextMiddleware)
     install_error_handlers(app)
     app.include_router(health_router)

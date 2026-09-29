@@ -21,3 +21,9 @@ Sign in at http://127.0.0.1:5173 with `sarah@demo.gravv.local` / `demo-password-
 Magic links and invitations land in the local inbox at http://127.0.0.1:54324.
 
 Without an Anthropic key the app runs with `LLM_PROVIDER=fake` and deterministic AI output.
+
+## Deployment
+
+`infra/terraform` holds staging and prod (App Runner, S3 + CloudFront, SSM, GitHub OIDC, alarms). `make infra-validate`
+checks the configuration offline; `docs/RUNBOOK.md` walks through the first deployment and day-two operations.
+GitHub Actions deploy staging on every merge to `main` and production on `v*` tags.

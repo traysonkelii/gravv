@@ -29,8 +29,15 @@ jobs:
           echo "SUPABASE_PUBLISHABLE_KEY=$PUBLISHABLE_KEY" >> "$GITHUB_ENV"
       - run: cd apps/api && uv run python -m scripts.seed_users
       - run: cd apps/api && uv run pytest -q
-      - run: cd apps/api && uv run pip-audit --strict || true
+      - run: cd apps/api && uvx pip-audit --strict || true
         continue-on-error: true
+
+  infra:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+      - run: make infra-validate
 
   web:
     runs-on: ubuntu-latest
@@ -43,6 +50,13 @@ jobs:
       - run: cd apps/web && pnpm lint && pnpm exec prettier --check . && pnpm exec tsc --noEmit && pnpm design-lint
       - run: cd apps/web && pnpm test -- --run
       - run: cd apps/web && pnpm build
+      - name: Lighthouse budgets on the public pages (performance >= 85, accessibility >= 95)
+        run: |
+          cd apps/web
+          pnpm exec playwright install chromium
+          pnpm exec vite preview --host 127.0.0.1 --port 4173 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          CHROME_PATH=$(ls -d ~/.cache/ms-playwright/chromium-*/chrome-linux*/chrome | head -1) pnpm lighthouse http://127.0.0.1:4173
       - run: cd apps/web && pnpm audit --audit-level high || true
         continue-on-error: true
 
