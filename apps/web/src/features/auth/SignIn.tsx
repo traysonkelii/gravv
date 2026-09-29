@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link, useNavigate } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router'
 import { z } from 'zod'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Field'
@@ -16,6 +16,8 @@ type Form = z.infer<typeof schema>
 
 export function SignIn() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const from = (location.state as { from?: string } | null)?.from ?? '/app'
   const [error, setError] = useState<string | null>(null)
   const { register, handleSubmit, formState } = useForm<Form>({ resolver: zodResolver(schema) })
 
@@ -26,7 +28,7 @@ export function SignIn() {
       setError('Email or password is incorrect. Check both and try again.')
       return
     }
-    navigate('/app', { replace: true })
+    navigate(from, { replace: true })
   }
 
   return (

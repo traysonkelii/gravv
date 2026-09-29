@@ -11,7 +11,9 @@ export function RequireAuth() {
 
 export function RedirectIfAuthed() {
   const { session, loading } = useAuth()
+  const location = useLocation()
   if (loading) return null
-  if (session) return <Navigate to="/app" replace />
+  if (session)
+    return <Navigate to={(location.state as { from?: string } | null)?.from ?? '/app'} replace />
   return <Outlet />
 }

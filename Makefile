@@ -37,7 +37,7 @@ seed: ## create seed users through the auth admin API and load supabase/seed.sql
 
 gen: ## regenerate the TypeScript API client
 	cd apps/api && APP_ENV=test uv run python -m scripts.export_openapi > ../web/src/lib/api/openapi.json
-	cd apps/web && pnpm exec openapi-typescript src/lib/api/openapi.json -o src/lib/api/schema.d.ts && pnpm exec prettier --write src/lib/api/schema.d.ts src/lib/api/openapi.json >/dev/null
+	cd apps/web && pnpm exec openapi-typescript src/lib/api/openapi.json -o src/lib/api/schema.d.ts --default-non-nullable=false && pnpm exec prettier --write src/lib/api/schema.d.ts src/lib/api/openapi.json >/dev/null
 
 lint: ## all linters
 	cd apps/api && uv run ruff check . && uv run ruff format --check . && uv run mypy .

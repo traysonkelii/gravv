@@ -3,12 +3,18 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.domain.health.router import router as health_router
+from app.domain.invitations.router import router as invitations_router
+from app.domain.me.router import router as me_router
+from app.domain.workspaces.router import router as workspaces_router
 from app.errors import install_error_handlers
 from app.observability import RequestContextMiddleware, configure_logging
 
 
 def api_router() -> APIRouter:
     api = APIRouter(prefix="/api/v1")
+    api.include_router(me_router)
+    api.include_router(workspaces_router)
+    api.include_router(invitations_router)
     return api
 
 

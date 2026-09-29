@@ -6,7 +6,17 @@ import { RedirectIfAuthed, RequireAuth } from '@/features/auth/RequireAuth'
 import { Reset } from '@/features/auth/Reset'
 import { SignIn } from '@/features/auth/SignIn'
 import { SignUp } from '@/features/auth/SignUp'
+import { RequireOnboarded } from '@/features/auth/RequireOnboarded'
 import { Home } from '@/features/home/Home'
+import { InvitePage } from '@/features/invite/InvitePage'
+import { Onboarding } from '@/features/onboarding/Onboarding'
+import { DataSettings } from '@/features/settings/DataSettings'
+import { IntegrationsSettings } from '@/features/settings/IntegrationsSettings'
+import { MembersSettings } from '@/features/settings/MembersSettings'
+import { ProfileSettings } from '@/features/settings/ProfileSettings'
+import { SecuritySettings } from '@/features/settings/SecuritySettings'
+import { SettingsLayout } from '@/features/settings/SettingsLayout'
+import { WorkspaceSettings } from '@/features/settings/WorkspaceSettings'
 
 function Placeholder({ title }: { title: string }) {
   return <h1 className="font-display text-2xl font-bold text-steel-100">{title}</h1>
@@ -25,22 +35,41 @@ export const router = createBrowserRouter([
   },
   { path: '/auth/reset', element: <Reset /> },
   { path: '/auth/callback', element: <Callback /> },
+  { path: '/invite/:token', element: <InvitePage /> },
   {
     element: <RequireAuth />,
     children: [
+      { path: '/onboarding', element: <Onboarding /> },
       {
-        path: '/app',
-        element: <AppShell />,
+        element: <RequireOnboarded />,
         children: [
-          { index: true, element: <Navigate to="/app/home" replace /> },
-          { path: 'home', element: <Home /> },
-          { path: 'contacts', element: <Placeholder title="Contacts" /> },
-          { path: 'network', element: <Placeholder title="Network" /> },
-          { path: 'analytics', element: <Placeholder title="Analytics" /> },
-          { path: 'insights', element: <Placeholder title="Insights" /> },
-          { path: 'tasks', element: <Placeholder title="Tasks" /> },
-          { path: 'deals', element: <Placeholder title="Deals" /> },
-          { path: 'settings/*', element: <Placeholder title="Settings" /> },
+          {
+            path: '/app',
+            element: <AppShell />,
+            children: [
+              { index: true, element: <Navigate to="/app/home" replace /> },
+              { path: 'home', element: <Home /> },
+              { path: 'contacts', element: <Placeholder title="Contacts" /> },
+              { path: 'network', element: <Placeholder title="Network" /> },
+              { path: 'analytics', element: <Placeholder title="Analytics" /> },
+              { path: 'insights', element: <Placeholder title="Insights" /> },
+              { path: 'tasks', element: <Placeholder title="Tasks" /> },
+              { path: 'deals', element: <Placeholder title="Deals" /> },
+              {
+                path: 'settings',
+                element: <SettingsLayout />,
+                children: [
+                  { index: true, element: <Navigate to="/app/settings/profile" replace /> },
+                  { path: 'profile', element: <ProfileSettings /> },
+                  { path: 'workspace', element: <WorkspaceSettings /> },
+                  { path: 'members', element: <MembersSettings /> },
+                  { path: 'integrations', element: <IntegrationsSettings /> },
+                  { path: 'security', element: <SecuritySettings /> },
+                  { path: 'data', element: <DataSettings /> },
+                ],
+              },
+            ],
+          },
         ],
       },
     ],

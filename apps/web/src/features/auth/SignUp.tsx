@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link, useNavigate } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router'
 import { z } from 'zod'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Field'
@@ -17,9 +17,14 @@ type Form = z.infer<typeof schema>
 
 export function SignUp() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const state = (location.state as { from?: string; email?: string } | null) ?? {}
   const [error, setError] = useState<string | null>(null)
   const [checkInbox, setCheckInbox] = useState(false)
-  const { register, handleSubmit, formState } = useForm<Form>({ resolver: zodResolver(schema) })
+  const { register, handleSubmit, formState } = useForm<Form>({
+    resolver: zodResolver(schema),
+    defaultValues: { email: state.email ?? '' },
+  })
 
   const onSubmit = async (values: Form) => {
     setError(null)
@@ -35,7 +40,7 @@ export function SignUp() {
       setError(error.message)
       return
     }
-    if (data.session) navigate('/onboarding', { replace: true })
+    if (data.session) navigate(state.from ?? '/onboarding', { replace: true })
     else setCheckInbox(true)
   }
 

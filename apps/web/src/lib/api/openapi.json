@@ -1,10 +1,1574 @@
 {
+  "components": {
+    "schemas": {
+      "AcceptResult": {
+        "properties": {
+          "workspace_id": {
+            "format": "uuid",
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "required": ["workspace_id"],
+        "title": "AcceptResult",
+        "type": "object"
+      },
+      "Goals": {
+        "additionalProperties": false,
+        "properties": {
+          "close_deals": {
+            "default": false,
+            "title": "Close Deals",
+            "type": "boolean"
+          },
+          "expand_network": {
+            "default": false,
+            "title": "Expand Network",
+            "type": "boolean"
+          },
+          "free_text": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Free Text",
+            "type": "string"
+          },
+          "strengthen": {
+            "default": false,
+            "title": "Strengthen",
+            "type": "boolean"
+          },
+          "track_roi": {
+            "default": false,
+            "title": "Track Roi",
+            "type": "boolean"
+          }
+        },
+        "title": "Goals",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "InterestIn": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": ["professional", "personal"],
+            "title": "Kind",
+            "type": "string"
+          },
+          "value": {
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": ["kind", "value"],
+        "title": "InterestIn",
+        "type": "object"
+      },
+      "InterestRead": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": ["id", "kind", "value"],
+        "title": "InterestRead",
+        "type": "object"
+      },
+      "InvitationCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/WorkspaceRole",
+            "default": "member"
+          }
+        },
+        "required": ["email"],
+        "title": "InvitationCreate",
+        "type": "object"
+      },
+      "InvitationPeek": {
+        "properties": {
+          "accepted": {
+            "title": "Accepted",
+            "type": "boolean"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "expired": {
+            "title": "Expired",
+            "type": "boolean"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "inviter_name": {
+            "title": "Inviter Name",
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/WorkspaceRole"
+          },
+          "workspace_name": {
+            "title": "Workspace Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "workspace_name",
+          "role",
+          "inviter_name",
+          "email",
+          "expires_at",
+          "accepted",
+          "expired"
+        ],
+        "title": "InvitationPeek",
+        "type": "object"
+      },
+      "InvitationRead": {
+        "properties": {
+          "accepted_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accepted At"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "invited_by": {
+            "format": "uuid",
+            "title": "Invited By",
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/WorkspaceRole"
+          },
+          "workspace_id": {
+            "format": "uuid",
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "workspace_id",
+          "email",
+          "role",
+          "invited_by",
+          "expires_at",
+          "accepted_at",
+          "created_at"
+        ],
+        "title": "InvitationRead",
+        "type": "object"
+      },
+      "MeRead": {
+        "properties": {
+          "interests": {
+            "items": {
+              "$ref": "#/components/schemas/InterestRead"
+            },
+            "title": "Interests",
+            "type": "array"
+          },
+          "memberships": {
+            "items": {
+              "$ref": "#/components/schemas/MembershipRead"
+            },
+            "title": "Memberships",
+            "type": "array"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/ProfileRead"
+          }
+        },
+        "required": ["profile", "interests", "memberships"],
+        "title": "MeRead",
+        "type": "object"
+      },
+      "MeUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "default_workspace_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Workspace Id"
+          },
+          "full_name": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name"
+          },
+          "goals": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Goals"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "interests": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/InterestIn"
+                },
+                "maxItems": 40,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interests"
+          },
+          "role_title": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role Title"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone"
+          }
+        },
+        "title": "MeUpdate",
+        "type": "object"
+      },
+      "MemberRead": {
+        "properties": {
+          "avatar_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Path"
+          },
+          "departed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Departed At"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "joined_at": {
+            "format": "date-time",
+            "title": "Joined At",
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/WorkspaceRole"
+          },
+          "role_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role Title"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MembershipStatus"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "full_name",
+          "role_title",
+          "avatar_path",
+          "email",
+          "role",
+          "status",
+          "joined_at",
+          "departed_at"
+        ],
+        "title": "MemberRead",
+        "type": "object"
+      },
+      "MemberUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WorkspaceRole"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MembershipStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "MemberUpdate",
+        "type": "object"
+      },
+      "MembershipRead": {
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/WorkspaceKind"
+          },
+          "role": {
+            "$ref": "#/components/schemas/WorkspaceRole"
+          },
+          "settings": {
+            "additionalProperties": true,
+            "title": "Settings",
+            "type": "object"
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          },
+          "status": {
+            "$ref": "#/components/schemas/MembershipStatus"
+          },
+          "workspace_id": {
+            "format": "uuid",
+            "title": "Workspace Id",
+            "type": "string"
+          },
+          "workspace_name": {
+            "title": "Workspace Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "workspace_id",
+          "workspace_name",
+          "kind",
+          "slug",
+          "role",
+          "status",
+          "settings"
+        ],
+        "title": "MembershipRead",
+        "type": "object"
+      },
+      "MembershipStatus": {
+        "enum": ["invited", "active", "departed"],
+        "title": "MembershipStatus",
+        "type": "string"
+      },
+      "OnboardingProfile": {
+        "additionalProperties": false,
+        "properties": {
+          "full_name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Full Name",
+            "type": "string"
+          },
+          "role_title": {
+            "default": "",
+            "maxLength": 120,
+            "title": "Role Title",
+            "type": "string"
+          },
+          "timezone": {
+            "default": "UTC",
+            "maxLength": 64,
+            "title": "Timezone",
+            "type": "string"
+          }
+        },
+        "required": ["full_name"],
+        "title": "OnboardingProfile",
+        "type": "object"
+      },
+      "OnboardingUpdate": {
+        "additionalProperties": false,
+        "description": "One call per step so progress survives reloads.\n\nSteps: 1 profile, 2 interests, 3 goals, 4 integrations, 5 done.",
+        "properties": {
+          "goals": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Goals"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "interests": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/InterestIn"
+                },
+                "maxItems": 40,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interests"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OnboardingProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "step": {
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Step",
+            "type": "integer"
+          }
+        },
+        "required": ["step"],
+        "title": "OnboardingUpdate",
+        "type": "object"
+      },
+      "ProfileRead": {
+        "properties": {
+          "avatar_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Path"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "default_workspace_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Workspace Id"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "goals": {
+            "additionalProperties": true,
+            "title": "Goals",
+            "type": "object"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "onboarding_completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Onboarding Completed At"
+          },
+          "onboarding_step": {
+            "title": "Onboarding Step",
+            "type": "integer"
+          },
+          "role_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role Title"
+          },
+          "timezone": {
+            "title": "Timezone",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "full_name",
+          "role_title",
+          "timezone",
+          "avatar_path",
+          "goals",
+          "onboarding_step",
+          "onboarding_completed_at",
+          "default_workspace_id",
+          "created_at"
+        ],
+        "title": "ProfileRead",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "WorkspaceCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/WorkspaceSettings"
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          }
+        },
+        "required": ["name"],
+        "title": "WorkspaceCreate",
+        "type": "object"
+      },
+      "WorkspaceKind": {
+        "enum": ["personal", "organization"],
+        "title": "WorkspaceKind",
+        "type": "string"
+      },
+      "WorkspaceRead": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/WorkspaceKind"
+          },
+          "my_role": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WorkspaceRole"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "owner_user_id": {
+            "format": "uuid",
+            "title": "Owner User Id",
+            "type": "string"
+          },
+          "plan": {
+            "title": "Plan",
+            "type": "string"
+          },
+          "settings": {
+            "additionalProperties": true,
+            "title": "Settings",
+            "type": "object"
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "name",
+          "slug",
+          "owner_user_id",
+          "settings",
+          "plan",
+          "created_at"
+        ],
+        "title": "WorkspaceRead",
+        "type": "object"
+      },
+      "WorkspaceRole": {
+        "enum": ["viewer", "member", "manager", "admin", "owner"],
+        "title": "WorkspaceRole",
+        "type": "string"
+      },
+      "WorkspaceSettings": {
+        "additionalProperties": false,
+        "properties": {
+          "ai_daily_token_budget": {
+            "default": 500000,
+            "maximum": 50000000.0,
+            "minimum": 0.0,
+            "title": "Ai Daily Token Budget",
+            "type": "integer"
+          },
+          "auto_apply_low_risk_facts": {
+            "default": false,
+            "title": "Auto Apply Low Risk Facts",
+            "type": "boolean"
+          },
+          "default_cadence_days": {
+            "default": 30,
+            "maximum": 365.0,
+            "minimum": 1.0,
+            "title": "Default Cadence Days",
+            "type": "integer"
+          },
+          "default_contact_visibility": {
+            "default": "team",
+            "pattern": "^(team|private)$",
+            "title": "Default Contact Visibility",
+            "type": "string"
+          },
+          "narrate_insights_with_llm": {
+            "default": false,
+            "title": "Narrate Insights With Llm",
+            "type": "boolean"
+          },
+          "require_mfa": {
+            "default": false,
+            "title": "Require Mfa",
+            "type": "boolean"
+          },
+          "retain_audio": {
+            "default": false,
+            "title": "Retain Audio",
+            "type": "boolean"
+          }
+        },
+        "title": "WorkspaceSettings",
+        "type": "object"
+      },
+      "WorkspaceUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "settings": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WorkspaceSettings"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slug"
+          }
+        },
+        "title": "WorkspaceUpdate",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
   "info": {
     "title": "Gravv API",
     "version": "0.1.0"
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/invitations/{token}": {
+      "get": {
+        "operationId": "invitations_peek",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "required": true,
+            "schema": {
+              "title": "Token",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitationPeek"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Invitations Peek",
+        "tags": ["invitations"]
+      }
+    },
+    "/api/v1/invitations/{token}/accept": {
+      "post": {
+        "operationId": "invitations_accept",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "required": true,
+            "schema": {
+              "title": "Token",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcceptResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Invitations Accept",
+        "tags": ["invitations"]
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "operationId": "me_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Me Get",
+        "tags": ["me"]
+      },
+      "patch": {
+        "operationId": "me_update",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Me Update",
+        "tags": ["me"]
+      }
+    },
+    "/api/v1/me/onboarding": {
+      "patch": {
+        "operationId": "me_onboarding_update",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnboardingUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Me Onboarding Update",
+        "tags": ["me"]
+      }
+    },
+    "/api/v1/workspaces": {
+      "get": {
+        "operationId": "workspaces_list",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/WorkspaceRead"
+                  },
+                  "title": "Response Workspaces List",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Workspaces List",
+        "tags": ["workspaces"]
+      },
+      "post": {
+        "operationId": "workspaces_create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkspaceCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Workspaces Create",
+        "tags": ["workspaces"]
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}": {
+      "get": {
+        "operationId": "workspaces_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Workspaces Get",
+        "tags": ["workspaces"]
+      },
+      "patch": {
+        "operationId": "workspaces_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkspaceUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Workspaces Update",
+        "tags": ["workspaces"]
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/invitations": {
+      "get": {
+        "operationId": "invitations_list",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/InvitationRead"
+                  },
+                  "title": "Response Invitations List",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Invitations List",
+        "tags": ["workspaces"]
+      },
+      "post": {
+        "operationId": "invitations_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvitationCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitationRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Invitations Create",
+        "tags": ["workspaces"]
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/invitations/{invitation_id}": {
+      "delete": {
+        "operationId": "invitations_revoke",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "invitation_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Invitation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Invitations Revoke",
+        "tags": ["workspaces"]
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/members": {
+      "get": {
+        "operationId": "members_list",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MemberRead"
+                  },
+                  "title": "Response Members List",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Members List",
+        "tags": ["workspaces"]
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/members/me": {
+      "delete": {
+        "operationId": "members_leave",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Members Leave",
+        "tags": ["workspaces"]
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/members/{user_id}": {
+      "patch": {
+        "operationId": "members_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "User Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MemberUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemberRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Members Update",
+        "tags": ["workspaces"]
+      }
+    },
     "/healthz": {
       "get": {
         "operationId": "health_live",

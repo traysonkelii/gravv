@@ -54,3 +54,22 @@ Comparing against the migration list would require shipping the migrations in th
 ## D-012 HTTP clients for OpenAI-compatible providers (2026-09-28)
 The OpenAI-compatible LLM and Whisper transcription providers use `httpx` directly instead of the
 `openai` SDK. Both are a single POST each.
+
+## D-013 Invitations always email our own link (2026-09-28)
+The plan sends new users through Supabase Auth invites and existing users a plain email. One path is
+simpler: every invitation is a plain SMTP email with `/invite/<token>`; a recipient without an account
+creates one from that page (email prefilled) and then accepts. SMTP is Mailpit locally
+(`smtp_port = 54325` enabled in `config.toml`) and SES in hosted environments (`SMTP_*` settings).
+
+## D-014 Own email type instead of EmailStr (2026-09-28)
+`email-validator` rejects reserved TLDs such as `.local`, which the seeded demo accounts and tests use.
+`app.domain.common.EmailAddress` lowercases and checks the shape only.
+
+## D-015 pid-file dev server controller (2026-09-28)
+`scripts/devctl.sh start|stop|status` runs api, worker, and web in the background with pid files. Used
+by automation and by Playwright's webServer hook via `scripts/e2e-api.sh`; `make dev` remains the
+foreground runner for people.
+
+## D-016 Generated client treats defaulted fields as optional (2026-09-28)
+`openapi-typescript` runs with `--default-non-nullable=false` so request bodies may omit fields that
+have server-side defaults (for example workspace settings), matching the Pydantic schemas.

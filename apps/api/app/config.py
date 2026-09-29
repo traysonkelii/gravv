@@ -19,6 +19,13 @@ class Settings(BaseSettings):
     supabase_secret_key: str = ""
     supabase_jwt_secret: str = ""
     cors_origins: str = "http://127.0.0.1:5173,http://localhost:5173"
+    web_url: str = "http://127.0.0.1:5173"
+    smtp_host: str = "127.0.0.1"
+    smtp_port: int = 54325
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from: str = "Gravv <no-reply@gravv.local>"
+    smtp_tls: bool = False
     app_encryption_key: str = ""
 
     llm_provider: Literal["anthropic", "openai", "fake"] = "fake"
