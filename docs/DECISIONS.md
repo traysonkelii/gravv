@@ -73,3 +73,13 @@ foreground runner for people.
 ## D-016 Generated client treats defaulted fields as optional (2026-09-28)
 `openapi-typescript` runs with `--default-non-nullable=false` so request bodies may omit fields that
 have server-side defaults (for example workspace settings), matching the Pydantic schemas.
+
+## D-017 Select policies do not filter deleted_at (2026-09-29)
+Postgres checks the SELECT policy against the new row of an UPDATE, so a policy with `deleted_at is null`
+rejects every soft delete. The predicate moved out of the policies; repositories and the read-model views
+filter `deleted_at is null` on every read. Tenancy and visibility rules are unchanged.
+
+## D-018 Application roles carry the extensions schema on their search_path (2026-09-29)
+Supabase sets `search_path` on the `postgres` role only. `gravv_api` and `gravv_worker` get
+`public, extensions` in migration 0009 so citext, pg_trgm operators, and `similarity()` resolve for
+SQL run under `set local role authenticated`.

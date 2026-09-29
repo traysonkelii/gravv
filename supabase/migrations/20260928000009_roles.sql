@@ -12,6 +12,9 @@ begin
 end $$;
 alter role gravv_api with login;
 alter role gravv_worker with login;
+-- Only the postgres role carries `extensions` on its search_path; the app roles need citext and pg_trgm too.
+alter role gravv_api set search_path = public, extensions;
+alter role gravv_worker set search_path = public, extensions;
 grant authenticated to gravv_api;
 grant anon to gravv_api;
 grant service_role to gravv_worker;

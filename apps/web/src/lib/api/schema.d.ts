@@ -4,6 +4,220 @@
  */
 
 export interface paths {
+  '/api/v1/companies': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Companies List */
+    get: operations['companies_list']
+    put?: never
+    /** Companies Create */
+    post: operations['companies_create']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/companies/{company_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Companies Get */
+    get: operations['companies_get']
+    put?: never
+    post?: never
+    /** Companies Delete */
+    delete: operations['companies_delete']
+    options?: never
+    head?: never
+    /** Companies Update */
+    patch: operations['companies_update']
+    trace?: never
+  }
+  '/api/v1/contacts': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Contacts List */
+    get: operations['contacts_list']
+    put?: never
+    /** Contacts Create */
+    post: operations['contacts_create']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/contacts/{contact_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Contacts Get */
+    get: operations['contacts_get']
+    put?: never
+    post?: never
+    /** Contacts Delete */
+    delete: operations['contacts_delete']
+    options?: never
+    head?: never
+    /** Contacts Update */
+    patch: operations['contacts_update']
+    trace?: never
+  }
+  '/api/v1/contacts/{contact_id}/copy-to-personal': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Contacts Copy To Personal */
+    post: operations['contacts_copy_to_personal']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/contacts/{contact_id}/facts': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Facts List */
+    get: operations['facts_list']
+    put?: never
+    /** Facts Create */
+    post: operations['facts_create']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/contacts/{contact_id}/profile': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Profile Get */
+    get: operations['profile_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/contacts/{contact_id}/share': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Contacts Share */
+    post: operations['contacts_share']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/contacts/{contact_id}/timeline': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Contacts Timeline */
+    get: operations['contacts_timeline']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/facts/{fact_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    /** Facts Delete */
+    delete: operations['facts_delete']
+    options?: never
+    head?: never
+    /** Facts Update */
+    patch: operations['facts_update']
+    trace?: never
+  }
+  '/api/v1/interactions': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Interactions List */
+    get: operations['interactions_list']
+    put?: never
+    /** Interactions Create */
+    post: operations['interactions_create']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/interactions/{interaction_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    /** Interactions Delete */
+    delete: operations['interactions_delete']
+    options?: never
+    head?: never
+    /** Interactions Update */
+    patch: operations['interactions_update']
+    trace?: never
+  }
   '/api/v1/invitations/{token}': {
     parameters: {
       query?: never
@@ -71,6 +285,23 @@ export interface paths {
     head?: never
     /** Me Onboarding Update */
     patch: operations['me_onboarding_update']
+    trace?: never
+  }
+  '/api/v1/search': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Search Global */
+    get: operations['search_global']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
     trace?: never
   }
   '/api/v1/workspaces': {
@@ -241,6 +472,366 @@ export interface components {
        */
       workspace_id: string
     }
+    /**
+     * AiStatus
+     * @enum {string}
+     */
+    AiStatus: 'none' | 'pending' | 'processed' | 'failed' | 'skipped'
+    /**
+     * Band
+     * @enum {string}
+     */
+    Band: 'strong' | 'steady' | 'weak' | 'drifting'
+    /** CompanyCreate */
+    CompanyCreate: {
+      /** Domain */
+      domain?: string | null
+      /** Industry */
+      industry?: string | null
+      /** Name */
+      name: string
+      /** Notes */
+      notes?: string | null
+      /** @default other */
+      type?: components['schemas']['CompanyType']
+    }
+    /** CompanyHit */
+    CompanyHit: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Industry */
+      industry: string | null
+      /** Name */
+      name: string
+    }
+    /** CompanyRead */
+    CompanyRead: {
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /**
+       * Created By
+       * Format: uuid
+       */
+      created_by: string
+      /** Domain */
+      domain: string | null
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Industry */
+      industry: string | null
+      /** Name */
+      name: string
+      /** Notes */
+      notes: string | null
+      type: components['schemas']['CompanyType']
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string
+      /**
+       * Workspace Id
+       * Format: uuid
+       */
+      workspace_id: string
+    }
+    /** CompanySummary */
+    CompanySummary: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Industry */
+      industry?: string | null
+      /** Name */
+      name: string
+    }
+    /**
+     * CompanyType
+     * @enum {string}
+     */
+    CompanyType: 'client' | 'partner' | 'vendor' | 'government' | 'prospect' | 'other'
+    /** CompanyUpdate */
+    CompanyUpdate: {
+      /** Domain */
+      domain?: string | null
+      /** Industry */
+      industry?: string | null
+      /** Name */
+      name?: string | null
+      /** Notes */
+      notes?: string | null
+      type?: components['schemas']['CompanyType'] | null
+    }
+    /** ContactCreate */
+    ContactCreate: {
+      /**
+       * Cadence Days
+       * @default 30
+       */
+      cadence_days?: number
+      /** Company Id */
+      company_id?: string | null
+      /** Company Name */
+      company_name?: string | null
+      /** Emails */
+      emails?: string[]
+      /** First Name */
+      first_name: string
+      /** Honorific */
+      honorific?: string | null
+      /**
+       * Last Name
+       * @default
+       */
+      last_name?: string
+      /** Location */
+      location?: string | null
+      /** Phones */
+      phones?: string[]
+      /** @default other */
+      relationship_type?: components['schemas']['RelationshipType']
+      /** Tags */
+      tags?: string[]
+      /** Title */
+      title?: string | null
+      visibility?: components['schemas']['ContactVisibility'] | null
+    }
+    /** ContactHit */
+    ContactHit: {
+      /** Company Name */
+      company_name: string | null
+      /** Display Name */
+      display_name: string
+      /** Gravity Score */
+      gravity_score: number
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Title */
+      title: string | null
+    }
+    /** ContactProfileRead */
+    ContactProfileRead: {
+      /** Common Ground */
+      common_ground: string[]
+      /** Communication Style */
+      communication_style: string | null
+      /** Generated At */
+      generated_at: string | null
+      /** Model */
+      model: string | null
+      /** Prompt Version */
+      prompt_version: string | null
+      /** Remember */
+      remember: string[]
+      /** Risks */
+      risks: string[]
+      /** Stale */
+      stale: boolean
+      /** Summary */
+      summary: string
+      /** Talking Points */
+      talking_points: string[]
+    }
+    /** ContactRead */
+    ContactRead: {
+      band: components['schemas']['Band']
+      /** Cadence Days */
+      cadence_days: number
+      company: components['schemas']['CompanySummary'] | null
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Display Name */
+      display_name: string
+      /** Emails */
+      emails: string[]
+      /** First Name */
+      first_name: string
+      /** Gravity Score */
+      gravity_score: number
+      /** Honorific */
+      honorific: string | null
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      last_interaction: components['schemas']['InteractionSummary'] | null
+      /** Last Name */
+      last_name: string
+      /** Location */
+      location: string | null
+      /** Next Due At */
+      next_due_at: string | null
+      /** Open Opportunity Value Cents */
+      open_opportunity_value_cents: number
+      /** Open Task Count */
+      open_task_count: number
+      /** Origin Contact Id */
+      origin_contact_id: string | null
+      /**
+       * Owner User Id
+       * Format: uuid
+       */
+      owner_user_id: string
+      /** Phones */
+      phones: string[]
+      profile?: components['schemas']['ContactProfileRead'] | null
+      relationship_type: components['schemas']['RelationshipType']
+      /** Score Delta 30D */
+      score_delta_30d: number | null
+      status: components['schemas']['ContactStatus']
+      /** Tags */
+      tags: string[]
+      /** Title */
+      title: string | null
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string
+      visibility: components['schemas']['ContactVisibility']
+      /**
+       * Workspace Id
+       * Format: uuid
+       */
+      workspace_id: string
+    }
+    /**
+     * ContactStatus
+     * @enum {string}
+     */
+    ContactStatus: 'active' | 'follow_up' | 'needs_attention' | 'drifting' | 'archived'
+    /** ContactUpdate */
+    ContactUpdate: {
+      /** Cadence Days */
+      cadence_days?: number | null
+      /** Company Id */
+      company_id?: string | null
+      /** Company Name */
+      company_name?: string | null
+      /** Emails */
+      emails?: string[] | null
+      /** First Name */
+      first_name?: string | null
+      /** Honorific */
+      honorific?: string | null
+      /** Last Name */
+      last_name?: string | null
+      /** Location */
+      location?: string | null
+      /** Phones */
+      phones?: string[] | null
+      relationship_type?: components['schemas']['RelationshipType'] | null
+      status?: components['schemas']['ContactStatus'] | null
+      /** Tags */
+      tags?: string[] | null
+      /** Title */
+      title?: string | null
+      visibility?: components['schemas']['ContactVisibility'] | null
+    }
+    /**
+     * ContactVisibility
+     * @enum {string}
+     */
+    ContactVisibility: 'private' | 'team'
+    /**
+     * FactCategory
+     * @enum {string}
+     */
+    FactCategory:
+      | 'preference'
+      | 'dislike'
+      | 'interest'
+      | 'personal'
+      | 'professional'
+      | 'communication_style'
+      | 'ambition'
+      | 'family'
+      | 'risk'
+      | 'other'
+    /** FactCreate */
+    FactCreate: {
+      category: components['schemas']['FactCategory']
+      /**
+       * Confidence
+       * @default 1
+       */
+      confidence?: number
+      /** Content */
+      content: string
+      /** @default manual */
+      source?: components['schemas']['FactSource']
+    }
+    /** FactRead */
+    FactRead: {
+      category: components['schemas']['FactCategory']
+      /** Confidence */
+      confidence: number
+      /**
+       * Contact Id
+       * Format: uuid
+       */
+      contact_id: string
+      /** Content */
+      content: string
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /**
+       * Created By
+       * Format: uuid
+       */
+      created_by: string
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Is Active */
+      is_active: boolean
+      source: components['schemas']['FactSource']
+      /** Source Interaction Id */
+      source_interaction_id: string | null
+      /** Superseded By */
+      superseded_by: string | null
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string
+    }
+    /**
+     * FactSource
+     * @enum {string}
+     */
+    FactSource: 'manual' | 'note' | 'voice' | 'email' | 'calendar' | 'crm' | 'ai'
+    /** FactUpdate */
+    FactUpdate: {
+      category?: components['schemas']['FactCategory'] | null
+      /** Confidence */
+      confidence?: number | null
+      /** Content */
+      content?: string | null
+    }
     /** Goals */
     Goals: {
       /**
@@ -273,6 +864,171 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components['schemas']['ValidationError'][]
+    }
+    /** InteractionCreate */
+    InteractionCreate: {
+      /**
+       * Body
+       * @default
+       */
+      body?: string
+      /**
+       * Contact Id
+       * Format: uuid
+       */
+      contact_id: string
+      /** @default mutual */
+      direction?: components['schemas']['InteractionDirection']
+      /**
+       * Extract
+       * @default false
+       */
+      extract?: boolean
+      /** @default note */
+      kind?: components['schemas']['InteractionKind']
+      /** Occurred At */
+      occurred_at?: string | null
+      sentiment?: components['schemas']['SentimentLabel'] | null
+      /** Sentiment Score */
+      sentiment_score?: number | null
+      /** Subject */
+      subject?: string | null
+      /** Summary */
+      summary?: string | null
+    }
+    /**
+     * InteractionDirection
+     * @enum {string}
+     */
+    InteractionDirection: 'inbound' | 'outbound' | 'mutual'
+    /** InteractionHit */
+    InteractionHit: {
+      /** Contact Id */
+      contact_id: string | null
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Occurred At */
+      occurred_at: string
+      /** Snippet */
+      snippet: string
+      /** Subject */
+      subject: string | null
+    }
+    /**
+     * InteractionKind
+     * @enum {string}
+     */
+    InteractionKind:
+      | 'note'
+      | 'meeting'
+      | 'call'
+      | 'email'
+      | 'message'
+      | 'event'
+      | 'introduction'
+      | 'gift'
+      | 'other'
+    /** InteractionRead */
+    InteractionRead: {
+      /** Ai Extraction */
+      ai_extraction: {
+        [key: string]: unknown
+      } | null
+      ai_status: components['schemas']['AiStatus']
+      /** Body */
+      body: string
+      /** Contact Id */
+      contact_id: string | null
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      direction: components['schemas']['InteractionDirection']
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      kind: components['schemas']['InteractionKind']
+      /**
+       * Occurred At
+       * Format: date-time
+       */
+      occurred_at: string
+      sentiment: components['schemas']['SentimentLabel'] | null
+      /** Sentiment Score */
+      sentiment_score: number | null
+      source: components['schemas']['InteractionSource']
+      /** Subject */
+      subject: string | null
+      /** Summary */
+      summary: string | null
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string
+      /**
+       * User Id
+       * Format: uuid
+       */
+      user_id: string
+      /**
+       * Workspace Id
+       * Format: uuid
+       */
+      workspace_id: string
+    }
+    /**
+     * InteractionSource
+     * @enum {string}
+     */
+    InteractionSource:
+      | 'manual'
+      | 'voice'
+      | 'gmail'
+      | 'outlook'
+      | 'google_calendar'
+      | 'ms_calendar'
+      | 'crm'
+      | 'import'
+    /** InteractionSummary */
+    InteractionSummary: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      kind: components['schemas']['InteractionKind']
+      /**
+       * Occurred At
+       * Format: date-time
+       */
+      occurred_at: string
+      /** Subject */
+      subject: string | null
+      /** Summary */
+      summary: string | null
+    }
+    /** InteractionUpdate */
+    InteractionUpdate: {
+      /** Body */
+      body?: string | null
+      direction?: components['schemas']['InteractionDirection'] | null
+      kind?: components['schemas']['InteractionKind'] | null
+      /** Occurred At */
+      occurred_at?: string | null
+      sentiment?: components['schemas']['SentimentLabel'] | null
+      /** Sentiment Score */
+      sentiment_score?: number | null
+      /** Subject */
+      subject?: string | null
+      /** Summary */
+      summary?: string | null
     }
     /** InterestIn */
     InterestIn: {
@@ -460,6 +1216,34 @@ export interface components {
       /** Step */
       step: number
     }
+    /** Page[CompanyRead] */
+    Page_CompanyRead_: {
+      /** Items */
+      items: components['schemas']['CompanyRead'][]
+      /** Next Cursor */
+      next_cursor?: string | null
+    }
+    /** Page[ContactRead] */
+    Page_ContactRead_: {
+      /** Items */
+      items: components['schemas']['ContactRead'][]
+      /** Next Cursor */
+      next_cursor?: string | null
+    }
+    /** Page[InteractionRead] */
+    Page_InteractionRead_: {
+      /** Items */
+      items: components['schemas']['InteractionRead'][]
+      /** Next Cursor */
+      next_cursor?: string | null
+    }
+    /** Page[TimelineEntry] */
+    Page_TimelineEntry_: {
+      /** Items */
+      items: components['schemas']['TimelineEntry'][]
+      /** Next Cursor */
+      next_cursor?: string | null
+    }
     /** ProfileRead */
     ProfileRead: {
       /** Avatar Path */
@@ -492,6 +1276,61 @@ export interface components {
       role_title: string | null
       /** Timezone */
       timezone: string
+    }
+    /**
+     * RelationshipType
+     * @enum {string}
+     */
+    RelationshipType: 'client' | 'partner' | 'vendor' | 'colleague' | 'government' | 'other'
+    /** SearchResult */
+    SearchResult: {
+      /** Companies */
+      companies: components['schemas']['CompanyHit'][]
+      /** Contacts */
+      contacts: components['schemas']['ContactHit'][]
+      /** Interactions */
+      interactions: components['schemas']['InteractionHit'][]
+    }
+    /**
+     * SentimentLabel
+     * @enum {string}
+     */
+    SentimentLabel: 'positive' | 'neutral' | 'negative' | 'mixed'
+    /** ShareRequest */
+    ShareRequest: {
+      /**
+       * Target Workspace Id
+       * Format: uuid
+       */
+      target_workspace_id: string
+    }
+    /** TimelineEntry */
+    TimelineEntry: {
+      /** Body */
+      body: string
+      /**
+       * Entry Type
+       * @enum {string}
+       */
+      entry_type: 'interaction' | 'task' | 'score'
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Kind */
+      kind: string
+      /** Meta */
+      meta: {
+        [key: string]: unknown
+      }
+      /** Title */
+      title: string
+      /**
+       * Ts
+       * Format: date-time
+       */
+      ts: string
     }
     /** ValidationError */
     ValidationError: {
@@ -609,6 +1448,778 @@ export interface components {
 }
 export type $defs = Record<string, never>
 export interface operations {
+  companies_list: {
+    parameters: {
+      query?: {
+        q?: string | null
+        type?: string | null
+        industry?: string | null
+        limit?: number
+        cursor?: string | null
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Page_CompanyRead_']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  companies_create: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CompanyCreate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CompanyRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  companies_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        company_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CompanyRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  companies_delete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        company_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  companies_update: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        company_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CompanyUpdate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CompanyRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  contacts_list: {
+    parameters: {
+      query?: {
+        q?: string | null
+        status?: string | null
+        band?: string | null
+        company_id?: string | null
+        relationship_type?: string | null
+        tag?: string | null
+        owner?: string | null
+        sort?: 'updated' | 'gravity' | 'last_interaction' | 'name' | 'next_due'
+        limit?: number
+        cursor?: string | null
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Page_ContactRead_']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  contacts_create: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ContactCreate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ContactRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  contacts_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ContactRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  contacts_delete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  contacts_update: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ContactUpdate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ContactRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  contacts_copy_to_personal: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ContactRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  facts_list: {
+    parameters: {
+      query?: {
+        include_inactive?: boolean
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FactRead'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  facts_create: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['FactCreate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FactRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  profile_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ContactProfileRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  contacts_share: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ShareRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ContactRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  contacts_timeline: {
+    parameters: {
+      query?: {
+        kinds?: string[] | null
+        limit?: number
+        cursor?: string | null
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Page_TimelineEntry_']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  facts_delete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        fact_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  facts_update: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        fact_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['FactUpdate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FactRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  interactions_list: {
+    parameters: {
+      query?: {
+        contact_id?: string | null
+        kind?: string | null
+        since?: string | null
+        until?: string | null
+        limit?: number
+        cursor?: string | null
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Page_InteractionRead_']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  interactions_create: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['InteractionCreate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['InteractionRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  interactions_delete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        interaction_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  interactions_update: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        interaction_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['InteractionUpdate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['InteractionRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   invitations_peek: {
     parameters: {
       query?: never
@@ -744,6 +2355,39 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['MeRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  search_global: {
+    parameters: {
+      query: {
+        q: string
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SearchResult']
         }
       }
       /** @description Validation Error */

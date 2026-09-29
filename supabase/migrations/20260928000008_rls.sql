@@ -44,8 +44,10 @@ create policy invitations_all on invitations for all to authenticated
   using (is_member(workspace_id, 'admin')) with check (is_member(workspace_id, 'admin') and invited_by = auth.uid());
 
 -- companies
+-- Soft-deleted rows stay visible to policies: Postgres re-checks the select policy against the updated row,
+-- so `deleted_at is null` here would block soft deletes. Every read query and view filters deleted_at instead.
 create policy companies_select on companies for select to authenticated
-  using (deleted_at is null and is_member(workspace_id, 'viewer'));
+  using (is_member(workspace_id, 'viewer'));
 create policy companies_insert on companies for insert to authenticated
   with check (is_member(workspace_id, 'member') and created_by = auth.uid());
 create policy companies_update on companies for update to authenticated
@@ -54,8 +56,7 @@ create policy companies_delete on companies for delete to authenticated using (i
 
 -- contacts
 create policy contacts_select on contacts for select to authenticated using (
-  deleted_at is null
-  and is_member(workspace_id, 'viewer')
+  is_member(workspace_id, 'viewer')
   and (visibility = 'team' or owner_user_id = auth.uid())
 );
 create policy contacts_insert on contacts for insert to authenticated with check (
@@ -89,7 +90,7 @@ create policy contact_profiles_write on contact_profiles for all to authenticate
   with check (is_member(workspace_id, 'member'));
 
 create policy interactions_select on interactions for select to authenticated using (
-  deleted_at is null and is_member(workspace_id, 'viewer')
+  is_member(workspace_id, 'viewer')
   and ((contact_id is null and user_id = auth.uid()) or exists (select 1 from contacts c where c.id = contact_id))
 );
 create policy interactions_insert on interactions for insert to authenticated
@@ -116,7 +117,7 @@ create policy tasks_delete on tasks for delete to authenticated
   using (is_member(workspace_id, 'member') and (created_by = auth.uid() or assignee_user_id = auth.uid() or is_member(workspace_id, 'manager')));
 
 create policy opportunities_select on opportunities for select to authenticated
-  using (deleted_at is null and is_member(workspace_id, 'viewer'));
+  using (is_member(workspace_id, 'viewer'));
 create policy opportunities_insert on opportunities for insert to authenticated
   with check (is_member(workspace_id, 'member') and owner_user_id = auth.uid());
 create policy opportunities_update on opportunities for update to authenticated

@@ -52,7 +52,7 @@ test('owner invites a teammate who accepts from the inbox link, then is departed
   await page.goto('/app/settings/members')
   await expect(page.getByRole('heading', { name: 'Members' })).toBeVisible()
   await page.getByLabel('Invite by email').fill(invitee)
-  await page.getByLabel('Role').selectOption('member')
+  await page.getByLabel('Role', { exact: true }).selectOption('member')
   await page.getByRole('button', { name: 'Send invitation' }).click()
   await expect(page.getByText('Invitation sent')).toBeVisible()
 
@@ -69,7 +69,8 @@ test('owner invites a teammate who accepts from the inbox link, then is departed
   await expect(other).toHaveURL(/\/onboarding|\/app/)
 
   await page.reload()
-  await expect(page.getByRole('cell', { name: /Ivan Invitee/ })).toBeVisible()
+  const row = page.getByRole('row', { name: new RegExp(invitee) })
+  await expect(row).toBeVisible()
 
   const wsId = await meridianWorkspaceId(page)
   const inviteeToken = await accessToken(other)
@@ -78,10 +79,7 @@ test('owner invites a teammate who accepts from the inbox link, then is departed
   })
   expect(before.status()).toBe(200)
 
-  await page
-    .getByRole('row', { name: /Ivan Invitee/ })
-    .getByRole('button', { name: 'Mark departed' })
-    .click()
+  await row.getByRole('button', { name: 'Mark departed' }).click()
   await page.getByRole('button', { name: 'Mark departed' }).last().click()
   await expect(page.getByText('Member marked departed')).toBeVisible()
 

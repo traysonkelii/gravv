@@ -61,7 +61,7 @@ create trigger trg_contact_created after insert on contacts for each row execute
 -- Fuzzy contact search used by /search and capture contact matching. Runs under the caller's RLS.
 create or replace function search_contacts(ws uuid, q text, lim int default 20)
 returns table (id uuid, display_name text, title text, company_name text, gravity_score smallint, rank real)
-language sql stable as $$
+language sql stable set search_path = public, extensions as $$
   select c.id, c.display_name, c.title, co.name, c.gravity_score,
          greatest(similarity(c.display_name, q), ts_rank(c.search_vector, plainto_tsquery('simple', q))) as rank
   from contacts c left join companies co on co.id = c.company_id

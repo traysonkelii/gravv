@@ -7,6 +7,9 @@ import { Reset } from '@/features/auth/Reset'
 import { SignIn } from '@/features/auth/SignIn'
 import { SignUp } from '@/features/auth/SignUp'
 import { RequireOnboarded } from '@/features/auth/RequireOnboarded'
+import { ContactDetail } from '@/features/contacts/ContactDetail'
+import { ContactCreatePage, ContactEditPage } from '@/features/contacts/ContactForm'
+import { ContactsList } from '@/features/contacts/ContactsList'
 import { Home } from '@/features/home/Home'
 import { InvitePage } from '@/features/invite/InvitePage'
 import { Onboarding } from '@/features/onboarding/Onboarding'
@@ -49,7 +52,10 @@ export const router = createBrowserRouter([
             children: [
               { index: true, element: <Navigate to="/app/home" replace /> },
               { path: 'home', element: <Home /> },
-              { path: 'contacts', element: <Placeholder title="Contacts" /> },
+              { path: 'contacts', element: <ContactsList /> },
+              { path: 'contacts/new', element: <ContactCreatePage /> },
+              { path: 'contacts/:id', element: <ContactDetail /> },
+              { path: 'contacts/:id/edit', element: <ContactEditPage /> },
               { path: 'network', element: <Placeholder title="Network" /> },
               { path: 'analytics', element: <Placeholder title="Analytics" /> },
               { path: 'insights', element: <Placeholder title="Insights" /> },

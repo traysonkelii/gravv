@@ -21,7 +21,7 @@
   --color-steel-700: #272d34; /* raised plate, hover, table header */
   --color-steel-600: #343b44; /* rules and borders */
   --color-steel-500: #4b5560; /* disabled text, placeholders */
-  --color-steel-400: #76818d; /* secondary text (4.6:1 on steel-800) */
+  --color-steel-400: #8a95a2; /* secondary text (5.8:1 on steel-900, 5.2:1 on steel-800) */
   --color-steel-300: #a3acb6; /* body text (7.4:1 on steel-800) */
   --color-steel-200: #c9d0d8; /* primary text (10.8:1 on steel-800) */
   --color-steel-100: #e6eaee; /* headings (13.6:1 on steel-800) */
@@ -117,6 +117,12 @@
 }
 @utility tnum {
   font-variant-numeric: tabular-nums;
+}
+@utility sheet-h {
+  max-height: 85dvh;
+}
+@utility sheet-body {
+  max-height: calc(85dvh - 3.5rem);
 }
 
 @layer base {
