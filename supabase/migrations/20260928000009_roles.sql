@@ -18,3 +18,5 @@ alter role gravv_worker set search_path = public, extensions;
 grant authenticated to gravv_api;
 grant anon to gravv_api;
 grant service_role to gravv_worker;
+-- jobs that act for a user bind that user's identity, exactly as the API does
+grant authenticated to gravv_worker;

@@ -84,6 +84,39 @@ async def enqueue(
     return result.scalar_one_or_none()
 
 
+async def enqueue_as_worker(
+    session: AsyncSession,
+    kind: str,
+    payload: dict[str, Any],
+    workspace_id: UUID | None,
+    user_id: UUID | None,
+    priority: int = 5,
+    dedupe_key: str | None = None,
+    run_after: datetime | None = None,
+) -> UUID | None:
+    """Worker-side enqueue (service_role): direct insert, same dedupe semantics as enqueue_job()."""
+    result = await session.execute(
+        text(
+            "insert into jobs (kind, payload, workspace_id, user_id, run_after, priority, dedupe_key) "
+            "values (:kind, cast(:payload as jsonb), :ws, :uid, :run_after, cast(:priority as smallint), :dedupe) "
+            "on conflict (dedupe_key) where status in ('queued', 'running') and dedupe_key is not null do nothing "
+            "returning id"
+        ),
+        {
+            "kind": kind,
+            "payload": json.dumps(payload, default=str),
+            "ws": workspace_id,
+            "uid": user_id,
+            "run_after": run_after or datetime.now(UTC),
+            "priority": priority,
+            "dedupe": dedupe_key,
+        },
+    )
+    job_id = result.scalar_one_or_none()
+    await session.execute(text("select pg_notify('gravv_jobs', :id)"), {"id": str(job_id or "")})
+    return job_id
+
+
 async def claim(session: AsyncSession, worker_id: str) -> Job | None:
     row = (await session.execute(_CLAIM, {"worker_id": worker_id})).first()
     return _row_to_job(row) if row else None

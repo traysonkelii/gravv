@@ -39,7 +39,10 @@ async def create_interaction(
         row.id,
         {"contact_id": str(body.contact_id), "kind": body.kind.value},
     )
-    # extract=true enqueues capture.extract once the capture pipeline lands (M3).
+    if body.extract and body.body.strip():
+        from app.domain.captures.service import create_for_interaction
+
+        await create_for_interaction(session, ws, user_id, row.id, body.contact_id, body.body)
     return InteractionRead.model_validate(row)
 
 

@@ -5,7 +5,7 @@
 | M0 Foundation | done | Local stack, 9 migrations, seed, API + worker skeleton, web shell + auth, CI |
 | M1 Identity, workspaces, onboarding | done | /me, workspaces, members, invitations via Mailpit, departure, ownership transfer with MFA, onboarding wizard, settings |
 | M2 Contacts, companies, facts, interactions | done | Contacts CRUD with search, filters, sort, cursor pagination; companies; facts with supersede; interactions; timeline; share and copy; detail page |
-| M3 Capture pipeline | not started | |
+| M3 Capture pipeline | done | Text and voice captures, signed uploads, transcription and extraction jobs, profile synthesis, proposal review, token budget, injection tests, AI eval |
 | M4 Scoring, insights, Home, Analytics | not started | |
 | M5 Network, tasks, opportunities | not started | |
 | M6 Organization features, data portability | not started | |
@@ -34,3 +34,13 @@
   (stands in for the Lighthouse accessibility budget until M7 wires Lighthouse into CI).
 - Design lint passes; all UI components from Section 10.4 used by M2 exist under components/ui.
 - API: 53 tests including private visibility, role rules on edits, supersede, timeline merge, share and copy.
+
+## M3 acceptance
+- Playwright: from a contact page, the text capture "Met the Colonel, he loves competitive ..., remind me to call
+  the program officers next Tuesday" produces a proposal with one fact and one task; confirming shows both on the
+  contact and the interaction on the timeline.
+- API: text and voice round trips run the jobs inline with the fake provider; a repeated confirm does not duplicate
+  facts or tasks; upload-url validation; missing upload returns 409; budget exhaustion fails the capture softly;
+  extract=true on a manual note produces a review capture that updates the same note.
+- `make ai-eval` runs 30 cases against the configured provider; the fake provider passes 100 percent.
+- Live provider check (LLM_PROVIDER=anthropic) is a configuration change; not run in this environment (no key).

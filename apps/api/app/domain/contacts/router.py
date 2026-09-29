@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Query, Response
 
 from app.auth.deps import CurrentUser, Session, Workspace, WorkspaceContext, require_role
 from app.db.repositories.contacts import ContactFilters
+from app.domain.captures.schemas import JobAccepted
 from app.domain.common import Page
 from app.domain.contacts import service
 from app.domain.contacts.schemas import (
@@ -16,6 +17,7 @@ from app.domain.contacts.schemas import (
     ShareRequest,
     TimelineEntry,
 )
+from app.jobs import queue
 
 router = APIRouter(prefix="/contacts", tags=["contacts"])
 Member = Annotated[WorkspaceContext, Depends(require_role("member"))]
@@ -104,3 +106,19 @@ async def contacts_timeline(
 @router.get("/{contact_id}/profile", operation_id="profile_get", response_model=ContactProfileRead)
 async def profile_get(contact_id: UUID, ws: Workspace, session: Session) -> ContactProfileRead:
     return await service.get_profile(session, ws, contact_id)
+
+
+@router.post(
+    "/{contact_id}/profile/regenerate", operation_id="profile_regenerate", response_model=JobAccepted, status_code=202
+)
+async def profile_regenerate(contact_id: UUID, ws: Member, session: Session) -> JobAccepted:
+    await service.get_profile(session, ws, contact_id)
+    job_id = await queue.enqueue(
+        session,
+        "profile.synthesize",
+        {"contact_id": str(contact_id)},
+        ws.workspace_id,
+        priority=2,
+        dedupe_key=f"profile.synthesize:{contact_id}",
+    )
+    return JobAccepted(job_id=job_id, deduplicated=job_id is None)

@@ -23,6 +23,307 @@
         "title": "Band",
         "type": "string"
       },
+      "CaptureConfirm": {
+        "additionalProperties": false,
+        "properties": {
+          "contact_id": {
+            "format": "uuid",
+            "title": "Contact Id",
+            "type": "string"
+          },
+          "create_contacts_for": {
+            "items": {
+              "$ref": "#/components/schemas/MentionedPerson"
+            },
+            "maxItems": 20,
+            "title": "Create Contacts For",
+            "type": "array"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/ExtractedEdge"
+            },
+            "maxItems": 20,
+            "title": "Edges",
+            "type": "array"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/ExtractedFact"
+            },
+            "maxItems": 20,
+            "title": "Facts",
+            "type": "array"
+          },
+          "interaction": {
+            "$ref": "#/components/schemas/ExtractedInteraction"
+          },
+          "tasks": {
+            "items": {
+              "$ref": "#/components/schemas/ExtractedTask"
+            },
+            "maxItems": 20,
+            "title": "Tasks",
+            "type": "array"
+          }
+        },
+        "required": ["contact_id", "interaction"],
+        "title": "CaptureConfirm",
+        "type": "object"
+      },
+      "CaptureExtraction": {
+        "properties": {
+          "contact_match": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ContactMatch"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/ExtractedEdge"
+            },
+            "maxItems": 20,
+            "title": "Edges",
+            "type": "array"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/ExtractedFact"
+            },
+            "maxItems": 20,
+            "title": "Facts",
+            "type": "array"
+          },
+          "interaction": {
+            "$ref": "#/components/schemas/ExtractedInteraction"
+          },
+          "mentioned_companies": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Mentioned Companies",
+            "type": "array"
+          },
+          "mentioned_people": {
+            "items": {
+              "$ref": "#/components/schemas/MentionedPerson"
+            },
+            "maxItems": 20,
+            "title": "Mentioned People",
+            "type": "array"
+          },
+          "needs_review": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 10,
+            "title": "Needs Review",
+            "type": "array"
+          },
+          "tasks": {
+            "items": {
+              "$ref": "#/components/schemas/ExtractedTask"
+            },
+            "maxItems": 20,
+            "title": "Tasks",
+            "type": "array"
+          }
+        },
+        "required": ["interaction"],
+        "title": "CaptureExtraction",
+        "type": "object"
+      },
+      "CaptureRead": {
+        "properties": {
+          "contact_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Id"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "interaction_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interaction Id"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "proposal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CaptureExtraction"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "provenance": {
+            "additionalProperties": true,
+            "title": "Provenance",
+            "type": "object"
+          },
+          "raw_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Text"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CaptureStatus"
+          },
+          "transcript": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transcript"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          },
+          "workspace_id": {
+            "format": "uuid",
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "workspace_id",
+          "user_id",
+          "contact_id",
+          "kind",
+          "status",
+          "transcript",
+          "raw_text",
+          "duration_seconds",
+          "proposal",
+          "provenance",
+          "interaction_id",
+          "error",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "CaptureRead",
+        "type": "object"
+      },
+      "CaptureStatus": {
+        "enum": [
+          "uploaded",
+          "transcribing",
+          "transcribed",
+          "extracting",
+          "proposed",
+          "confirmed",
+          "discarded",
+          "failed"
+        ],
+        "title": "CaptureStatus",
+        "type": "string"
+      },
+      "CaptureTextCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "contact_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Id"
+          },
+          "idempotency_key": {
+            "maxLength": 64,
+            "minLength": 8,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "title": "Idempotency Key",
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 20000,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": ["text", "idempotency_key"],
+        "title": "CaptureTextCreate",
+        "type": "object"
+      },
       "CompanyCreate": {
         "additionalProperties": false,
         "properties": {
@@ -285,6 +586,43 @@
         "title": "CompanyUpdate",
         "type": "object"
       },
+      "ConfirmResult": {
+        "properties": {
+          "contact": {
+            "$ref": "#/components/schemas/ContactRead"
+          },
+          "created_contact_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Created Contact Ids",
+            "type": "array"
+          },
+          "fact_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Fact Ids",
+            "type": "array"
+          },
+          "interaction": {
+            "$ref": "#/components/schemas/InteractionRead"
+          },
+          "task_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Task Ids",
+            "type": "array"
+          }
+        },
+        "required": ["interaction", "contact", "created_contact_ids", "fact_ids", "task_ids"],
+        "title": "ConfirmResult",
+        "type": "object"
+      },
       "ContactCreate": {
         "additionalProperties": false,
         "properties": {
@@ -450,6 +788,27 @@
         },
         "required": ["id", "display_name", "title", "company_name", "gravity_score"],
         "title": "ContactHit",
+        "type": "object"
+      },
+      "ContactMatch": {
+        "properties": {
+          "confidence": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "contact_id": {
+            "title": "Contact Id",
+            "type": "string"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          }
+        },
+        "required": ["contact_id", "display_name", "confidence"],
+        "title": "ContactMatch",
         "type": "object"
       },
       "ContactProfileRead": {
@@ -959,6 +1318,172 @@
         "enum": ["private", "team"],
         "title": "ContactVisibility",
         "type": "string"
+      },
+      "ExtractedEdge": {
+        "properties": {
+          "kind": {
+            "default": "knows",
+            "enum": [
+              "knows",
+              "reports_to",
+              "works_with",
+              "introduced_by",
+              "former_colleague",
+              "other"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "person_a": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Person A",
+            "type": "string"
+          },
+          "person_b": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Person B",
+            "type": "string"
+          }
+        },
+        "required": ["person_a", "person_b"],
+        "title": "ExtractedEdge",
+        "type": "object"
+      },
+      "ExtractedFact": {
+        "properties": {
+          "category": {
+            "$ref": "#/components/schemas/FactCategory"
+          },
+          "confidence": {
+            "default": 0.8,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "type": "number"
+          },
+          "content": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Content",
+            "type": "string"
+          },
+          "supersedes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Existing fact this one contradicts, verbatim",
+            "title": "Supersedes"
+          }
+        },
+        "required": ["category", "content"],
+        "title": "ExtractedFact",
+        "type": "object"
+      },
+      "ExtractedInteraction": {
+        "properties": {
+          "body": {
+            "default": "",
+            "maxLength": 20000,
+            "title": "Body",
+            "type": "string"
+          },
+          "direction": {
+            "$ref": "#/components/schemas/InteractionDirection",
+            "default": "mutual"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/InteractionKind",
+            "default": "note"
+          },
+          "occurred_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occurred At"
+          },
+          "sentiment": {
+            "$ref": "#/components/schemas/SentimentLabel",
+            "default": "neutral"
+          },
+          "sentiment_score": {
+            "default": 0.0,
+            "maximum": 1.0,
+            "minimum": -1.0,
+            "title": "Sentiment Score",
+            "type": "number"
+          },
+          "subject": {
+            "default": "",
+            "maxLength": 200,
+            "title": "Subject",
+            "type": "string"
+          },
+          "summary": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "title": "ExtractedInteraction",
+        "type": "object"
+      },
+      "ExtractedTask": {
+        "properties": {
+          "contact_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Name of the person the task concerns, if not the main contact",
+            "title": "Contact Ref"
+          },
+          "due_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due At"
+          },
+          "priority": {
+            "default": 2,
+            "maximum": 3.0,
+            "minimum": 1.0,
+            "title": "Priority",
+            "type": "integer"
+          },
+          "title": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": ["title"],
+        "title": "ExtractedTask",
+        "type": "object"
       },
       "FactCategory": {
         "enum": [
@@ -1789,6 +2314,89 @@
         "title": "InvitationRead",
         "type": "object"
       },
+      "JobAccepted": {
+        "properties": {
+          "deduplicated": {
+            "title": "Deduplicated",
+            "type": "boolean"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          }
+        },
+        "required": ["job_id", "deduplicated"],
+        "title": "JobAccepted",
+        "type": "object"
+      },
+      "JobRead": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": ["id", "kind", "status", "result", "last_error", "created_at", "finished_at"],
+        "title": "JobRead",
+        "type": "object"
+      },
       "MeRead": {
         "properties": {
           "interests": {
@@ -2049,6 +2657,55 @@
         "enum": ["invited", "active", "departed"],
         "title": "MembershipStatus",
         "type": "string"
+      },
+      "MentionedPerson": {
+        "properties": {
+          "company": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Company"
+          },
+          "name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "relationship_hint": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relationship Hint"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "required": ["name"],
+        "title": "MentionedPerson",
+        "type": "object"
       },
       "OnboardingProfile": {
         "additionalProperties": false,
@@ -2412,6 +3069,26 @@
         "title": "TimelineEntry",
         "type": "object"
       },
+      "UploadedRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "maximum": 600.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          }
+        },
+        "title": "UploadedRequest",
+        "type": "object"
+      },
       "ValidationError": {
         "properties": {
           "ctx": {
@@ -2446,6 +3123,75 @@
         },
         "required": ["loc", "msg", "type"],
         "title": "ValidationError",
+        "type": "object"
+      },
+      "VoiceUploadRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "contact_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Id"
+          },
+          "content_type": {
+            "enum": ["audio/webm", "audio/mp4", "audio/mpeg", "audio/wav"],
+            "title": "Content Type",
+            "type": "string"
+          },
+          "idempotency_key": {
+            "maxLength": 64,
+            "minLength": 8,
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "title": "Idempotency Key",
+            "type": "string"
+          },
+          "size_bytes": {
+            "maximum": 26214400.0,
+            "minimum": 1.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": ["content_type", "size_bytes", "idempotency_key"],
+        "title": "VoiceUploadRequest",
+        "type": "object"
+      },
+      "VoiceUploadResponse": {
+        "properties": {
+          "capture_id": {
+            "format": "uuid",
+            "title": "Capture Id",
+            "type": "string"
+          },
+          "headers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Headers",
+            "type": "object"
+          },
+          "storage_path": {
+            "title": "Storage Path",
+            "type": "string"
+          },
+          "token": {
+            "title": "Token",
+            "type": "string"
+          },
+          "upload_url": {
+            "title": "Upload Url",
+            "type": "string"
+          }
+        },
+        "required": ["capture_id", "upload_url", "token", "storage_path", "headers"],
+        "title": "VoiceUploadResponse",
         "type": "object"
       },
       "WorkspaceCreate": {
@@ -2658,6 +3404,454 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/captures": {
+      "get": {
+        "operationId": "captures_list",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CaptureRead"
+                  },
+                  "title": "Response Captures List",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Captures List",
+        "tags": ["captures"]
+      }
+    },
+    "/api/v1/captures/text": {
+      "post": {
+        "operationId": "captures_create_text",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptureTextCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptureRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Captures Create Text",
+        "tags": ["captures"]
+      }
+    },
+    "/api/v1/captures/voice/upload-url": {
+      "post": {
+        "operationId": "captures_voice_upload_url",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoiceUploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VoiceUploadResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Captures Voice Upload Url",
+        "tags": ["captures"]
+      }
+    },
+    "/api/v1/captures/{capture_id}": {
+      "get": {
+        "operationId": "captures_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "capture_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Capture Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptureRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Captures Get",
+        "tags": ["captures"]
+      }
+    },
+    "/api/v1/captures/{capture_id}/confirm": {
+      "post": {
+        "operationId": "captures_confirm",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "capture_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Capture Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaptureConfirm"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Captures Confirm",
+        "tags": ["captures"]
+      }
+    },
+    "/api/v1/captures/{capture_id}/discard": {
+      "post": {
+        "operationId": "captures_discard",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "capture_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Capture Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptureRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Captures Discard",
+        "tags": ["captures"]
+      }
+    },
+    "/api/v1/captures/{capture_id}/uploaded": {
+      "post": {
+        "operationId": "captures_voice_uploaded",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "capture_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Capture Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadedRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptureRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Captures Voice Uploaded",
+        "tags": ["captures"]
+      }
+    },
     "/api/v1/companies": {
       "get": {
         "operationId": "companies_list",
@@ -3756,6 +4950,68 @@
         "tags": ["contacts"]
       }
     },
+    "/api/v1/contacts/{contact_id}/profile/regenerate": {
+      "post": {
+        "operationId": "profile_regenerate",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "contact_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Contact Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Profile Regenerate",
+        "tags": ["contacts"]
+      }
+    },
     "/api/v1/contacts/{contact_id}/share": {
       "post": {
         "operationId": "contacts_share",
@@ -4477,6 +5733,52 @@
         ],
         "summary": "Invitations Accept",
         "tags": ["invitations"]
+      }
+    },
+    "/api/v1/jobs/{job_id}": {
+      "get": {
+        "operationId": "jobs_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Jobs Get",
+        "tags": ["jobs"]
       }
     },
     "/api/v1/me": {

@@ -83,3 +83,24 @@ filter `deleted_at is null` on every read. Tenancy and visibility rules are unch
 Supabase sets `search_path` on the `postgres` role only. `gravv_api` and `gravv_worker` get
 `public, extensions` in migration 0009 so citext, pg_trgm operators, and `similarity()` resolve for
 SQL run under `set local role authenticated`.
+
+## D-020 Structured outputs through messages.parse (2026-09-29)
+The plan forces structure with a single tool call. The current Anthropic API recommends `output_format` /
+`messages.parse()`, and forced `tool_choice` is rejected on the newest model tier, so the provider uses
+`parse()` with the Pydantic schema and retries once with the validation error appended. Default model is
+`claude-opus-5` (override with `LLM_MODEL`). Server-side refusal fallbacks are not enabled; a refusal fails
+the job with a clear capture error instead.
+
+## D-021 The fake LLM is rule-based, with fixture overrides (2026-09-29)
+A hash-selected fixture would return unrelated facts for arbitrary local input. `app/ai/fake.py` extracts
+contacts, facts, tasks, people, and dates from the rendered prompt deterministically, so `make dev` without an
+API key still produces sensible proposals and the e2e scenario is stable. Exact fixtures under
+`tests/fixtures/ai/<prompt>/<hash>.json` override the rules when present.
+
+## D-022 The worker role is also a member of authenticated (2026-09-29)
+Extraction reads contacts under the practitioner's identity (RLS on), so `gravv_worker` needs
+`set local role authenticated`. Migration 0009 grants both `service_role` and `authenticated` to it.
+
+## D-023 Capture provenance is stored beside the proposal (2026-09-29)
+`captures.proposal` holds `{extraction, provenance}`; provenance carries model, prompt version, inputs hash,
+provider, and any auto-applied fact ids. The API returns the two as separate fields.

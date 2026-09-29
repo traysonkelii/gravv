@@ -4,6 +4,125 @@
  */
 
 export interface paths {
+  '/api/v1/captures': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Captures List */
+    get: operations['captures_list']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/captures/text': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Captures Create Text */
+    post: operations['captures_create_text']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/captures/voice/upload-url': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Captures Voice Upload Url */
+    post: operations['captures_voice_upload_url']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/captures/{capture_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Captures Get */
+    get: operations['captures_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/captures/{capture_id}/confirm': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Captures Confirm */
+    post: operations['captures_confirm']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/captures/{capture_id}/discard': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Captures Discard */
+    post: operations['captures_discard']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/captures/{capture_id}/uploaded': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Captures Voice Uploaded */
+    post: operations['captures_voice_uploaded']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/companies': {
     parameters: {
       query?: never
@@ -130,6 +249,23 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/contacts/{contact_id}/profile/regenerate': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Profile Regenerate */
+    post: operations['profile_regenerate']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/contacts/{contact_id}/share': {
     parameters: {
       query?: never
@@ -246,6 +382,23 @@ export interface paths {
     put?: never
     /** Invitations Accept */
     post: operations['invitations_accept']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/jobs/{job_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Jobs Get */
+    get: operations['jobs_get']
+    put?: never
+    post?: never
     delete?: never
     options?: never
     head?: never
@@ -482,6 +635,110 @@ export interface components {
      * @enum {string}
      */
     Band: 'strong' | 'steady' | 'weak' | 'drifting'
+    /** CaptureConfirm */
+    CaptureConfirm: {
+      /**
+       * Contact Id
+       * Format: uuid
+       */
+      contact_id: string
+      /** Create Contacts For */
+      create_contacts_for?: components['schemas']['MentionedPerson'][]
+      /** Edges */
+      edges?: components['schemas']['ExtractedEdge'][]
+      /** Facts */
+      facts?: components['schemas']['ExtractedFact'][]
+      interaction: components['schemas']['ExtractedInteraction']
+      /** Tasks */
+      tasks?: components['schemas']['ExtractedTask'][]
+    }
+    /** CaptureExtraction */
+    CaptureExtraction: {
+      contact_match?: components['schemas']['ContactMatch'] | null
+      /** Edges */
+      edges?: components['schemas']['ExtractedEdge'][]
+      /** Facts */
+      facts?: components['schemas']['ExtractedFact'][]
+      interaction: components['schemas']['ExtractedInteraction']
+      /** Mentioned Companies */
+      mentioned_companies?: string[]
+      /** Mentioned People */
+      mentioned_people?: components['schemas']['MentionedPerson'][]
+      /** Needs Review */
+      needs_review?: string[]
+      /** Tasks */
+      tasks?: components['schemas']['ExtractedTask'][]
+    }
+    /** CaptureRead */
+    CaptureRead: {
+      /** Contact Id */
+      contact_id: string | null
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Duration Seconds */
+      duration_seconds: number | null
+      /** Error */
+      error: string | null
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Interaction Id */
+      interaction_id: string | null
+      /** Kind */
+      kind: string
+      proposal: components['schemas']['CaptureExtraction'] | null
+      /** Provenance */
+      provenance: {
+        [key: string]: unknown
+      }
+      /** Raw Text */
+      raw_text: string | null
+      status: components['schemas']['CaptureStatus']
+      /** Transcript */
+      transcript: string | null
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string
+      /**
+       * User Id
+       * Format: uuid
+       */
+      user_id: string
+      /**
+       * Workspace Id
+       * Format: uuid
+       */
+      workspace_id: string
+    }
+    /**
+     * CaptureStatus
+     * @enum {string}
+     */
+    CaptureStatus:
+      | 'uploaded'
+      | 'transcribing'
+      | 'transcribed'
+      | 'extracting'
+      | 'proposed'
+      | 'confirmed'
+      | 'discarded'
+      | 'failed'
+    /** CaptureTextCreate */
+    CaptureTextCreate: {
+      /** Contact Id */
+      contact_id?: string | null
+      /** Idempotency Key */
+      idempotency_key: string
+      /** Text */
+      text: string
+    }
     /** CompanyCreate */
     CompanyCreate: {
       /** Domain */
@@ -573,6 +830,17 @@ export interface components {
       notes?: string | null
       type?: components['schemas']['CompanyType'] | null
     }
+    /** ConfirmResult */
+    ConfirmResult: {
+      contact: components['schemas']['ContactRead']
+      /** Created Contact Ids */
+      created_contact_ids: string[]
+      /** Fact Ids */
+      fact_ids: string[]
+      interaction: components['schemas']['InteractionRead']
+      /** Task Ids */
+      task_ids: string[]
+    }
     /** ContactCreate */
     ContactCreate: {
       /**
@@ -622,6 +890,15 @@ export interface components {
       id: string
       /** Title */
       title: string | null
+    }
+    /** ContactMatch */
+    ContactMatch: {
+      /** Confidence */
+      confidence: number
+      /** Contact Id */
+      contact_id: string
+      /** Display Name */
+      display_name: string
     }
     /** ContactProfileRead */
     ContactProfileRead: {
@@ -751,6 +1028,83 @@ export interface components {
      * @enum {string}
      */
     ContactVisibility: 'private' | 'team'
+    /** ExtractedEdge */
+    ExtractedEdge: {
+      /**
+       * Kind
+       * @default knows
+       * @enum {string}
+       */
+      kind?: 'knows' | 'reports_to' | 'works_with' | 'introduced_by' | 'former_colleague' | 'other'
+      /** Person A */
+      person_a: string
+      /** Person B */
+      person_b: string
+    }
+    /** ExtractedFact */
+    ExtractedFact: {
+      category: components['schemas']['FactCategory']
+      /**
+       * Confidence
+       * @default 0.8
+       */
+      confidence?: number
+      /** Content */
+      content: string
+      /**
+       * Supersedes
+       * @description Existing fact this one contradicts, verbatim
+       */
+      supersedes?: string | null
+    }
+    /** ExtractedInteraction */
+    ExtractedInteraction: {
+      /**
+       * Body
+       * @default
+       */
+      body?: string
+      /** @default mutual */
+      direction?: components['schemas']['InteractionDirection']
+      /** @default note */
+      kind?: components['schemas']['InteractionKind']
+      /** Occurred At */
+      occurred_at?: string | null
+      /** @default neutral */
+      sentiment?: components['schemas']['SentimentLabel']
+      /**
+       * Sentiment Score
+       * @default 0
+       */
+      sentiment_score?: number
+      /**
+       * Subject
+       * @default
+       */
+      subject?: string
+      /**
+       * Summary
+       * @default
+       */
+      summary?: string
+    }
+    /** ExtractedTask */
+    ExtractedTask: {
+      /**
+       * Contact Ref
+       * @description Name of the person the task concerns, if not the main contact
+       */
+      contact_ref?: string | null
+      /** Due At */
+      due_at?: string | null
+      /**
+       * Priority
+       * @default 2
+       */
+      priority?: number
+      /** Title */
+      title: string
+    }
     /**
      * FactCategory
      * @enum {string}
@@ -1111,6 +1465,38 @@ export interface components {
        */
       workspace_id: string
     }
+    /** JobAccepted */
+    JobAccepted: {
+      /** Deduplicated */
+      deduplicated: boolean
+      /** Job Id */
+      job_id: string | null
+    }
+    /** JobRead */
+    JobRead: {
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Finished At */
+      finished_at: string | null
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Kind */
+      kind: string
+      /** Last Error */
+      last_error: string | null
+      /** Result */
+      result: {
+        [key: string]: unknown
+      } | null
+      /** Status */
+      status: string
+    }
     /** MeRead */
     MeRead: {
       /** Interests */
@@ -1187,6 +1573,17 @@ export interface components {
      * @enum {string}
      */
     MembershipStatus: 'invited' | 'active' | 'departed'
+    /** MentionedPerson */
+    MentionedPerson: {
+      /** Company */
+      company?: string | null
+      /** Name */
+      name: string
+      /** Relationship Hint */
+      relationship_hint?: string | null
+      /** Title */
+      title?: string | null
+    }
     /** OnboardingProfile */
     OnboardingProfile: {
       /** Full Name */
@@ -1332,6 +1729,11 @@ export interface components {
        */
       ts: string
     }
+    /** UploadedRequest */
+    UploadedRequest: {
+      /** Duration Seconds */
+      duration_seconds?: number | null
+    }
     /** ValidationError */
     ValidationError: {
       /** Context */
@@ -1344,6 +1746,38 @@ export interface components {
       msg: string
       /** Error Type */
       type: string
+    }
+    /** VoiceUploadRequest */
+    VoiceUploadRequest: {
+      /** Contact Id */
+      contact_id?: string | null
+      /**
+       * Content Type
+       * @enum {string}
+       */
+      content_type: 'audio/webm' | 'audio/mp4' | 'audio/mpeg' | 'audio/wav'
+      /** Idempotency Key */
+      idempotency_key: string
+      /** Size Bytes */
+      size_bytes: number
+    }
+    /** VoiceUploadResponse */
+    VoiceUploadResponse: {
+      /**
+       * Capture Id
+       * Format: uuid
+       */
+      capture_id: string
+      /** Headers */
+      headers: {
+        [key: string]: string
+      }
+      /** Storage Path */
+      storage_path: string
+      /** Token */
+      token: string
+      /** Upload Url */
+      upload_url: string
     }
     /** WorkspaceCreate */
     WorkspaceCreate: {
@@ -1448,6 +1882,247 @@ export interface components {
 }
 export type $defs = Record<string, never>
 export interface operations {
+  captures_list: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CaptureRead'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  captures_create_text: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CaptureTextCreate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      202: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CaptureRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  captures_voice_upload_url: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['VoiceUploadRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['VoiceUploadResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  captures_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        capture_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CaptureRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  captures_confirm: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        capture_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CaptureConfirm']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ConfirmResult']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  captures_discard: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        capture_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CaptureRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  captures_voice_uploaded: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        capture_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UploadedRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      202: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CaptureRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   companies_list: {
     parameters: {
       query?: {
@@ -1937,6 +2612,39 @@ export interface operations {
       }
     }
   }
+  profile_regenerate: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      202: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['JobAccepted']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   contacts_share: {
     parameters: {
       query?: never
@@ -2269,6 +2977,37 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['AcceptResult']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  jobs_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        job_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['JobRead']
         }
       }
       /** @description Validation Error */

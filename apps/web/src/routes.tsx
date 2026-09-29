@@ -7,6 +7,7 @@ import { Reset } from '@/features/auth/Reset'
 import { SignIn } from '@/features/auth/SignIn'
 import { SignUp } from '@/features/auth/SignUp'
 import { RequireOnboarded } from '@/features/auth/RequireOnboarded'
+import { ProposalReview } from '@/features/capture/ProposalReview'
 import { ContactDetail } from '@/features/contacts/ContactDetail'
 import { ContactCreatePage, ContactEditPage } from '@/features/contacts/ContactForm'
 import { ContactsList } from '@/features/contacts/ContactsList'
@@ -56,6 +57,7 @@ export const router = createBrowserRouter([
               { path: 'contacts/new', element: <ContactCreatePage /> },
               { path: 'contacts/:id', element: <ContactDetail /> },
               { path: 'contacts/:id/edit', element: <ContactEditPage /> },
+              { path: 'captures/:id', element: <ProposalReview /> },
               { path: 'network', element: <Placeholder title="Network" /> },
               { path: 'analytics', element: <Placeholder title="Analytics" /> },
               { path: 'insights', element: <Placeholder title="Insights" /> },

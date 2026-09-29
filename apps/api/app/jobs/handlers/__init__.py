@@ -20,3 +20,8 @@ def handler(kind: str) -> Callable[[Handler], Handler]:
 @handler("noop")
 async def noop(job: Job) -> dict[str, Any]:
     return {"echo": job.payload}
+
+
+# Register handler modules (import side effects).
+from app.jobs.handlers import capture as _capture  # noqa: E402, F401
+from app.jobs.handlers import profile as _profile  # noqa: E402, F401

@@ -2,6 +2,7 @@ import { Outlet } from 'react-router'
 import { BottomNav } from '@/components/shell/BottomNav'
 import { SideRail } from '@/components/shell/SideRail'
 import { TopBar } from '@/components/shell/TopBar'
+import { CaptureSheet } from '@/features/capture/CaptureSheet'
 
 export function AppShell() {
   return (
@@ -14,6 +15,7 @@ export function AppShell() {
         </main>
         <BottomNav />
       </div>
+      <CaptureSheet />
     </div>
   )
 }

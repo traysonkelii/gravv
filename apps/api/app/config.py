@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     llm_model: str = ""
     anthropic_api_key: str = ""
     openai_api_key: str = ""
+    openai_base_url: str = "https://api.openai.com/v1"
     transcription_provider: Literal["openai", "deepgram", "fake"] = "fake"
     deepgram_api_key: str = ""
 

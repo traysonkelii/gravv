@@ -32,10 +32,30 @@ async def run_job(job: Job) -> str:
     return "succeeded"
 
 
-async def run_job_now(job_id: UUID) -> str:
-    """Test helper: claims a specific queued job and runs it inline."""
+async def run_job_now(job_id: UUID, wait_seconds: float = 15.0) -> str:
+    """Test helper: claims a specific job and runs it inline. If a live worker already claimed it, waits for
+    that run to finish and returns its status instead, so tests behave the same with or without `make dev`."""
+    import asyncio
+
+    from sqlalchemy import text
+
     async with worker_session() as session:
         job = await queue.claim_by_id(session, job_id, "inline")
-    if job is None:
-        raise LookupError(f"job {job_id} is not queued")
-    return await run_job(job)
+    if job is not None:
+        return await run_job(job)
+    deadline = asyncio.get_running_loop().time() + wait_seconds
+    while True:
+        async with worker_session() as session:
+            status = await session.scalar(text("select status::text from jobs where id = :id"), {"id": job_id})
+        if status is None:
+            raise LookupError(f"job {job_id} does not exist")
+        if status in ("succeeded", "failed", "dead"):
+            return str(status)
+        if status == "queued":
+            async with worker_session() as session:
+                job = await queue.claim_by_id(session, job_id, "inline")
+            if job is not None:
+                return await run_job(job)
+        if asyncio.get_running_loop().time() > deadline:
+            raise TimeoutError(f"job {job_id} still {status} after {wait_seconds}s")
+        await asyncio.sleep(0.2)
