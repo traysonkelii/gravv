@@ -9,8 +9,8 @@ from sqlalchemy import text
 
 from app.ai.budget import BudgetExceeded, check_budget, record_usage
 from app.ai.extraction import BriefDraft
-from app.ai.llm import get_llm_client
 from app.ai.prompts import render
+from app.ai.resolve import AIProviderNotConfigured, llm_from, load_workspace_keys
 from app.db.session import worker_session
 from app.jobs.handlers import handler
 from app.jobs.queue import Job
@@ -111,7 +111,12 @@ async def brief_generate(job: Job) -> dict[str, Any]:
         opportunities="\n".join(f"- {o[0]}, {o[1] / 100:,.0f} USD, {o[2]}" for o in opps) or "none",
         mutual=", ".join(str(m) for m in mutual) or "none",
     )
-    llm = get_llm_client()
+    async with worker_session() as s:
+        keys = await load_workspace_keys(s, c["workspace_id"])
+    try:
+        llm = llm_from(keys)
+    except AIProviderNotConfigured as exc:
+        return {"skipped": str(exc)}
     result = await llm.complete_structured(prompt=prompt, schema=BriefDraft, max_tokens=2048)
     draft = result.value
     now = datetime.now(UTC)

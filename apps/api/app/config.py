@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     smtp_from: str = "Gravv <no-reply@gravv.local>"
     smtp_tls: bool = False
     app_encryption_key: str = ""
+    app_encryption_key_previous: str = ""
 
     llm_provider: Literal["anthropic", "openai", "fake"] = "fake"
     llm_model: str = ""

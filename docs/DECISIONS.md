@@ -164,3 +164,19 @@ Lighthouse cannot carry the browser session the SPA keeps in localStorage. The b
 Terraform, deploy workflows, and the runbook are complete and validated offline (`terraform validate` for both
 environments). No AWS or hosted Supabase resources were created from this environment; the first deployment
 follows the runbook.
+
+## D-037 AWS CDK replaces Terraform (2026-09-29)
+Product owner request. `infra/cdk` (TypeScript, aws-cdk-lib L1 App Runner constructs, L2 for the rest) replaces
+`infra/terraform` with the same shape: one stack per environment, SSM SecureString names only, CloudFront with OAC
+and CSP, GitHub OIDC role, alarms. `make infra-validate` type-checks and synthesizes both environments offline.
+CloudFormation has no App Runner custom-domain resource, so the deploy workflow associates the domain with the CLI.
+Deploys run `cdk deploy -c imageTag=<sha>` so the declared image never drifts from what is running.
+
+## D-038 Bring-your-own-key AI providers (2026-09-29)
+Product owner request: end users enter their own provider keys. `ai_credentials` stores one key per workspace and
+provider (Anthropic, OpenAI, Deepgram), encrypted with AES-256-GCM under APP_ENCRYPTION_KEY with the workspace and
+provider as associated data. Admins (and personal workspace owners) manage keys under Settings, AI; a live check
+against the provider runs before a key is stored; the API can write but never read the ciphertext column; only the
+worker decrypts. Jobs resolve providers in this order: workspace key, operator-wide server key if one is configured,
+the deterministic fake when the server is set to it. Without any of those a capture fails with a message pointing to
+Settings, AI, and profile and brief jobs skip. Usage still counts against the workspace token budget.

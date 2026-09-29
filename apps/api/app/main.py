@@ -2,6 +2,7 @@ from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
+from app.domain.ai_credentials.router import router as ai_credentials_router
 from app.domain.analytics.router import router as analytics_router
 from app.domain.captures.router import router as captures_router
 from app.domain.companies.router import router as companies_router
@@ -42,6 +43,7 @@ def api_router() -> APIRouter:
     api.include_router(opportunities_router)
     api.include_router(network_router)
     api.include_router(exports_router)
+    api.include_router(ai_credentials_router)
     return api
 
 

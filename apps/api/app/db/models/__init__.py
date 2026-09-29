@@ -366,6 +366,20 @@ class Integration(Base):
     updated_at: Mapped[datetime] = mapped_column(server_default="now()")
 
 
+class AiCredential(Base):
+    __tablename__ = "ai_credentials"
+    id: Mapped[UUID] = mapped_column(primary_key=True, server_default="gen_random_uuid()")
+    workspace_id: Mapped[UUID] = mapped_column(ForeignKey("workspaces.id"))
+    provider: Mapped[str] = mapped_column(Text)
+    # key_enc is deliberately unmapped: `authenticated` has no select privilege on it.
+    key_hint: Mapped[str] = mapped_column(Text)
+    model: Mapped[str | None] = mapped_column(Text)
+    verified_at: Mapped[datetime | None]
+    created_by: Mapped[UUID] = mapped_column(ForeignKey("profiles.id"))
+    created_at: Mapped[datetime] = mapped_column(server_default="now()")
+    updated_at: Mapped[datetime] = mapped_column(server_default="now()")
+
+
 class Job(Base):
     __tablename__ = "jobs"
     id: Mapped[UUID] = mapped_column(primary_key=True, server_default="gen_random_uuid()")

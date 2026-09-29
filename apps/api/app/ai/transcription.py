@@ -39,8 +39,8 @@ def sniff_audio(data: bytes, declared_mime: str) -> bool:
 
 
 class OpenAIWhisper:
-    def __init__(self, settings: Settings) -> None:
-        self.key = settings.openai_api_key
+    def __init__(self, api_key: str) -> None:
+        self.key = api_key
         self.model = "whisper-1"
 
     async def transcribe(self, *, audio: bytes, mime: str, language: str | None) -> Transcript:
@@ -66,8 +66,8 @@ class OpenAIWhisper:
 
 
 class Deepgram:
-    def __init__(self, settings: Settings) -> None:
-        self.key = settings.deepgram_api_key
+    def __init__(self, api_key: str) -> None:
+        self.key = api_key
 
     async def transcribe(self, *, audio: bytes, mime: str, language: str | None) -> Transcript:
         params = {"model": "nova-3", "smart_format": "true", "punctuate": "true"}
@@ -114,7 +114,7 @@ class FakeTranscription:
 def get_transcription_client(settings: Settings | None = None) -> TranscriptionClient:
     s = settings or get_settings()
     if s.transcription_provider == "openai" and s.openai_api_key:
-        return OpenAIWhisper(s)
+        return OpenAIWhisper(api_key=s.openai_api_key)
     if s.transcription_provider == "deepgram" and s.deepgram_api_key:
-        return Deepgram(s)
+        return Deepgram(api_key=s.deepgram_api_key)
     return FakeTranscription()

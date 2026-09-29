@@ -4,7 +4,7 @@ import { useOnboardingStep } from '@/lib/api/me'
 
 const next = [
   'Add a contact or capture a note about someone you met.',
-  'Gravv extracts facts and follow-ups from each note for you to confirm.',
+  'Add your AI provider key under Settings, AI so Gravv can extract facts and follow-ups from each note for you to confirm.',
   'Each relationship gets a Gravity score that reflects how current it is.',
   'Insights flag who needs attention and where a warm introduction exists.',
 ]

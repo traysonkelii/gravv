@@ -13,9 +13,9 @@ from sqlalchemy import text
 from app import storage
 from app.ai.budget import BudgetExceeded, check_budget, record_usage
 from app.ai.extraction import CaptureExtraction
-from app.ai.llm import get_llm_client
 from app.ai.prompts import render
-from app.ai.transcription import get_transcription_client, sniff_audio
+from app.ai.resolve import AIProviderNotConfigured, llm_from, load_workspace_keys, transcription_from
+from app.ai.transcription import sniff_audio
 from app.config import get_settings
 from app.db.session import worker_session
 from app.jobs import queue
@@ -75,7 +75,13 @@ async def transcribe(job: Job) -> dict[str, Any]:
             raise ValueError("recording is larger than 25 MB")
         if not sniff_audio(audio, mime) and settings.transcription_provider != "fake":
             raise ValueError(f"file content does not match {mime}")
-        transcript = await get_transcription_client(settings).transcribe(audio=audio, mime=mime, language=None)
+        async with worker_session() as s:
+            keys = await load_workspace_keys(s, c["workspace_id"])
+        transcriber = transcription_from(keys, settings)
+        transcript = await transcriber.transcribe(audio=audio, mime=mime, language=None)
+    except AIProviderNotConfigured as exc:
+        await _fail_capture(c["id"], str(exc))
+        return {"not_configured": True}
     except Exception as exc:
         if job.attempts >= job.max_attempts:
             await _fail_capture(c["id"], f"Transcription failed: {exc}")
@@ -182,7 +188,13 @@ async def extract(job: Job) -> dict[str, Any]:
         candidates="\n".join(candidates.values()) or "none",
         capture=capture_text,
     )
-    llm = get_llm_client()
+    async with worker_session() as s:
+        keys = await load_workspace_keys(s, c["workspace_id"])
+    try:
+        llm = llm_from(keys)
+    except AIProviderNotConfigured as exc:
+        await _fail_capture(c["id"], str(exc))
+        return {"not_configured": True}
     async with worker_session() as s:
         try:
             await check_budget(s, c["workspace_id"])

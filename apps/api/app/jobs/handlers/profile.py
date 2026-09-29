@@ -6,8 +6,8 @@ from sqlalchemy import text
 
 from app.ai.budget import BudgetExceeded, check_budget, record_usage
 from app.ai.extraction import ContactProfileDraft
-from app.ai.llm import get_llm_client
 from app.ai.prompts import render
+from app.ai.resolve import AIProviderNotConfigured, llm_from, load_workspace_keys
 from app.db.session import worker_session
 from app.jobs.handlers import handler
 from app.jobs.queue import Job
@@ -77,7 +77,12 @@ async def synthesize(job: Job) -> dict[str, Any]:
         tasks="\n".join(f"- {t[0]}{' (due ' + t[1] + ')' if t[1] else ''}" for t in tasks) or "none",
         opportunities="\n".join(f"- {o[0]}, {o[1] / 100:,.0f} USD, {o[2]}" for o in opps) or "none",
     )
-    llm = get_llm_client()
+    async with worker_session() as s:
+        keys = await load_workspace_keys(s, contact["workspace_id"])
+    try:
+        llm = llm_from(keys)
+    except AIProviderNotConfigured as exc:
+        return {"skipped": str(exc)}
     result = await llm.complete_structured(prompt=prompt, schema=ContactProfileDraft, max_tokens=2048)
     draft = result.value
     async with worker_session() as s:

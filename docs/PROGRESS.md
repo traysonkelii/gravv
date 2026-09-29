@@ -83,8 +83,8 @@ Everything the milestone lists exists in the repository and passes the local gat
 - PWA manifest, icons, service worker with NetworkFirst caching for GET API calls.
 - Optional light theme through Settings, Profile, Appearance.
 - Landing page at `/` with a real product screenshot and three feature statements.
-- Terraform: modules ecr, apprunner, secrets, static-site, github-oidc, alarms; envs staging and prod;
-  `make infra-validate` passes `terraform fmt` and `terraform validate` for both environments.
+- AWS CDK app (`infra/cdk`) with one stack per environment: ECR, App Runner api and worker, S3 and CloudFront
+  site, GitHub OIDC deploy role, alarms; `make infra-validate` type-checks and synthesizes both environments.
 - GitHub Actions: `deploy-staging` on merge to main after ci, `deploy-prod` on `v*` tags behind the
   `production` environment approval; migrations first, then services, then the SPA, then a smoke test.
 - `docs/RUNBOOK.md`: first deployment, key rotation, re-queuing dead jobs, backup restore, revoking an integration,
@@ -93,7 +93,13 @@ Everything the milestone lists exists in the repository and passes the local gat
   axe-core audit in Playwright.
 
 Not done in this environment, because it needs cloud accounts and domains that do not exist here:
-- Creating the hosted Supabase projects, the Route 53 zone, ACM certificates, the state bucket, and applying
-  Terraform. `terraform plan` was not run against a real account.
+- Creating the hosted Supabase projects, the Route 53 zone, ACM certificates, the CDK bootstrap, and deploying the
+  stack. `cdk diff` was not run against a real account.
 - Reaching staging at its domains, the Playwright smoke against staging, and the dead-job alarm email.
 - Visual regression baselines (optional in the plan) were not recorded.
+
+## Post-M7 changes
+- Bring-your-own-key AI providers (D-038): per-workspace encrypted keys, Settings, AI page, provider resolution in
+  the worker, capture sheet notice when no provider is configured. API tests cover admin-only management, hint-only
+  responses, worker decryption, and the column privilege on the ciphertext.
+- Infrastructure moved from Terraform to AWS CDK (D-037).

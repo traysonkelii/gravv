@@ -13,24 +13,34 @@
 2. Apply migrations: `supabase db push --db-url "$DB_URL"`. Then `GRAVV_API_PASSWORD=... GRAVV_WORKER_PASSWORD=...
    DB_URL=... infra/scripts/setup_roles.sh staging`.
 3. Request an ACM certificate in us-east-1 for the site domain; note its ARN and the Route 53 zone id.
-4. `cp infra/terraform/envs/staging/terraform.tfvars.example infra/terraform/envs/staging/terraform.tfvars` and fill it in.
-   Create the state bucket `gravv-tfstate` once. `make infra-plan env=staging`, then `make infra-apply env=staging`.
-5. Put secrets in SSM (names printed by `terraform output`):
+4. Fill the `staging` block in `infra/cdk/cdk.json` (zone id, certificate ARN, Supabase URL, GitHub repo, alert email).
+   Create the GitHub OIDC provider in the account once (`aws iam create-open-id-connect-provider --url
+   https://token.actions.githubusercontent.com --client-id-list sts.amazonaws.com`) and bootstrap CDK once per
+   account and region: `cd infra/cdk && pnpm exec cdk bootstrap aws://<account>/us-east-1`.
+5. Put secrets in SSM before the first deploy (App Runner refuses to start with a missing parameter):
    `aws ssm put-parameter --name /gravv/staging/DATABASE_URL --type SecureString --value '...' --overwrite` for each of
    DATABASE_URL (pooler, 6543), DATABASE_URL_WORKER (direct, 5432), SUPABASE_SECRET_KEY, SUPABASE_JWT_SECRET,
-   APP_ENCRYPTION_KEY, ANTHROPIC_API_KEY, OPENAI_API_KEY, SMTP_PASSWORD.
-6. Add the App Runner custom domain validation records from `terraform output api_domain_validation` to Route 53.
-7. In GitHub: environment `staging` with secret `AWS_DEPLOY_ROLE_ARN` (from `terraform output deploy_role_arn`),
+   APP_ENCRYPTION_KEY, SMTP_PASSWORD. Provider API keys are not server secrets: each workspace enters its own under
+   Settings, AI. To offer an operator-wide fallback key, add ANTHROPIC_API_KEY or OPENAI_API_KEY to the `SECRETS` list in
+   `infra/cdk/lib/gravv-stack.ts` and to SSM.
+6. Push a bootstrap image tag, then `make infra-deploy env=staging tag=<sha>` (or let the workflow do it). The
+   log-based alarms need the worker log group, which App Runner creates on first start; if the first deploy fails
+   on the metric filters, deploy again once the worker has logged.
+7. Associate the API custom domain (`aws apprunner associate-custom-domain`, done by the workflow) and add the
+   validation records it prints (`aws apprunner describe-custom-domains`) to Route 53.
+8. In GitHub: environment `staging` with secret `AWS_DEPLOY_ROLE_ARN` (stack output `DeployRoleArn`),
    secret `STAGING_DB_URL`, variables `STAGING_SUPABASE_URL`, `STAGING_SUPABASE_PUBLISHABLE_KEY`, `STAGING_SITE_BUCKET`,
    `STAGING_DISTRIBUTION_ID`. Same set with the `PROD_` prefix for production.
-8. Push to `main`; `deploy-staging` builds the image, rolls the services, publishes the SPA, and runs the smoke test.
-9. Configure Supabase Auth: site URL `https://staging.gravv.app`, redirect URLs for `/auth/callback` and `/auth/reset`,
+9. Push to `main`; `deploy-staging` builds the image, deploys the stack with the new tag, publishes the SPA, and runs
+   the smoke test.
+10. Configure Supabase Auth: site URL `https://staging.gravv.app`, redirect URLs for `/auth/callback` and `/auth/reset`,
    JWT expiry 900 seconds, minimum password length 12, HaveIBeenPwned check on, TOTP MFA on, custom SMTP (SES).
 
 ## Rotating keys
-- `APP_ENCRYPTION_KEY`: set `APP_ENCRYPTION_KEY_PREVIOUS` to the old value and `APP_ENCRYPTION_KEY` to the new one, roll
-  the services, run `uv run python -m scripts.rewrap_credentials` (Phase 3, when integrations land), then remove the
-  previous key.
+- `APP_ENCRYPTION_KEY`: set `APP_ENCRYPTION_KEY_PREVIOUS` to the old value and `APP_ENCRYPTION_KEY` to the new one in
+  SSM, roll the services, then re-save workspace AI keys (or run a rewrap script) so ciphertexts use the new key, then
+  remove the previous key. Keys encrypted with a retired key fail with `DecryptError` and the capture shows the
+  Settings, AI message.
 - Supabase secret key or JWT secret: rotate in the Supabase dashboard, update SSM, roll both App Runner services.
 - Database role passwords: `infra/scripts/setup_roles.sh <env>` with new passwords, update SSM, roll the services.
 
@@ -48,8 +58,8 @@ the latest backup to a scratch project and run `supabase db diff` against migrat
 revoke the grant at the provider. Phase 3 adds a `DELETE /integrations/{provider}` path for the user.
 
 ## Scaling
-- API: raise `max_size` and `max_concurrency` in `infra/terraform/modules/apprunner` inputs for the env.
-- Worker: raise `max_size` for the worker service; the claim query is safe with many workers.
+- API: raise `apiMax` in `infra/cdk/cdk.json` (and `maxConcurrency` in `infra/cdk/lib/apprunner.ts`).
+- Worker: raise `workerMax` in `infra/cdk/cdk.json`; the claim query is safe with many workers.
 - Database: Supabase compute add-ons; keep transactions short; nightly scoring is batched per workspace.
 
 ## Alarms

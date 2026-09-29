@@ -122,6 +122,10 @@ export const router = createBrowserRouter([
                     ),
                   },
                   {
+                    path: 'ai',
+                    element: page(() => import('@/features/settings/AISettings'), 'AISettings'),
+                  },
+                  {
                     path: 'integrations',
                     element: page(
                       () => import('@/features/settings/IntegrationsSettings'),

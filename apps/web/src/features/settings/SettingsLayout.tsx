@@ -5,6 +5,7 @@ const tabs = [
   { key: 'profile', label: 'Profile', to: '/app/settings/profile' },
   { key: 'workspace', label: 'Workspace', to: '/app/settings/workspace' },
   { key: 'members', label: 'Members', to: '/app/settings/members' },
+  { key: 'ai', label: 'AI', to: '/app/settings/ai' },
   { key: 'integrations', label: 'Integrations', to: '/app/settings/integrations' },
   { key: 'security', label: 'Security', to: '/app/settings/security' },
   { key: 'data', label: 'Data', to: '/app/settings/data' },

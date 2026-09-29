@@ -54,11 +54,11 @@ class LLMClient(Protocol):
 class AnthropicLLM:
     name = "anthropic"
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, api_key: str, model: str | None = None) -> None:
         import anthropic
 
-        self.client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key, max_retries=2, timeout=120.0)
-        self.model = settings.llm_model or ANTHROPIC_DEFAULT_MODEL
+        self.client = anthropic.AsyncAnthropic(api_key=api_key, max_retries=2, timeout=120.0)
+        self.model = model or ANTHROPIC_DEFAULT_MODEL
 
     async def complete_structured(self, *, prompt: Prompt, schema: type[T], max_tokens: int = 4096) -> Structured[T]:
         from anthropic.types import MessageParam
@@ -111,10 +111,10 @@ class OpenAICompatibleLLM:
 
     name = "openai"
 
-    def __init__(self, settings: Settings) -> None:
-        self.base_url = settings.openai_base_url.rstrip("/")
-        self.key = settings.openai_api_key
-        self.model = settings.llm_model or OPENAI_DEFAULT_MODEL
+    def __init__(self, api_key: str, base_url: str = "https://api.openai.com/v1", model: str | None = None) -> None:
+        self.base_url = base_url.rstrip("/")
+        self.key = api_key
+        self.model = model or OPENAI_DEFAULT_MODEL
 
     async def _chat(self, body: dict[str, Any]) -> dict[str, Any]:
         async with httpx.AsyncClient(timeout=120) as c:
@@ -176,11 +176,12 @@ class FakeLLM:
 
 
 def get_llm_client(settings: Settings | None = None) -> LLMClient:
+    """Server-wide provider from environment keys (no workspace key). Jobs use app.ai.resolve instead."""
     s = settings or get_settings()
     if s.llm_provider == "anthropic" and s.anthropic_api_key:
-        return AnthropicLLM(s)
+        return AnthropicLLM(api_key=s.anthropic_api_key, model=s.llm_model or None)
     if s.llm_provider == "openai" and s.openai_api_key:
-        return OpenAICompatibleLLM(s)
+        return OpenAICompatibleLLM(api_key=s.openai_api_key, base_url=s.openai_base_url, model=s.llm_model or None)
     if s.llm_provider != "fake":
         log.warning("llm_provider_missing_key", provider=s.llm_provider, using="fake")
     return FakeLLM()

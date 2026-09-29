@@ -14,6 +14,7 @@ UNMAPPED = {
     "contacts": {"search_vector"},
     "interactions": {"search_vector", "embedding"},
     "integrations": {"credentials_enc"},
+    "ai_credentials": {"key_enc"},
 }
 
 

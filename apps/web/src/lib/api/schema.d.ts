@@ -925,6 +925,41 @@ export interface paths {
     patch: operations['workspaces_update']
     trace?: never
   }
+  '/api/v1/workspaces/{workspace_id}/ai': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Ai Status */
+    get: operations['ai_status']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/workspaces/{workspace_id}/ai/{provider}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Ai Credential Put */
+    put: operations['ai_credential_put']
+    post?: never
+    /** Ai Credential Delete */
+    delete: operations['ai_credential_delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/workspaces/{workspace_id}/export': {
     parameters: {
       query?: never
@@ -1066,6 +1101,20 @@ export interface paths {
 export type webhooks = Record<string, never>
 export interface components {
   schemas: {
+    /** AIStatusRead */
+    AIStatusRead: {
+      /** Can Manage */
+      can_manage: boolean
+      /** Credentials */
+      credentials: components['schemas']['CredentialRead'][]
+      llm: components['schemas']['ProviderStatusRead']
+      transcription: components['schemas']['ProviderStatusRead']
+      /**
+       * Workspace Id
+       * Format: uuid
+       */
+      workspace_id: string
+    }
     /** AcceptResult */
     AcceptResult: {
       /**
@@ -1514,6 +1563,42 @@ export interface components {
      * @enum {string}
      */
     ContactVisibility: 'private' | 'team'
+    /** CredentialPut */
+    CredentialPut: {
+      /** Api Key */
+      api_key: string
+      /** Model */
+      model?: string | null
+      /**
+       * Verify
+       * @default true
+       */
+      verify?: boolean
+    }
+    /** CredentialRead */
+    CredentialRead: {
+      /**
+       * Created By
+       * Format: uuid
+       */
+      created_by: string
+      /** Key Hint */
+      key_hint: string
+      /** Model */
+      model: string | null
+      /**
+       * Provider
+       * @enum {string}
+       */
+      provider: 'anthropic' | 'openai' | 'deepgram'
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string
+      /** Verified At */
+      verified_at: string | null
+    }
     /** EdgeCreate */
     EdgeCreate: {
       /** @default knows */
@@ -2592,6 +2677,15 @@ export interface components {
       role_title: string | null
       /** Timezone */
       timezone: string
+    }
+    /** ProviderStatusRead */
+    ProviderStatusRead: {
+      /** Configured */
+      configured: boolean
+      /** Provider */
+      provider: string | null
+      /** Source */
+      source: ('workspace' | 'server' | 'fake') | null
     }
     /**
      * RelationshipType
@@ -5390,6 +5484,109 @@ export interface operations {
         content: {
           'application/json': components['schemas']['WorkspaceRead']
         }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  ai_status: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        workspace_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AIStatusRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  ai_credential_put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        workspace_id: string
+        provider: 'anthropic' | 'openai' | 'deepgram'
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CredentialPut']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['CredentialRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  ai_credential_delete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        workspace_id: string
+        provider: 'anthropic' | 'openai' | 'deepgram'
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
       /** @description Validation Error */
       422: {

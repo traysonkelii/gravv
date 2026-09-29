@@ -1,6 +1,35 @@
 {
   "components": {
     "schemas": {
+      "AIStatusRead": {
+        "properties": {
+          "can_manage": {
+            "title": "Can Manage",
+            "type": "boolean"
+          },
+          "credentials": {
+            "items": {
+              "$ref": "#/components/schemas/CredentialRead"
+            },
+            "title": "Credentials",
+            "type": "array"
+          },
+          "llm": {
+            "$ref": "#/components/schemas/ProviderStatusRead"
+          },
+          "transcription": {
+            "$ref": "#/components/schemas/ProviderStatusRead"
+          },
+          "workspace_id": {
+            "format": "uuid",
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "required": ["workspace_id", "llm", "transcription", "credentials", "can_manage"],
+        "title": "AIStatusRead",
+        "type": "object"
+      },
       "AcceptResult": {
         "properties": {
           "workspace_id": {
@@ -1402,6 +1431,86 @@
         "enum": ["private", "team"],
         "title": "ContactVisibility",
         "type": "string"
+      },
+      "CredentialPut": {
+        "additionalProperties": false,
+        "properties": {
+          "api_key": {
+            "maxLength": 512,
+            "minLength": 20,
+            "title": "Api Key",
+            "type": "string"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "verify": {
+            "default": true,
+            "title": "Verify",
+            "type": "boolean"
+          }
+        },
+        "required": ["api_key"],
+        "title": "CredentialPut",
+        "type": "object"
+      },
+      "CredentialRead": {
+        "properties": {
+          "created_by": {
+            "format": "uuid",
+            "title": "Created By",
+            "type": "string"
+          },
+          "key_hint": {
+            "title": "Key Hint",
+            "type": "string"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "provider": {
+            "enum": ["anthropic", "openai", "deepgram"],
+            "title": "Provider",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "verified_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verified At"
+          }
+        },
+        "required": ["provider", "key_hint", "model", "verified_at", "created_by", "updated_at"],
+        "title": "CredentialRead",
+        "type": "object"
       },
       "EdgeCreate": {
         "additionalProperties": false,
@@ -4238,6 +4347,40 @@
           "created_at"
         ],
         "title": "ProfileRead",
+        "type": "object"
+      },
+      "ProviderStatusRead": {
+        "properties": {
+          "configured": {
+            "title": "Configured",
+            "type": "boolean"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "enum": ["workspace", "server", "fake"],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          }
+        },
+        "required": ["configured", "provider", "source"],
+        "title": "ProviderStatusRead",
         "type": "object"
       },
       "RelationshipType": {
@@ -10135,6 +10278,213 @@
         ],
         "summary": "Workspaces Update",
         "tags": ["workspaces"]
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/ai": {
+      "get": {
+        "operationId": "ai_status",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIStatusRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Ai Status",
+        "tags": ["ai"]
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/ai/{provider}": {
+      "delete": {
+        "operationId": "ai_credential_delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "provider",
+            "required": true,
+            "schema": {
+              "enum": ["anthropic", "openai", "deepgram"],
+              "title": "Provider",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Ai Credential Delete",
+        "tags": ["ai"]
+      },
+      "put": {
+        "operationId": "ai_credential_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "provider",
+            "required": true,
+            "schema": {
+              "enum": ["anthropic", "openai", "deepgram"],
+              "title": "Provider",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-workspace-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CredentialPut"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CredentialRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Ai Credential Put",
+        "tags": ["ai"]
       }
     },
     "/api/v1/workspaces/{workspace_id}/export": {

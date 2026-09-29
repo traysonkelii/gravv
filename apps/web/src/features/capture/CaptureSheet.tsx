@@ -9,6 +9,9 @@ import { Tabs } from '@/components/ui/Tabs'
 import { toastError } from '@/components/ui/Toast'
 import { ApiError } from '@/lib/api/client'
 import { useUiStore } from '@/lib/store'
+import { useActiveWorkspace } from '@/lib/workspace'
+import { useAIStatus } from '@/features/settings/AISettings'
+import { Link } from 'react-router'
 import { useContact, type Contact } from '@/features/contacts/api'
 import { ContactPicker } from '@/features/capture/ContactPicker'
 import { LevelMeter } from '@/features/capture/LevelMeter'
@@ -140,6 +143,8 @@ export function CaptureSheet() {
   const close = useUiStore((s) => s.closeCapture)
   const navigate = useNavigate()
   const [mode, setMode] = useState<'voice' | 'text'>('voice')
+  const { workspace } = useActiveWorkspace()
+  const { data: ai } = useAIStatus(workspace?.workspace_id ?? null)
   const [picked, setPicked] = useState<Contact | null>(null)
   const { data: preselectedContact } = useContact(preselected ?? undefined)
   const contact = picked ?? (preselected ? (preselectedContact ?? null) : null)
@@ -151,6 +156,18 @@ export function CaptureSheet() {
   return (
     <Sheet open={open} title="Capture" onClose={close}>
       <div className="flex flex-col gap-4">
+        {ai && !ai.llm.configured && (
+          <p className="border border-rust-400 px-3 py-2 text-sm text-rust-400">
+            No AI provider is set up for this workspace, so notes cannot be extracted yet.{' '}
+            {ai.can_manage ? (
+              <Link to="/app/settings/ai" onClick={close} className="text-steel-100">
+                Add an API key
+              </Link>
+            ) : (
+              'Ask an admin to add an API key under Settings, AI.'
+            )}
+          </p>
+        )}
         <ContactPicker value={contact} onChange={setPicked} label="Who is this about (optional)" />
         <Tabs
           tabs={[

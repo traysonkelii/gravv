@@ -20,10 +20,11 @@ make check   # lint + tests + schema drift check (the milestone gate)
 Sign in at http://127.0.0.1:5173 with `sarah@demo.gravv.local` / `demo-password-1`.
 Magic links and invitations land in the local inbox at http://127.0.0.1:54324.
 
-Without an Anthropic key the app runs with `LLM_PROVIDER=fake` and deterministic AI output.
+Without an Anthropic key the app runs with `LLM_PROVIDER=fake` and deterministic AI output. In hosted environments
+each workspace brings its own provider keys under Settings, AI (Anthropic, OpenAI, Deepgram), stored encrypted.
 
 ## Deployment
 
-`infra/terraform` holds staging and prod (App Runner, S3 + CloudFront, SSM, GitHub OIDC, alarms). `make infra-validate`
-checks the configuration offline; `docs/RUNBOOK.md` walks through the first deployment and day-two operations.
+`infra/cdk` is an AWS CDK app with staging and prod (App Runner, S3 + CloudFront, SSM, GitHub OIDC, alarms).
+`make infra-validate` type-checks and synthesizes both environments offline; `docs/RUNBOOK.md` walks through the first deployment and day-two operations.
 GitHub Actions deploy staging on every merge to `main` and production on `v*` tags.
