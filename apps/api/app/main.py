@@ -13,7 +13,10 @@ from app.domain.interactions.router import router as interactions_router
 from app.domain.invitations.router import router as invitations_router
 from app.domain.jobs.router import router as jobs_router
 from app.domain.me.router import router as me_router
+from app.domain.network.router import router as network_router
+from app.domain.opportunities.router import router as opportunities_router
 from app.domain.search.router import router as search_router
+from app.domain.tasks.router import router as tasks_router
 from app.domain.workspaces.router import router as workspaces_router
 from app.errors import install_error_handlers
 from app.observability import RequestContextMiddleware, configure_logging
@@ -33,6 +36,9 @@ def api_router() -> APIRouter:
     api.include_router(jobs_router)
     api.include_router(insights_router)
     api.include_router(analytics_router)
+    api.include_router(tasks_router)
+    api.include_router(opportunities_router)
+    api.include_router(network_router)
     return api
 
 

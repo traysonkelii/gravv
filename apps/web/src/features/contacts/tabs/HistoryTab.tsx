@@ -199,7 +199,7 @@ export function HistoryTab({ contact }: { contact: Contact }) {
             body="Log a meeting, call, or note to start the timeline."
             action={
               <Button variant="primary" onClick={() => setAdding(true)}>
-                Add note
+                Log the first note
               </Button>
             }
           />

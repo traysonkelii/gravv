@@ -24,6 +24,8 @@ import {
 import { OverviewTab } from '@/features/contacts/tabs/OverviewTab'
 import { HistoryTab } from '@/features/contacts/tabs/HistoryTab'
 import { NotesTab } from '@/features/contacts/tabs/NotesTab'
+import { TasksTab } from '@/features/contacts/tabs/TasksTab'
+import { DealsTab } from '@/features/contacts/tabs/DealsTab'
 
 const tabs = [
   { key: 'overview', label: 'Overview' },
@@ -243,16 +245,8 @@ export function ContactDetail() {
         {tab === 'overview' && <OverviewTab contact={contact} />}
         {tab === 'history' && <HistoryTab contact={contact} />}
         {tab === 'notes' && <NotesTab contact={contact} />}
-        {tab === 'tasks' && (
-          <p className="text-base text-steel-300">
-            Tasks for this contact arrive with the tasks milestone.
-          </p>
-        )}
-        {tab === 'deals' && (
-          <p className="text-base text-steel-300">
-            Linked deals arrive with the opportunities milestone.
-          </p>
-        )}
+        {tab === 'tasks' && <TasksTab contact={contact} />}
+        {tab === 'deals' && <DealsTab contact={contact} />}
       </div>
     </div>
   )

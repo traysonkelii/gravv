@@ -316,6 +316,24 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/contacts/{contact_id}/edges': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Edges List */
+    get: operations['edges_list']
+    put?: never
+    /** Edges Create */
+    post: operations['edges_create']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/contacts/{contact_id}/facts': {
     parameters: {
       query?: never
@@ -414,6 +432,23 @@ export interface paths {
     put?: never
     post?: never
     delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/edges/{edge_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    /** Edges Delete */
+    delete: operations['edges_delete']
     options?: never
     head?: never
     patch?: never
@@ -627,6 +662,95 @@ export interface paths {
     patch: operations['me_onboarding_update']
     trace?: never
   }
+  '/api/v1/network/graph': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Network Graph */
+    get: operations['network_graph']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/network/paths': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Network Paths */
+    get: operations['network_paths']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/opportunities': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Opportunities List */
+    get: operations['opportunities_list']
+    put?: never
+    /** Opportunities Create */
+    post: operations['opportunities_create']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/opportunities/{opportunity_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Opportunities Get */
+    get: operations['opportunities_get']
+    put?: never
+    post?: never
+    /** Opportunities Delete */
+    delete: operations['opportunities_delete']
+    options?: never
+    head?: never
+    /** Opportunities Update */
+    patch: operations['opportunities_update']
+    trace?: never
+  }
+  '/api/v1/opportunities/{opportunity_id}/contacts/{contact_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    /** Opportunity Contacts Put */
+    put: operations['opportunity_contacts_put']
+    post?: never
+    /** Opportunity Contacts Delete */
+    delete: operations['opportunity_contacts_delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/search': {
     parameters: {
       query?: never
@@ -638,6 +762,75 @@ export interface paths {
     get: operations['search_global']
     put?: never
     post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/tasks': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Tasks List */
+    get: operations['tasks_list']
+    put?: never
+    /** Tasks Create */
+    post: operations['tasks_create']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/tasks/{task_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /** Tasks Update */
+    patch: operations['tasks_update']
+    trace?: never
+  }
+  '/api/v1/tasks/{task_id}/complete': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Tasks Complete */
+    post: operations['tasks_complete']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/tasks/{task_id}/snooze': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Tasks Snooze */
+    post: operations['tasks_snooze']
     delete?: never
     options?: never
     head?: never
@@ -1252,6 +1445,64 @@ export interface components {
      * @enum {string}
      */
     ContactVisibility: 'private' | 'team'
+    /** EdgeCreate */
+    EdgeCreate: {
+      /** @default knows */
+      kind?: components['schemas']['EdgeKind']
+      /** Note */
+      note?: string | null
+      /**
+       * Other Contact Id
+       * Format: uuid
+       */
+      other_contact_id: string
+      /**
+       * Strength
+       * @default 50
+       */
+      strength?: number
+    }
+    /**
+     * EdgeKind
+     * @enum {string}
+     */
+    EdgeKind: 'knows' | 'reports_to' | 'works_with' | 'introduced_by' | 'former_colleague' | 'other'
+    /** EdgeRead */
+    EdgeRead: {
+      /**
+       * Contact Id
+       * Format: uuid
+       */
+      contact_id: string
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      kind: components['schemas']['EdgeKind']
+      /** Note */
+      note: string | null
+      /** Other Company */
+      other_company: string | null
+      /**
+       * Other Contact Id
+       * Format: uuid
+       */
+      other_contact_id: string
+      /** Other Display Name */
+      other_display_name: string
+      /** Other Gravity Score */
+      other_gravity_score: number
+      /** Other Honorific */
+      other_honorific: string | null
+      /** Strength */
+      strength: number
+    }
     /** ExtractedEdge */
     ExtractedEdge: {
       /**
@@ -1437,6 +1688,58 @@ export interface components {
        * @default false
        */
       track_roi?: boolean
+    }
+    /** Graph */
+    Graph: {
+      /** Edges */
+      edges: components['schemas']['GraphEdge'][]
+      /** Nodes */
+      nodes: components['schemas']['GraphNode'][]
+    }
+    /** GraphEdge */
+    GraphEdge: {
+      /** Id */
+      id: string
+      /** Kind */
+      kind: string
+      /** Source */
+      source: string
+      /** Strength */
+      strength: number
+      /** Target */
+      target: string
+    }
+    /** GraphNode */
+    GraphNode: {
+      /** Band */
+      band: string
+      /** Company */
+      company: string | null
+      /** Connection Count */
+      connection_count: number
+      /** Deal Value Cents */
+      deal_value_cents: number
+      /** Display Name */
+      display_name: string
+      /** Gravity Score */
+      gravity_score: number
+      /** Id */
+      id: string
+      /** Industry */
+      industry: string | null
+      /** Initials */
+      initials: string
+      /**
+       * Kind
+       * @enum {string}
+       */
+      kind: 'me' | 'contact'
+      /** Last Interaction At */
+      last_interaction_at: string | null
+      /** Relationship Type */
+      relationship_type: string | null
+      /** Title */
+      title: string | null
     }
     /** HTTPValidationError */
     HTTPValidationError: {
@@ -1944,6 +2247,136 @@ export interface components {
       /** Step */
       step: number
     }
+    /** OpportunityContactPut */
+    OpportunityContactPut: {
+      /** @default other */
+      role?: components['schemas']['OpportunityRole']
+    }
+    /** OpportunityContactRead */
+    OpportunityContactRead: {
+      /**
+       * Contact Id
+       * Format: uuid
+       */
+      contact_id: string
+      /** Display Name */
+      display_name: string
+      /** Gravity Score */
+      gravity_score: number
+      /** Honorific */
+      honorific: string | null
+      role: components['schemas']['OpportunityRole']
+    }
+    /** OpportunityCreate */
+    OpportunityCreate: {
+      /** Company Id */
+      company_id?: string | null
+      /** Company Name */
+      company_name?: string | null
+      /**
+       * Currency
+       * @default USD
+       */
+      currency?: string
+      /** Expected Close */
+      expected_close?: string | null
+      /** Name */
+      name: string
+      /** Notes */
+      notes?: string | null
+      /** Probability */
+      probability?: number | null
+      /**
+       * Stage
+       * @default qualifying
+       */
+      stage?: string
+      /** @default open */
+      status?: components['schemas']['OpportunityStatus']
+      /**
+       * Value Cents
+       * @default 0
+       */
+      value_cents?: number
+    }
+    /** OpportunityRead */
+    OpportunityRead: {
+      company: components['schemas']['CompanySummary'] | null
+      /** Contacts */
+      contacts: components['schemas']['OpportunityContactRead'][]
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Currency */
+      currency: string
+      /** Expected Close */
+      expected_close: string | null
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Name */
+      name: string
+      /** Notes */
+      notes: string | null
+      /**
+       * Owner User Id
+       * Format: uuid
+       */
+      owner_user_id: string
+      /** Probability */
+      probability: number | null
+      /** Stage */
+      stage: string
+      status: components['schemas']['OpportunityStatus']
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string
+      /** Value Cents */
+      value_cents: number
+      /**
+       * Workspace Id
+       * Format: uuid
+       */
+      workspace_id: string
+    }
+    /**
+     * OpportunityRole
+     * @enum {string}
+     */
+    OpportunityRole: 'decision_maker' | 'influencer' | 'champion' | 'blocker' | 'user' | 'other'
+    /**
+     * OpportunityStatus
+     * @enum {string}
+     */
+    OpportunityStatus: 'open' | 'won' | 'lost' | 'on_hold'
+    /** OpportunityUpdate */
+    OpportunityUpdate: {
+      /** Company Id */
+      company_id?: string | null
+      /** Company Name */
+      company_name?: string | null
+      /** Currency */
+      currency?: string | null
+      /** Expected Close */
+      expected_close?: string | null
+      /** Name */
+      name?: string | null
+      /** Notes */
+      notes?: string | null
+      /** Probability */
+      probability?: number | null
+      /** Stage */
+      stage?: string | null
+      status?: components['schemas']['OpportunityStatus'] | null
+      /** Value Cents */
+      value_cents?: number | null
+    }
     /** Page[CompanyRead] */
     Page_CompanyRead_: {
       /** Items */
@@ -1965,12 +2398,44 @@ export interface components {
       /** Next Cursor */
       next_cursor?: string | null
     }
+    /** Page[OpportunityRead] */
+    Page_OpportunityRead_: {
+      /** Items */
+      items: components['schemas']['OpportunityRead'][]
+      /** Next Cursor */
+      next_cursor?: string | null
+    }
+    /** Page[TaskRead] */
+    Page_TaskRead_: {
+      /** Items */
+      items: components['schemas']['TaskRead'][]
+      /** Next Cursor */
+      next_cursor?: string | null
+    }
     /** Page[TimelineEntry] */
     Page_TimelineEntry_: {
       /** Items */
       items: components['schemas']['TimelineEntry'][]
       /** Next Cursor */
       next_cursor?: string | null
+    }
+    /** Path */
+    Path: {
+      /** Hops */
+      hops: number
+      /** Min Strength */
+      min_strength: number
+      /** Nodes */
+      nodes: string[]
+    }
+    /** PathsResult */
+    PathsResult: {
+      /** From Id */
+      from_id: string
+      /** Paths */
+      paths: components['schemas']['Path'][]
+      /** To Ids */
+      to_ids: string[]
     }
     /** ProfileRead */
     ProfileRead: {
@@ -2049,6 +2514,114 @@ export interface components {
        * Format: uuid
        */
       target_workspace_id: string
+    }
+    /** SnoozeRequest */
+    SnoozeRequest: {
+      /**
+       * Until
+       * Format: date-time
+       */
+      until: string
+    }
+    /** TaskCreate */
+    TaskCreate: {
+      /** Assignee User Id */
+      assignee_user_id?: string | null
+      /** Contact Id */
+      contact_id?: string | null
+      /** Description */
+      description?: string | null
+      /** Due At */
+      due_at?: string | null
+      /**
+       * Priority
+       * @default 2
+       */
+      priority?: number
+      /** Title */
+      title: string
+    }
+    /** TaskRead */
+    TaskRead: {
+      /** Assignee Name */
+      assignee_name: string | null
+      /**
+       * Assignee User Id
+       * Format: uuid
+       */
+      assignee_user_id: string
+      /** Completed At */
+      completed_at: string | null
+      /** Contact Id */
+      contact_id: string | null
+      /** Contact Name */
+      contact_name: string | null
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /**
+       * Created By
+       * Format: uuid
+       */
+      created_by: string
+      /** Description */
+      description: string | null
+      /** Due At */
+      due_at: string | null
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Priority */
+      priority: number
+      /** Snoozed Until */
+      snoozed_until: string | null
+      source: components['schemas']['TaskSource']
+      /** Source Interaction Id */
+      source_interaction_id: string | null
+      status: components['schemas']['TaskStatus']
+      /** Title */
+      title: string
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string
+      /**
+       * Workspace Id
+       * Format: uuid
+       */
+      workspace_id: string
+    }
+    /**
+     * TaskSource
+     * @enum {string}
+     */
+    TaskSource: 'manual' | 'ai' | 'voice' | 'cadence'
+    /**
+     * TaskStatus
+     * @enum {string}
+     */
+    TaskStatus: 'open' | 'done' | 'snoozed' | 'cancelled'
+    /** TaskUpdate */
+    TaskUpdate: {
+      /** Assignee User Id */
+      assignee_user_id?: string | null
+      /** Contact Id */
+      contact_id?: string | null
+      /** Description */
+      description?: string | null
+      /** Due At */
+      due_at?: string | null
+      /** Priority */
+      priority?: number | null
+      /** Status */
+      status?: ('open' | 'cancelled') | null
+      /** Title */
+      title?: string | null
     }
     /** TimelineEntry */
     TimelineEntry: {
@@ -3082,6 +3655,76 @@ export interface operations {
       }
     }
   }
+  edges_list: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['EdgeRead'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  edges_create: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['EdgeCreate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['EdgeRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   facts_list: {
     parameters: {
       query?: {
@@ -3317,6 +3960,37 @@ export interface operations {
         content: {
           'application/json': components['schemas']['Page_TimelineEntry_']
         }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  edges_delete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        edge_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
       /** @description Validation Error */
       422: {
@@ -3855,6 +4529,320 @@ export interface operations {
       }
     }
   }
+  network_graph: {
+    parameters: {
+      query?: {
+        relationship_type?: string | null
+        industry?: string | null
+        min_score?: number
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Graph']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  network_paths: {
+    parameters: {
+      query: {
+        to: string
+        from?: string
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PathsResult']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  opportunities_list: {
+    parameters: {
+      query?: {
+        status?: string | null
+        company_id?: string | null
+        owner?: string | null
+        limit?: number
+        cursor?: string | null
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Page_OpportunityRead_']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  opportunities_create: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['OpportunityCreate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OpportunityRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  opportunities_get: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        opportunity_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OpportunityRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  opportunities_delete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        opportunity_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  opportunities_update: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        opportunity_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['OpportunityUpdate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OpportunityRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  opportunity_contacts_put: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        opportunity_id: string
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['OpportunityContactPut']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OpportunityRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  opportunity_contacts_delete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        opportunity_id: string
+        contact_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OpportunityRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   search_global: {
     parameters: {
       query: {
@@ -3875,6 +4863,186 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['SearchResult']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  tasks_list: {
+    parameters: {
+      query?: {
+        status?: string | null
+        due_before?: string | null
+        contact_id?: string | null
+        assignee?: string | null
+        limit?: number
+        cursor?: string | null
+      }
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['Page_TaskRead_']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  tasks_create: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TaskCreate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TaskRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  tasks_update: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        task_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TaskUpdate']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TaskRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  tasks_complete: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        task_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TaskRead']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  tasks_snooze: {
+    parameters: {
+      query?: never
+      header?: {
+        'x-workspace-id'?: string | null
+      }
+      path: {
+        task_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SnoozeRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['TaskRead']
         }
       }
       /** @description Validation Error */

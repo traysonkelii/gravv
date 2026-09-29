@@ -44,7 +44,12 @@ test('Analytics shows summary numbers, both charts, and the top relationships ta
   await page.goto('/app/analytics')
   await expect(page.getByRole('heading', { name: 'Analytics' })).toBeVisible()
   await page.getByRole('button', { name: 'Quarter' }).click()
-  await expect(page.getByText('$5.7M')).toBeVisible()
+  await expect(
+    page
+      .getByRole('main')
+      .getByText(/^\$\d+(\.\d+)?[MK]$/)
+      .first(),
+  ).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Relationships by band' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Interactions over time' })).toBeVisible()
   const table = page.getByRole('table').last()

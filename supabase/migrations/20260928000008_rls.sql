@@ -142,6 +142,9 @@ create policy contact_edges_insert on contact_edges for insert to authenticated
               and exists (select 1 from contacts c where c.id = contact_b_id));
 create policy contact_edges_delete on contact_edges for delete to authenticated
   using (is_member(workspace_id, 'member'));
+-- upserting a reverse-order edge takes the ON CONFLICT DO UPDATE path
+create policy contact_edges_update on contact_edges for update to authenticated
+  using (is_member(workspace_id, 'member')) with check (is_member(workspace_id, 'member'));
 
 create policy relationship_scores_select on relationship_scores for select to authenticated
   using (is_member(workspace_id, 'viewer') and exists (select 1 from contacts c where c.id = contact_id));

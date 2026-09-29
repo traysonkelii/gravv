@@ -123,3 +123,16 @@ enqueueing, and holds `pg_try_advisory_xact_lock` so only one worker schedules.
 Rescoring after every interaction writes a daily `relationship_scores` row, and the timeline shows a score
 entry whenever the score changed from the previous day. Tests filter those entries out where they assert on
 interaction order.
+
+## D-028 Snoozed tasks reopen from the scheduler (2026-09-29)
+Snoozing sets `status = snoozed`, `snoozed_until`, and moves `due_at`. Each scheduler pass flips tasks whose
+snooze has passed back to `open`; the API does not need a separate wake-up job.
+
+## D-029 Network paths are computed in Python over the graph payload (2026-09-29)
+Path finding enumerates simple paths up to four hops from the same nodes and edges the canvas receives (the
+"me" node connects to every visible contact). A company target resolves to all contacts at that company. A
+recursive SQL CTE can replace this if workspaces grow past a few thousand edges.
+
+## D-030 The canvas reset is instant (2026-09-29)
+`d3-transition` is not installed; resetting the view applies the identity transform directly, which also fits
+the design rule that motion is limited to the sheet and the score blade.

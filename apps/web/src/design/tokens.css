@@ -125,6 +125,9 @@
     transparent 100%
   );
 }
+@utility fill-below-bar {
+  height: calc(100dvh - 3.5rem);
+}
 @utility tnum {
   font-variant-numeric: tabular-nums;
 }

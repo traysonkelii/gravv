@@ -24,7 +24,7 @@ test('create a contact, add a fact and a meeting note, see them on the timeline'
   await page.getByRole('button', { name: 'Add contact' }).click()
   await expect(page).toHaveURL(/\/app\/contacts\/[0-9a-f-]{36}$/)
   await expect(page.getByRole('heading', { name: `Maj. Lisa ${last}` })).toBeVisible()
-  await expect(page.getByText('Space Force, Program Officer')).toBeVisible()
+  await expect(page.locator('main header').getByText('Space Force, Program Officer')).toBeVisible()
   await expect(page.getByRole('meter')).toHaveAttribute('aria-valuenow', '0')
 
   await page.getByRole('tab', { name: 'Notes to remember' }).click()

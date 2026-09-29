@@ -7,7 +7,7 @@
 | M2 Contacts, companies, facts, interactions | done | Contacts CRUD with search, filters, sort, cursor pagination; companies; facts with supersede; interactions; timeline; share and copy; detail page |
 | M3 Capture pipeline | done | Text and voice captures, signed uploads, transcription and extraction jobs, profile synthesis, proposal review, token budget, injection tests, AI eval |
 | M4 Scoring, insights, Home, Analytics | done | Score engine, nightly and immediate rescoring, insight rules, scheduler with advisory lock, Home dashboard, Insights, Analytics with charts |
-| M5 Network, tasks, opportunities | not started | |
+| M5 Network, tasks, opportunities | done | Contact edges, network graph and path finder on canvas, tasks with complete and snooze, opportunities with contact roles |
 | M6 Organization features, data portability | not started | |
 | M7 Hardening and AWS | not started | |
 
@@ -52,3 +52,12 @@
 - Charts render only token colors (design lint plus a Playwright check of every rect fill).
 - Score engine: 50 unit cases including the drifting boundary, half-life recency, frequency cap, reciprocity,
   depth, momentum, status rules, and next_due.
+
+## M5 acceptance
+- Playwright: the seeded graph renders with the me-node and the ten seeded contacts; selecting Col. Michael Johnson
+  shows mutual connections Dr. James Chen and Gen. Patricia Williams; the path finder from me to NASA resolves
+  through Dr. James Chen; arrow keys move the selection.
+- Playwright: a task is added, snoozed, and completed; a deal is created, linked to a contact with a role, and
+  shows on the contact's Deals tab.
+- API: canonical edge ordering with reverse-order upsert, graph filters (industry, minimum score), shortest paths,
+  task lifecycle with immediate rescoring, opportunity lifecycle with pipeline totals flowing into analytics.

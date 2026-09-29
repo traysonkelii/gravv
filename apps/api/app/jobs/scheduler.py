@@ -12,6 +12,7 @@ import structlog
 from sqlalchemy import text
 
 from app.db.session import worker_session
+from app.domain.tasks.service import reopen_snoozed
 from app.jobs import queue
 from app.jobs.handlers import HANDLERS
 
@@ -36,6 +37,7 @@ async def tick(now: datetime | None = None) -> int:
         got = await s.scalar(text("select pg_try_advisory_xact_lock(:k)"), {"k": LOCK_KEY})
         if not got:
             return 0
+        await reopen_snoozed(s)
         workspaces: list[Any] = list((await s.execute(text("select id from workspaces"))).scalars().all())
         day = now.strftime("%Y-%m-%d")
         for ws in workspaces:
