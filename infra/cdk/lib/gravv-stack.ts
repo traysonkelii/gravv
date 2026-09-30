@@ -114,6 +114,8 @@ export class GravvStack extends Stack {
 
     // Static site: private bucket, CloudFront with OAC, security headers with CSP, SPA fallback, API under /api.
     const bucket = new s3.Bucket(this, 'SiteBucket', {
+      // Deterministic name so the deployer policy (infra/iam) can scope s3:* to gravv-site-*; the account id keeps it unique.
+      bucketName: `gravv-site-${envName}-${this.account}`,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       encryption: s3.BucketEncryption.S3_MANAGED,
       enforceSSL: true,
