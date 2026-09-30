@@ -60,7 +60,7 @@ ai-eval: ## run the AI extraction eval cases against the configured provider
 
 check: lint test db-diff ## the milestone gate
 
-build: ## container image and static bundle
+build: ## container image (local parity) and static bundle; cdk deploy builds its own image
 	docker build -t gravv-api:local apps/api
 	cd apps/web && pnpm build
 
@@ -70,8 +70,11 @@ infra-synth: ## synthesize the CDK app for one env (make infra-synth env=staging
 infra-diff: ## make infra-diff env=staging
 	cd infra/cdk && pnpm exec cdk diff -c env=$(env)
 
-infra-deploy: ## make infra-deploy env=staging tag=<image tag>
-	cd infra/cdk && pnpm exec cdk deploy -c env=$(env) -c imageTag=$(tag) --require-approval never
+infra-deploy: ## make infra-deploy env=prod [rotated=<stamp>] (builds the API image, deploys the stack; rotated= re-reads secrets)
+	cd infra/cdk && pnpm exec cdk deploy -c env=$(env) $(if $(rotated),-c rotated=$(rotated)) --require-approval never
+
+site-publish: ## make site-publish env=prod (build the SPA from .env.production, upload, invalidate)
+	scripts/site_publish.sh $(env)
 
 infra-validate: ## type-check and synthesize both envs without cloud access
 	cd infra/cdk && pnpm install --frozen-lockfile >/dev/null && pnpm exec tsc --noEmit && for e in staging prod; do pnpm exec cdk synth -c env=$$e --quiet >/dev/null && echo "synth $$e ok"; done
@@ -79,4 +82,4 @@ infra-validate: ## type-check and synthesize both envs without cloud access
 jobs-requeue: ## make jobs-requeue id=<job id>
 	cd apps/api && uv run python -m scripts.requeue_job $(id)
 
-.PHONY: help setup dev env db-reset db-migrate db-diff seed gen lint format test test-e2e ai-eval check build jobs-requeue infra-synth infra-diff infra-deploy infra-validate
+.PHONY: help setup dev env db-reset db-migrate db-diff seed gen lint format test test-e2e ai-eval check build jobs-requeue infra-synth infra-diff infra-deploy infra-validate site-publish

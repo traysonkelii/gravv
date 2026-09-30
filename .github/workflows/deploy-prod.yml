@@ -16,7 +16,7 @@ jobs:
     environment: production # manual approval gate configured in GitHub
     env:
       AWS_REGION: us-east-1
-      ECR_REPO: gravv-api
+      SITE_URL: https://gravv.keliiconsulting.com
     steps:
       - uses: actions/checkout@v4
       - uses: aws-actions/configure-aws-credentials@v4
@@ -26,39 +26,28 @@ jobs:
       - uses: supabase/setup-cli@v1
         with: { version: latest }
       - name: Apply migrations first (backward compatible with the running API)
-        run: supabase db push --db-url "${{ secrets.STAGING_DB_URL }}"
-      - uses: aws-actions/amazon-ecr-login@v2
-        id: ecr
-      - name: Build and push the API image
-        run: |
-          IMAGE="${{ steps.ecr.outputs.registry }}/${ECR_REPO}:${GITHUB_SHA}"
-          docker build -t "$IMAGE" apps/api
-          docker push "$IMAGE"
-          echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
+        run: supabase db push --db-url "${{ secrets.PROD_DB_URL }}"
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm, cache-dependency-path: infra/cdk/pnpm-lock.yaml }
-      - name: Deploy the stack with the new image tag (rolls api and worker)
-        run: cd infra/cdk && pnpm install --frozen-lockfile && pnpm exec cdk deploy -c env=prod -c imageTag="$GITHUB_SHA" --require-approval never
-      - name: Associate the API custom domain (no-op when already associated)
-        run: |
-          arn=$(aws apprunner list-services --query "ServiceSummaryList[?ServiceName=='gravv-api'].ServiceArn" --output text)
-          aws apprunner associate-custom-domain --service-arn "$arn" --domain-name api.gravv.app --no-enable-www-subdomain >/dev/null 2>&1 || true
+      - name: Deploy the stack (builds and publishes the API image, rolls api and worker)
+        run: cd infra/cdk && pnpm install --frozen-lockfile && pnpm exec cdk deploy -c env=prod --require-approval never
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm, cache-dependency-path: apps/web/pnpm-lock.yaml }
       - name: Build the web app
         env:
-          VITE_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.STAGING_SUPABASE_PUBLISHABLE_KEY }}
-          VITE_API_URL: https://api.gravv.app
+          VITE_SUPABASE_URL: ${{ vars.PROD_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.PROD_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_API_URL: ${{ env.SITE_URL }}
         run: cd apps/web && pnpm install --frozen-lockfile && pnpm build
       - name: Publish the SPA
         run: |
-          aws s3 sync apps/web/dist "s3://${{ vars.STAGING_SITE_BUCKET }}" --delete --exclude index.html --exclude "*.webmanifest" --exclude sw.js --cache-control "public, max-age=31536000, immutable"
-          aws s3 cp apps/web/dist/index.html "s3://${{ vars.STAGING_SITE_BUCKET }}/index.html" --cache-control "no-cache"
-          for f in sw.js manifest.webmanifest; do [ -f "apps/web/dist/$f" ] && aws s3 cp "apps/web/dist/$f" "s3://${{ vars.STAGING_SITE_BUCKET }}/$f" --cache-control "no-cache"; done
-          aws cloudfront create-invalidation --distribution-id "${{ vars.STAGING_DISTRIBUTION_ID }}" --paths "/index.html" "/" "/sw.js" "/manifest.webmanifest"
-      - name: Smoke test against prod
+          aws s3 sync apps/web/dist "s3://${{ vars.PROD_SITE_BUCKET }}" --delete --exclude index.html --exclude "*.webmanifest" --exclude sw.js --cache-control "public, max-age=31536000, immutable"
+          aws s3 cp apps/web/dist/index.html "s3://${{ vars.PROD_SITE_BUCKET }}/index.html" --cache-control "no-cache"
+          for f in sw.js manifest.webmanifest; do [ -f "apps/web/dist/$f" ] && aws s3 cp "apps/web/dist/$f" "s3://${{ vars.PROD_SITE_BUCKET }}/$f" --cache-control "no-cache"; done
+          aws cloudfront create-invalidation --distribution-id "${{ vars.PROD_DISTRIBUTION_ID }}" --paths "/index.html" "/" "/sw.js" "/manifest.webmanifest"
+      - name: Smoke test against production
         env:
-          PLAYWRIGHT_BASE_URL: https://app.gravv.app
+          PLAYWRIGHT_BASE_URL: ${{ env.SITE_URL }}
+          SMOKE_API_URL: ${{ env.SITE_URL }}
         run: cd apps/web && pnpm exec playwright install --with-deps chromium && pnpm exec playwright test e2e/smoke.spec.ts

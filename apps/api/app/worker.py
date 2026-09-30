@@ -52,6 +52,29 @@ async def _housekeeping(stop: asyncio.Event) -> None:
             await asyncio.wait_for(stop.wait(), timeout=60)
 
 
+async def drain(budget_seconds: float, worker_id: str = "lambda") -> int:
+    """One scheduled pass (D-039, Lambda): reap stale locks, run the scheduler, then claim and run jobs one at a
+    time until the queue is empty or the budget is spent. Returns the number of jobs run."""
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + budget_seconds
+    async with worker_session() as session:
+        reaped = await queue.reap_stale(session)
+    enqueued = await scheduler.tick()
+    ran = 0
+    # ponytail: sequential; run under a semaphore like main() if one user's captures start queueing up.
+    while loop.time() < deadline:
+        async with worker_session() as session:
+            job = await queue.claim(session, worker_id)
+        if job is None:
+            break
+        await run_job(job)
+        ran += 1
+    async with worker_session() as session:
+        depth = await queue.queue_depth(session)
+    log.info("jobs_queue_depth", jobs_queue_depth=depth, jobs_reaped=reaped, jobs_run=ran, jobs_enqueued=enqueued)
+    return ran
+
+
 async def main() -> None:
     settings = get_settings()
     configure_logging(settings)

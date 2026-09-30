@@ -180,3 +180,21 @@ against the provider runs before a key is stored; the API can write but never re
 worker decrypts. Jobs resolve providers in this order: workspace key, operator-wide server key if one is configured,
 the deterministic fake when the server is set to it. Without any of those a capture fails with a message pointing to
 Settings, AI, and profile and brief jobs skip. Usage still counts against the workspace token budget.
+
+## D-039 Lambda replaces App Runner for compute (2026-09-29)
+Product owner request: host the single-user POC at gravv.keliiconsulting.com under a 10 dollar monthly cap. App Runner
+cannot scale to zero (about 10 dollars per idle instance per month, two instances) and throttles CPU on instances
+that serve no requests, which the worker never does. The API now runs as a container Lambda behind a function URL,
+routed under `/api/*` and `/readyz` on the site's CloudFront distribution, so the site and API share one origin.
+The worker is a second Lambda from the same image, invoked every minute by an EventBridge rule; `app.worker.drain`
+reaps stale locks, runs the scheduler pass, and runs queued jobs one at a time until the queue is empty or the time
+budget is spent, so idle invocations return in well under a second. Captures are processed within about a minute
+instead of on NOTIFY. Secrets moved from SSM SecureString to one Secrets Manager secret (`gravv/<env>`) because
+CloudFormation resolves Secrets Manager keys into Lambda environment variables at deploy time and cannot do so for
+SecureString parameters. The image is built and published by CDK as an asset; the ECR repository and image tag
+context are gone. Added: an AWS Budget with email alerts at 50, 80, and forecast 100 percent, and at 100 percent
+actual a kill-switch Lambda that sets both functions' reserved concurrency to zero and disables the worker rule.
+Dropped from Section 13.7: the p95 latency alarm (cold starts would trip it) and the queue-depth alarm (the worker
+error alarm covers a stuck worker for one user). The function URL is reachable directly; the API's own token checks
+and rate limiting guard it. Expected cost is about 1 to 2 dollars a month: the Route 53 zone, one secret, and image
+storage. The staging environment keeps the same shape and is not deployed for the POC.

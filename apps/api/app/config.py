@@ -4,7 +4,9 @@ from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+# Container images copy app/ into /srv, which has no repo root above it; the .env file then simply does not exist.
+_parents = Path(__file__).resolve().parents
+REPO_ROOT = _parents[3] if len(_parents) > 3 else _parents[-1]
 
 
 class Settings(BaseSettings):

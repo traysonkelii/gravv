@@ -5,6 +5,7 @@ from sqlalchemy import text
 from app.db.session import worker_session
 from app.jobs import queue
 from app.jobs.runner import run_job, run_job_now
+from app.worker import drain
 from tests.conftest import AuthAdmin, create_org, rls_session
 
 # A live worker may be running against the same database; a far-future run_after keeps these jobs
@@ -39,3 +40,17 @@ async def test_unknown_kind_backs_off_then_dies(auth_admin: AuthAdmin) -> None:
         job = await queue.claim_by_id(s, job_id, "test")
     assert job is not None and job.attempts == 2
     assert await run_job(job) == "dead"
+
+
+async def test_drain_runs_due_jobs(auth_admin: AuthAdmin) -> None:
+    user = await auth_admin.create_user("w3", "Worker Tester")
+    ws = await create_org(user, "Org W3")
+    async with rls_session(user) as s:
+        job_id = await queue.enqueue(s, "noop", {"via": "drain"}, ws, dedupe_key=f"drain:{ws}")
+    assert job_id is not None
+    # A live worker may claim it first; either way the job ends succeeded and drain returns without hanging.
+    ran = await drain(budget_seconds=10, worker_id="test-drain")
+    assert ran >= 0
+    async with worker_session() as s:
+        status = await s.scalar(text("select status::text from jobs where id = :id"), {"id": job_id})
+    assert status == "succeeded"

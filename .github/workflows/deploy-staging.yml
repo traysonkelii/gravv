@@ -19,7 +19,7 @@ jobs:
     environment: staging
     env:
       AWS_REGION: us-east-1
-      ECR_REPO: gravv-api-staging
+      SITE_URL: https://staging.gravv.app
     steps:
       - uses: actions/checkout@v4
         with: { ref: ${{ github.event.workflow_run.head_sha }} }
@@ -31,30 +31,18 @@ jobs:
         with: { version: latest }
       - name: Apply migrations first (backward compatible with the running API)
         run: supabase db push --db-url "${{ secrets.STAGING_DB_URL }}"
-      - uses: aws-actions/amazon-ecr-login@v2
-        id: ecr
-      - name: Build and push the API image
-        run: |
-          IMAGE="${{ steps.ecr.outputs.registry }}/${ECR_REPO}:${GITHUB_SHA}"
-          docker build -t "$IMAGE" apps/api
-          docker push "$IMAGE"
-          echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm, cache-dependency-path: infra/cdk/pnpm-lock.yaml }
-      - name: Deploy the stack with the new image tag (rolls api and worker)
-        run: cd infra/cdk && pnpm install --frozen-lockfile && pnpm exec cdk deploy -c env=staging -c imageTag="$GITHUB_SHA" --require-approval never
-      - name: Associate the API custom domain (no-op when already associated)
-        run: |
-          arn=$(aws apprunner list-services --query "ServiceSummaryList[?ServiceName=='gravv-api-staging'].ServiceArn" --output text)
-          aws apprunner associate-custom-domain --service-arn "$arn" --domain-name api-staging.gravv.app --no-enable-www-subdomain >/dev/null 2>&1 || true
+      - name: Deploy the stack (builds and publishes the API image, rolls api and worker)
+        run: cd infra/cdk && pnpm install --frozen-lockfile && pnpm exec cdk deploy -c env=staging --require-approval never
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm, cache-dependency-path: apps/web/pnpm-lock.yaml }
       - name: Build the web app
         env:
           VITE_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.STAGING_SUPABASE_PUBLISHABLE_KEY }}
-          VITE_API_URL: https://api-staging.gravv.app
+          VITE_API_URL: ${{ env.SITE_URL }}
         run: cd apps/web && pnpm install --frozen-lockfile && pnpm build
       - name: Publish the SPA
         run: |
@@ -64,5 +52,6 @@ jobs:
           aws cloudfront create-invalidation --distribution-id "${{ vars.STAGING_DISTRIBUTION_ID }}" --paths "/index.html" "/" "/sw.js" "/manifest.webmanifest"
       - name: Smoke test against staging
         env:
-          PLAYWRIGHT_BASE_URL: https://staging.gravv.app
+          PLAYWRIGHT_BASE_URL: ${{ env.SITE_URL }}
+          SMOKE_API_URL: ${{ env.SITE_URL }}
         run: cd apps/web && pnpm exec playwright install --with-deps chromium && pnpm exec playwright test e2e/smoke.spec.ts
