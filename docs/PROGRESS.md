@@ -92,14 +92,15 @@ Everything the milestone lists exists in the repository and passes the local gat
 - Lighthouse budgets script (`pnpm lighthouse`) for the public pages; the authenticated pages are covered by the
   axe-core audit in Playwright.
 
-Not done in this environment, because it needs cloud accounts and domains that do not exist here:
-- Creating the hosted Supabase projects, the Route 53 zone, ACM certificates, the CDK bootstrap, and deploying the
-  stack. `cdk diff` was not run against a real account.
-- Reaching staging at its domains, the Playwright smoke against staging, and the dead-job alarm email.
-- Visual regression baselines (optional in the plan) were not recorded.
+Not done: the staging environment (defined, not deployed), the dead-job alarm email drill, and visual regression
+baselines (optional in the plan).
 
 ## Post-M7 changes
 - Bring-your-own-key AI providers (D-038): per-workspace encrypted keys, Settings, AI page, provider resolution in
   the worker, capture sheet notice when no provider is configured. API tests cover admin-only management, hint-only
   responses, worker decryption, and the column privilege on the ciphertext.
 - Infrastructure moved from Terraform to AWS CDK (D-037).
+- Compute moved from App Runner to Lambda with a monthly cost cap (D-039), and prod deployed on 2026-09-30:
+  Supabase project `gravv-prod` (us-east-1, free tier) with all migrations and roles, stack `gravv-prod` in AWS
+  account 908064770691 (us-east-1), site at https://gravv.keliiconsulting.com, budget 10 USD with the kill switch.
+  Smoke test passes against the live site. Deploys run from a workstation (`make infra-deploy`, `make site-publish`).
