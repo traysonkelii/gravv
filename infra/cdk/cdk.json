@@ -12,10 +12,10 @@
     },
     "prod": {
       "siteDomain": "gravv.keliiconsulting.com",
-      "zoneName": "gravv.keliiconsulting.com",
-      "zoneId": "Z0000000000000000000",
-      "supabaseUrl": "https://prod-project-ref.supabase.co",
-      "alertEmail": "ops@example.com",
+      "zoneName": "keliiconsulting.com",
+      "zoneId": "Z04137392B44TTHUO7BDS",
+      "supabaseUrl": "https://hgeyzwalztxwnvodcnou.supabase.co",
+      "alertEmail": "traysonkelii@gmail.com",
       "budgetUsd": 10
     },
     "@aws-cdk/core:newStyleStackSynthesis": true

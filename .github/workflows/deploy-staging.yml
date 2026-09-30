@@ -14,7 +14,8 @@ concurrency: deploy-staging
 
 jobs:
   deploy:
-    if: github.event.workflow_run.conclusion == 'success'
+    # Skips cleanly until the staging environment is configured in GitHub (docs/RUNBOOK.md).
+    if: github.event.workflow_run.conclusion == 'success' && vars.STAGING_SITE_BUCKET != ''
     runs-on: ubuntu-latest
     environment: staging
     env:
@@ -22,7 +23,8 @@ jobs:
       SITE_URL: https://staging.gravv.app
     steps:
       - uses: actions/checkout@v4
-        with: { ref: ${{ github.event.workflow_run.head_sha }} }
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
@@ -32,6 +34,7 @@ jobs:
       - name: Apply migrations first (backward compatible with the running API)
         run: supabase db push --db-url "${{ secrets.STAGING_DB_URL }}"
       - uses: pnpm/action-setup@v4
+        with: { version: 12 }
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm, cache-dependency-path: infra/cdk/pnpm-lock.yaml }
       - name: Deploy the stack (builds and publishes the API image, rolls api and worker)

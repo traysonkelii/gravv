@@ -23,6 +23,8 @@ Prerequisites on the workstation: AWS CLI with a profile that carries `infra/iam
 3. Apply migrations and set the application role passwords:
    `supabase db push --db-url "$DB_URL"`, then
    `GRAVV_API_PASSWORD=... GRAVV_WORKER_PASSWORD=... DB_URL=... infra/scripts/setup_roles.sh prod`.
+   Without a local `psql`, run the same two `alter role` statements through the local stack's container:
+   `docker exec -i supabase_db_gravv psql "$DB_URL" -c ...` (use the session pooler URL, port 5432, from Docker).
    Pooler usernames carry the project ref: `gravv_api.<ref>` and `gravv_worker.<ref>`.
 4. DNS: create the hosted zone for the site domain
    (`aws route53 create-hosted-zone --name gravv.keliiconsulting.com --caller-reference "$(date +%s)"`) and add
@@ -43,7 +45,9 @@ Prerequisites on the workstation: AWS CLI with a profile that carries `infra/iam
 9. Create `.env.production` at the repo root with `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, and
    `VITE_API_URL=https://gravv.keliiconsulting.com` (same origin as the site). Then `make site-publish env=prod`.
 10. Configure Supabase Auth: site URL `https://gravv.keliiconsulting.com`, redirect URLs for `/auth/callback` and
-    `/auth/reset`, JWT expiry 900 seconds, minimum password length 12, HaveIBeenPwned check on, TOTP MFA on.
+    `/auth/reset`, JWT expiry 900 seconds, minimum password length 12, TOTP MFA on. The HaveIBeenPwned check
+    needs the Pro plan; turn it on when the project is upgraded. All of this is one Management API call:
+    `PATCH https://api.supabase.com/v1/projects/<ref>/config/auth` with the access token from `supabase login`.
     Custom SMTP is optional for one user; the built-in mailer is rate limited to a few messages an hour.
 11. Smoke test: `PLAYWRIGHT_BASE_URL=https://gravv.keliiconsulting.com SMOKE_API_URL=$PLAYWRIGHT_BASE_URL
     pnpm exec playwright test e2e/smoke.spec.ts` in `apps/web`, then sign up, enter an Anthropic key under

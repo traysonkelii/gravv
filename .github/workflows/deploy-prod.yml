@@ -28,6 +28,7 @@ jobs:
       - name: Apply migrations first (backward compatible with the running API)
         run: supabase db push --db-url "${{ secrets.PROD_DB_URL }}"
       - uses: pnpm/action-setup@v4
+        with: { version: 12 }
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm, cache-dependency-path: infra/cdk/pnpm-lock.yaml }
       - name: Deploy the stack (builds and publishes the API image, rolls api and worker)
